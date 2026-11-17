@@ -1,0 +1,202 @@
+{
+ "replay_M_base_taxi": {
+  "videos": {
+   "replay_M_base_taxi-s101": {
+    "frame_to_frame": 2.969,
+    "over_12_frames": 15.061,
+    "segments": [
+     {
+      "blocks": [
+       1,
+       12
+      ],
+      "dx": 90.152,
+      "dy": -27.424,
+      "zoom": 1.036,
+      "inliers": 77
+     },
+     {
+      "blocks": [
+       14,
+       25
+      ],
+      "dx": 83.596,
+      "dy": -29.886,
+      "zoom": 1.016,
+      "inliers": 53
+     },
+     {
+      "blocks": [
+       27,
+       38
+      ],
+      "dx": -101.66,
+      "dy": -106.043,
+      "zoom": 1.291,
+      "inliers": 30
+     },
+     {
+      "blocks": [
+       40,
+       41
+      ],
+      "dx": 28.673,
+      "dy": 4.949,
+      "zoom": 1.003,
+      "inliers": 1009
+     }
+    ]
+   },
+   "replay_M_base_taxi-s102": {
+    "frame_to_frame": 3.057,
+    "over_12_frames": 13.404,
+    "segments": [
+     {
+      "blocks": [
+       1,
+       12
+      ],
+      "dx": 36.734,
+      "dy": -31.785,
+      "zoom": 1.028,
+      "inliers": 117
+     },
+     {
+      "blocks": [
+       14,
+       25
+      ],
+      "dx": -18.138,
+      "dy": -68.066,
+      "zoom": 1.083,
+      "inliers": 94
+     },
+     {
+      "blocks": [
+       27,
+       38
+      ],
+      "dx": -17.834,
+      "dy": -57.246,
+      "zoom": 1.053,
+      "inliers": 88
+     },
+     {
+      "blocks": [
+       40,
+       41
+      ],
+      "dx": 29.372,
+      "dy": -0.646,
+      "zoom": 1.005,
+      "inliers": 1049
+     }
+    ]
+   }
+  },
+  "frame_to_frame": 3.013,
+  "over_12_frames": 14.232,
+  "zoom_mean": 1.064,
+  "abs_dx_mean": 50.8
+ },
+ "replay_M_lora2_taxi": {
+  "videos": {
+   "replay_M_lora2_taxi-s101": {
+    "frame_to_frame": 2.507,
+    "over_12_frames": 14.554,
+    "segments": [
+     {
+      "blocks": [
+       1,
+       12
+      ],
+      "dx": 264.862,
+      "dy": -16.134,
+      "zoom": 1.02,
+      "inliers": 105
+     },
+     {
+      "blocks": [
+       14,
+       25
+      ],
+      "dx": 281.191,
+      "dy": -12.609,
+      "zoom": 1.009,
+      "inliers": 126
+     },
+     {
+      "blocks": [
+       27,
+       38
+      ],
+      "dx": 273.021,
+      "dy": -10.749,
+      "zoom": 1.017,
+      "inliers": 113
+     },
+     {
+      "blocks": [
+       40,
+       41
+      ],
+      "dx": 11.609,
+      "dy": -0.555,
+      "zoom": 1.001,
+      "inliers": 1168
+     }
+    ]
+   },
+   "replay_M_lora2_taxi-s102": {
+    "frame_to_frame": 2.578,
+    "over_12_frames": 15.078,
+    "segments": [
+     {
+      "blocks": [
+       1,
+       12
+      ],
+      "dx": 249.152,
+      "dy": -13.142,
+      "zoom": 1.028,
+      "inliers": 107
+     },
+     {
+      "blocks": [
+       14,
+       25
+      ],
+      "dx": 255.012,
+      "dy": -18.27,
+      "zoom": 1.022,
+      "inliers": 107
+     },
+     {
+      "blocks": [
+       27,
+       38
+      ],
+      "dx": 254.935,
+      "dy": -12.083,
+      "zoom": 1.009,
+      "inliers": 120
+     },
+     {
+      "blocks": [
+       40,
+       41
+      ],
+      "dx": 12.905,
+      "dy": -1.965,
+      "zoom": 1.002,
+      "inliers": 1256
+     }
+    ]
+   }
+  },
+  "frame_to_frame": 2.542,
+  "over_12_frames": 14.816,
+  "zoom_mean": 1.014,
+  "abs_dx_mean": 200.3
+ }
+}

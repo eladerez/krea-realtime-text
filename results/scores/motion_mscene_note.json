@@ -1,0 +1,142 @@
+{
+ "replay_M_base_note": {
+  "videos": {
+   "replay_M_base_note-s101": {
+    "frame_to_frame": 4.128,
+    "over_12_frames": 25.391,
+    "segments": [
+     {
+      "blocks": [
+       40,
+       41
+      ],
+      "dx": 17.084,
+      "dy": -1.972,
+      "zoom": 1.031,
+      "inliers": 324
+     }
+    ]
+   },
+   "replay_M_base_note-s102": {
+    "frame_to_frame": 4.802,
+    "over_12_frames": 28.263,
+    "segments": [
+     {
+      "blocks": [
+       40,
+       41
+      ],
+      "dx": -30.286,
+      "dy": -17.363,
+      "zoom": 1.125,
+      "inliers": 276
+     }
+    ]
+   }
+  },
+  "frame_to_frame": 4.465,
+  "over_12_frames": 26.827,
+  "zoom_mean": 1.078,
+  "abs_dx_mean": 23.7
+ },
+ "replay_M_lora2_note": {
+  "videos": {
+   "replay_M_lora2_note-s101": {
+    "frame_to_frame": 0.447,
+    "over_12_frames": 2.591,
+    "segments": [
+     {
+      "blocks": [
+       1,
+       12
+      ],
+      "dx": 1.959,
+      "dy": -1.379,
+      "zoom": 0.999,
+      "inliers": 194
+     },
+     {
+      "blocks": [
+       14,
+       25
+      ],
+      "dx": 2.697,
+      "dy": -2.147,
+      "zoom": 1.0,
+      "inliers": 180
+     },
+     {
+      "blocks": [
+       27,
+       38
+      ],
+      "dx": 1.481,
+      "dy": -2.114,
+      "zoom": 1.001,
+      "inliers": 166
+     },
+     {
+      "blocks": [
+       40,
+       41
+      ],
+      "dx": 0.225,
+      "dy": -0.398,
+      "zoom": 1.0,
+      "inliers": 595
+     }
+    ]
+   },
+   "replay_M_lora2_note-s102": {
+    "frame_to_frame": 0.44,
+    "over_12_frames": 2.77,
+    "segments": [
+     {
+      "blocks": [
+       1,
+       12
+      ],
+      "dx": 0.724,
+      "dy": -2.566,
+      "zoom": 1.001,
+      "inliers": 216
+     },
+     {
+      "blocks": [
+       14,
+       25
+      ],
+      "dx": 2.765,
+      "dy": -2.07,
+      "zoom": 0.999,
+      "inliers": 203
+     },
+     {
+      "blocks": [
+       27,
+       38
+      ],
+      "dx": 3.102,
+      "dy": -2.76,
+      "zoom": 0.999,
+      "inliers": 178
+     },
+     {
+      "blocks": [
+       40,
+       41
+      ],
+      "dx": 0.266,
+      "dy": -0.511,
+      "zoom": 1.0,
+      "inliers": 625
+     }
+    ]
+   }
+  },
+  "frame_to_frame": 0.444,
+  "over_12_frames": 2.681,
+  "zoom_mean": 1.0,
+  "abs_dx_mean": 1.7
+ }
+}

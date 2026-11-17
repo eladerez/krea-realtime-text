@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How Krea Draws Typed Text</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Layout: one wide flow diagram (inputs left, the transformer centre, outputs right), then three short evidence panels. */
+:root {
+  --bg: #f4f5f8; --surface: #ffffff; --ink: #161a21; --muted: #5a6170; --line: #d3d8e0;
+  --prompt: #a86b12; --mem: #0d7470; --ours: #2c55c9; --lora: #a3238f; --probe: #6d4fc2; --probe-bg: #eee8fb;
+  --f-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1116; --surface: #171a21; --ink: #e7e9ee; --muted: #9aa1ad; --line: #2e333d;
+    --prompt: #e3ad55; --mem: #42b8b1; --ours: #7f9ff6; --lora: #e470d3; --probe: #a68cf0; --probe-bg: #241d38;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1116; --surface: #171a21; --ink: #e7e9ee; --muted: #9aa1ad; --line: #2e333d;
+  --prompt: #e3ad55; --mem: #42b8b1; --ours: #7f9ff6; --lora: #e470d3; --probe: #a68cf0; --probe-bg: #241d38;
+  color-scheme: dark;
+}
+body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--f-body); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 28px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 28px; }
+h1, h2 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: 30px; line-height: 1.15; }
+h2 { font-size: 19px; }
+p { margin: 0; max-width: 70ch; }
+.lede { color: var(--muted); }
+.eyebrow { font: 600 12px/1 var(--f-body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+header { display: grid; gap: 10px; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.chip { width: 14px; height: 14px; border-radius: 3px; border: 2px solid; background: var(--surface); }
+.chip.prompt { border-color: var(--prompt); } .chip.mem { border-color: var(--mem); }
+.chip.ours { border-color: var(--ours); background: color-mix(in srgb, var(--ours) 12%, var(--surface)); }
+.chip.lora { border-color: var(--lora); background: var(--lora); }
+.chip.probe { border-color: var(--probe); background: var(--probe-bg); }
+
+figure { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+.scroll { overflow-x: auto; }
+svg.flow { display: block; width: 100%; min-width: 980px; height: auto; color: var(--ink); }
+figcaption { padding: 12px 18px 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13.5px; }
+
+/* SVG classes (fills and strokes from tokens, so both themes work) */
+.bx { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+.bx.prompt { stroke: var(--prompt); } .bx.mem { stroke: var(--mem); }
+.bx.ours { stroke: var(--ours); fill: color-mix(in srgb, var(--ours) 9%, var(--surface)); }
+.bx.block { stroke: var(--muted); stroke-dasharray: 5 4; fill: none; }
+.bx.inner { stroke: var(--line); }
+.bx.sa { stroke: var(--mem); }
+.bx.ca { stroke: var(--prompt); }
+.lorab { fill: var(--lora); }
+.lorat { fill: var(--surface); font: 700 11.5px var(--f-mono); }
+.t { fill: var(--ink); font: 600 13.5px var(--f-body); }
+.s { fill: var(--muted); font: 400 12px var(--f-body); }
+.m { fill: var(--ink); font: 700 12px var(--f-mono); }
+.big { fill: var(--ink); font: 700 22px var(--f-mono); }
+.bar { fill: color-mix(in srgb, var(--muted) 35%, var(--surface)); }
+.bar.lit { fill: var(--probe); }
+.band { fill: var(--probe-bg); stroke: var(--probe); stroke-width: 1; }
+.pt { fill: var(--probe); font: 700 12px var(--f-mono); }
+.idx { fill: var(--muted); font: 500 11px var(--f-mono); }
+.ln { fill: none; stroke-width: 1.8; }
+.ln.prompt { stroke: var(--prompt); } .ln.mem { stroke: var(--mem); } .ln.ours { stroke: var(--ours); }
+.ln.ink { stroke: var(--muted); }
+.ln.dash { stroke: var(--muted); stroke-dasharray: 3 4; stroke-width: 1.2; }
+.ah.prompt { fill: var(--prompt); } .ah.mem { fill: var(--mem); } .ah.ours { fill: var(--ours); } .ah.ink { fill: var(--muted); }
+.step { fill: var(--surface); stroke: var(--line); stroke-width: 1.2; }
+.lab { font: 600 11.5px var(--f-body); }
+.lab.prompt { fill: var(--prompt); } .lab.mem { fill: var(--mem); } .lab.ours { fill: var(--ours); }
+
+.panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; align-items: start; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; display: grid; gap: 12px; min-width: 0; }
+.panel.lora { border-top: 3px solid var(--lora); }
+.panel.probe { border-top: 3px solid var(--probe); }
+.panel ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+.panel li { max-width: 70ch; }
+.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-weight: 700; }
+
+table { border-collapse: separate; border-spacing: 3px; font-size: 13px; }
+th { font-weight: 600; color: var(--muted); text-align: left; padding: 4px 6px; white-space: nowrap; }
+td.h { width: 64px; height: 34px; text-align: center; border-radius: 4px; font: 700 13px var(--f-mono); font-variant-numeric: tabular-nums; }
+.tablewrap { overflow-x: auto; }
+table.res { border-spacing: 0; width: 100%; }
+table.res th, table.res td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: left; font-size: 13.5px; }
+table.res td.n { font-family: var(--f-mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+table.res th.n { text-align: right; }
+.note { font-size: 13px; color: var(--muted); }
+.pill { display: inline-block; font: 600 11px var(--f-body); letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 7px; border-radius: 99px; border: 1px solid var(--muted); color: var(--muted); }
+</style>
+</head><body>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Krea Realtime 14B · realtime text bench</div>
+    <h1>How Krea draws the text you type, and where our changes act</h1>
+    <p class="lede">Krea makes video in blocks of 12 frames (3.8 s). Each block is drawn from noise in 4 steps through a stack of 40 transformer blocks. The typed text can reach those blocks two ways: through the prompt, and through the memory of recent frames. Our writer puts the text into the memory, the lock keeps it there, and the LoRA teaches the model to copy what the memory shows.</p>
+    <div class="legend" aria-label="Legend">
+      <span><i class="chip prompt"></i>Prompt path</span>
+      <span><i class="chip mem"></i>Memory path</span>
+      <span><i class="chip ours"></i>Our additions</span>
+      <span><i class="chip lora"></i>LoRA adapters</span>
+      <span><i class="chip probe"></i>Where the probe read the digit</span>
+    </div>
+  </header>
+
+  <figure>
+    <div class="scroll">
+    <svg class="flow" viewBox="0 0 1110 650" role="img" aria-label="Flow: the typed text goes into the prompt (text encoder, cross-attention) and, through our writer, into the memory frames (encoded, rebuilt into the key-value cache read by self-attention). Inside each of the 40 transformer blocks, the LoRA sits on self-attention. A probe read the digit best in blocks 10 to 20. Four denoising steps produce latents that are decoded into 12 frames; the lock reads the newest frame and rewrites the memory when it is wrong.">
+      <defs>
+        <marker id="a-prompt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah prompt" d="M0 0 L10 5 L0 10 z"/></marker>
+        <marker id="a-mem" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah mem" d="M0 0 L10 5 L0 10 z"/></marker>
+        <marker id="a-ours" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah ours" d="M0 0 L10 5 L0 10 z"/></marker>
+        <marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah ink" d="M0 0 L10 5 L0 10 z"/></marker>
+      </defs>
+
+      <!-- Inputs -->
+      <rect class="bx" x="24" y="16" width="246" height="58" rx="8"/>
+      <text class="s" x="38" y="38">You type</text>
+      <text class="big" x="38" y="64">71246</text>
+
+      <path class="ln prompt" d="M147 74 V106" marker-end="url(#a-prompt)"/>
+      <rect class="bx prompt" x="24" y="110" width="246" height="96" rx="8"/>
+      <text class="lab prompt" x="38" y="130">PROMPT PATH</text>
+      <text class="t" x="38" y="152">Prompt switched</text>
+      <text class="s" x="38" y="171">…It reads "71246"…</text>
+      <text class="s" x="38" y="190">T5 text encoder → text tokens</text>
+
+      <path class="ln ours" d="M24 45 H12 V284 H22" marker-end="url(#a-ours)"/>
+      <rect class="bx ours" x="24" y="240" width="246" height="124" rx="8"/>
+      <text class="lab ours" x="38" y="260">MEMORY PATH · OUR WRITER</text>
+      <text class="t" x="38" y="282">Text pasted into memory</text>
+      <text class="s" x="38" y="301">into the last 9 frames Krea remembers</text>
+      <text class="s" x="38" y="322">calculators: 7-segment writer</text>
+      <text class="s" x="38" y="340">any surface: OCR → track → erase</text>
+      <text class="s" x="38" y="356">→ paste in a plain font</text>
+
+      <path class="ln mem" d="M147 364 V392" marker-end="url(#a-mem)"/>
+      <rect class="bx mem" x="24" y="396" width="246" height="62" rx="8"/>
+      <text class="t" x="38" y="420">VAE encode → memory latents</text>
+      <text class="s" x="38" y="442">the 2 newest latents re-encoded</text>
+
+      <path class="ln mem" d="M147 458 V486" marker-end="url(#a-mem)"/>
+      <rect class="bx mem" x="24" y="490" width="246" height="62" rx="8"/>
+      <text class="t" x="38" y="514">Key-value cache rebuilt</text>
+      <text class="s" x="38" y="536">one pass over the memory, each block</text>
+
+      <!-- The stack of 40 blocks -->
+      <text class="t" x="330" y="40">40 blocks</text>
+      <rect class="band" x="324" y="178" width="58" height="136" rx="3"/>
+      <g>
+        <!-- bars: y = 60 + i*12, height 10 -->
+        <rect class="bar" x="330" y="60" width="46" height="10"/><rect class="bar" x="330" y="72" width="46" height="10"/>
+        <rect class="bar" x="330" y="84" width="46" height="10"/><rect class="bar" x="330" y="96" width="46" height="10"/>
+        <rect class="bar" x="330" y="108" width="46" height="10"/><rect class="bar" x="330" y="120" width="46" height="10"/>
+        <rect class="bar" x="330" y="132" width="46" height="10"/><rect class="bar" x="330" y="144" width="46" height="10"/>
+        <rect class="bar" x="330" y="156" width="46" height="10"/><rect class="bar" x="330" y="168" width="46" height="10"/>
+        <rect class="bar lit" x="330" y="180" width="46" height="10"/><rect class="bar" x="330" y="192" width="46" height="10"/>
+        <rect class="bar" x="330" y="204" width="46" height="10"/><rect class="bar" x="330" y="216" width="46" height="10"/>
+        <rect class="bar" x="330" y="228" width="46" height="10"/><rect class="bar" x="330" y="240" width="46" height="10"/>
+        <rect class="bar" x="330" y="252" width="46" height="10"/><rect class="bar" x="330" y="264" width="46" height="10"/>
+        <rect class="bar" x="330" y="276" width="46" height="10"/><rect class="bar" x="330" y="288" width="46" height="10"/>
+        <rect class="bar lit" x="330" y="300" width="46" height="10"/><rect class="bar" x="330" y="312" width="46" height="10"/>
+        <rect class="bar" x="330" y="324" width="46" height="10"/><rect class="bar" x="330" y="336" width="46" height="10"/>
+        <rect class="bar" x="330" y="348" width="46" height="10"/><rect class="bar" x="330" y="360" width="46" height="10"/>
+        <rect class="bar" x="330" y="372" width="46" height="10"/><rect class="bar" x="330" y="384" width="46" height="10"/>
+        <rect class="bar" x="330" y="396" width="46" height="10"/><rect class="bar" x="330" y="408" width="46" height="10"/>
+        <rect class="bar lit" x="330" y="420" width="46" height="10" opacity="0.55"/><rect class="bar" x="330" y="432" width="46" height="10"/>
+        <rect class="bar" x="330" y="444" width="46" height="10"/><rect class="bar" x="330" y="456" width="46" height="10"/>
+        <rect class="bar" x="330" y="468" width="46" height="10"/><rect class="bar" x="330" y="480" width="46" height="10"/>
+        <rect class="bar" x="330" y="492" width="46" height="10"/><rect class="bar" x="330" y="504" width="46" height="10"/>
+        <rect class="bar" x="330" y="516" width="46" height="10"/><rect class="bar lit" x="330" y="528" width="46" height="10" opacity="0.55"/>
+      </g>
+      <text class="idx" x="320" y="69" text-anchor="end">0</text>
+      <text class="idx" x="320" y="189" text-anchor="end">10</text>
+      <text class="idx" x="320" y="309" text-anchor="end">20</text>
+      <text class="idx" x="320" y="429" text-anchor="end">30</text>
+      <text class="idx" x="320" y="537" text-anchor="end">39</text>
+      <text class="pt" x="388" y="189">81%</text>
+      <text class="pt" x="388" y="309">70%</text>
+      <text class="pt" x="388" y="429">56%</text>
+      <text class="pt" x="388" y="537">52%</text>
+      <text class="s" x="330" y="560">probe: best read</text>
+      <text class="s" x="330" y="575">per block (see below)</text>
+
+      <!-- zoom: inside every block -->
+      <path class="ln dash" d="M376 60 L450 64"/>
+      <path class="ln dash" d="M376 538 L450 384"/>
+      <rect class="bx block" x="450" y="64" width="300" height="320" rx="10"/>
+      <text class="t" x="466" y="88">Inside every block (×40)</text>
+
+      <rect class="bx sa" x="466" y="102" width="268" height="104" rx="7"/>
+      <text class="t" x="480" y="124">Self-attention</text>
+      <text class="s" x="480" y="144">fused q, k, v projection and output o</text>
+      <text class="s" x="480" y="162">the display's tokens look at the</text>
+      <text class="s" x="480" y="178">memory's keys and values here</text>
+      <rect class="lorab" x="638" y="110" width="88" height="24" rx="5"/>
+      <text class="lorat" x="682" y="126" text-anchor="middle">LoRA r16</text>
+
+      <rect class="bx ca" x="466" y="220" width="268" height="72" rx="7"/>
+      <text class="t" x="480" y="242">Cross-attention</text>
+      <text class="s" x="480" y="262">reads the prompt's text tokens</text>
+      <text class="s" x="480" y="280">(no LoRA here yet)</text>
+
+      <rect class="bx inner" x="466" y="306" width="268" height="58" rx="7"/>
+      <text class="t" x="480" y="330">Feed-forward</text>
+      <text class="s" x="480" y="350">per-token MLP</text>
+
+      <!-- memory keys/values into self-attention -->
+      <path class="ln mem" d="M270 521 H298 V592 H436 V160 H462" marker-end="url(#a-mem)"/>
+      <text class="lab mem" x="306" y="586">keys, values</text>
+      <!-- prompt tokens into cross-attention (over the top, from the right) -->
+      <path class="ln prompt" d="M270 150 H292 V22 H772 V256 H738" marker-end="url(#a-prompt)"/>
+      <text class="lab prompt" x="560" y="16">text tokens</text>
+
+      <!-- denoising -->
+      <rect class="bx" x="450" y="404" width="300" height="148" rx="10"/>
+      <text class="t" x="466" y="428">4 denoising steps per block</text>
+      <rect class="step" x="466" y="442" width="58" height="34" rx="5"/><text class="m" x="495" y="463" text-anchor="middle">1000</text>
+      <rect class="step" x="538" y="442" width="58" height="34" rx="5"/><text class="m" x="567" y="463" text-anchor="middle">909</text>
+      <rect class="step" x="610" y="442" width="58" height="34" rx="5"/><text class="m" x="639" y="463" text-anchor="middle">714</text>
+      <rect class="step" x="682" y="442" width="52" height="34" rx="5"/><text class="m" x="708" y="463" text-anchor="middle">0</text>
+      <path class="ln ink" d="M524 459 H534" marker-end="url(#a-ink)"/>
+      <path class="ln ink" d="M596 459 H606" marker-end="url(#a-ink)"/>
+      <path class="ln ink" d="M668 459 H678" marker-end="url(#a-ink)"/>
+      <text class="s" x="466" y="498">noise level t; each step runs all 40 blocks</text>
+      <text class="s" x="466" y="516">at t = 1000 the frame is still pure noise,</text>
+      <text class="s" x="466" y="534">yet block 20 already holds the digit (45%)</text>
+
+      <!-- outputs -->
+      <path class="ln ink" d="M750 478 H786 V134 H802" marker-end="url(#a-ink)"/>
+      <rect class="bx" x="806" y="100" width="282" height="64" rx="8"/>
+      <text class="t" x="820" y="124">VAE decode</text>
+      <text class="s" x="820" y="146">→ 12 new frames (3.8 s)</text>
+
+      <path class="ln ink" d="M947 164 V196" marker-end="url(#a-ink)"/>
+      <rect class="bx" x="806" y="200" width="282" height="64" rx="8"/>
+      <text class="t" x="820" y="224">Shown on screen</text>
+      <text class="s" x="820" y="246">every frame as Krea drew it</text>
+
+      <path class="ln ink" d="M947 264 V296" marker-end="url(#a-ink)"/>
+      <rect class="bx ours" x="806" y="300" width="282" height="104" rx="8"/>
+      <text class="lab ours" x="820" y="320">OUR LOCK</text>
+      <text class="t" x="820" y="342">Newest frame read</text>
+      <text class="s" x="820" y="362">7-segment reader or OCR</text>
+      <text class="s" x="820" y="380">wrong → memory written again</text>
+      <text class="s" x="820" y="396">right → nothing is touched</text>
+
+      <!-- the loop back into memory -->
+      <path class="ln ours" d="M947 404 V620 H6 V340 H22" marker-end="url(#a-ours)"/>
+      <text class="lab ours" x="560" y="612">rewrite memory when the newest frame reads wrong</text>
+
+    </svg>
+    </div>
+    <figcaption>One block of generation, left to right. Text reaches the model through the prompt (amber) and through the memory (teal). The blue parts are what we added: the writer, the lock, and the loop between them. The LoRA (magenta) sits on self-attention in all 40 blocks. The violet band marks blocks 10 to 20, where a linear probe read the displayed digit best. The new frames then become the memory for the next block.</figcaption>
+  </figure>
+
+  <div class="panels">
+    <section class="panel probe">
+      <span class="pill">Research · feature probe</span>
+      <h2>Where the digit lives inside Krea</h2>
+      <p>We recorded the hidden state at each digit's own position on the display, at blocks 10, 20, 30 and 39 and at each of the 4 steps, and asked a simple classifier which digit it holds. It was tested on numbers it never saw.</p>
+      <div class="tablewrap">
+        <table aria-label="Probe accuracy by block and denoising step">
+          <tr><th></th><th>t 1000</th><th>t 909</th><th>t 714</th><th>t 0</th></tr>
+          <tr><th>block 10</th>
+            <td class="h" style="background: color-mix(in srgb, var(--probe) 23%, var(--surface))">23%</td>
+            <td class="h" style="background: color-mix(in srgb, var(--probe) 52%, var(--surface))">52%</td>
+            <td class="h" style="background: color-mix(in srgb, var(--probe) 73%, var(--surface)); color: var(--surface)">73%</td>
+            <td class="h" style="background: color-mix(in srgb, var(--probe) 81%, var(--surface)); color: var(--surface)">81%</td></tr>
+          <tr><th>block 20</th>
+            <td class="h" style="background: color-mix(in srgb, var(--probe) 45%, var(--surface))">45%</td>
+            <td class="h" style="background: color-mix(in srgb, var(--probe) 61%, var(--surface)); color: var(--surface)">61%</td>
+            <td class="h" style="background: color-mix(in srgb, var(--probe) 70%, var(--surface)); color: var(--surface)">70%</td>
+            <td class="h" style="background: color-mix(in srgb, var(--probe) 68%, var(--surface)); color: var(--surface)">68%</td></tr>
+          <tr><th>block 30</th>
+            <td class="h" style="background: color-mix(in srgb, var(--probe) 30%, var(--surface))">30%</td>
+            <td class="h" style="background: color-mix(in srgb, var(--probe) 46%, var(--surface))">46%</td>
+            <td class="h" style="background: color-mix(in srgb, var(--probe) 56%, var(--surface)); color: var(--surface)">56%</td>
+            <td class="h" style="background: color-mix(in srgb, var(--probe) 54%, var(--surface))">54%</td></tr>
+          <tr><th>block 39</th>
+            <td class="h" style="background: color-mix(in srgb, var(--probe) 31%, var(--surface))">31%</td>
+            <td class="h" style="background: color-mix(in srgb, var(--probe) 43%, var(--surface))">43%</td>
+            <td class="h" style="background: color-mix(in srgb, var(--probe) 52%, var(--surface))">52%</td>
+            <td class="h" style="background: color-mix(in srgb, var(--probe) 51%, var(--surface))">51%</td></tr>
+        </table>
+      </div>
+      <ul>
+        <li>Chance is <span class="num">2%</span>. The same test on the keypad below the display gets <span class="num">4–6%</span>, so the digit is held at its own place, not spread over the frame.</li>
+        <li>It is strongest in blocks <span class="num">10–20</span>, and already there at the first step, while the frame is still noise. So it comes from the memory and the prompt.</li>
+        <li>All five positions share one digit code: a probe trained on the left three reads the right two at <span class="num">82%</span>.</li>
+        <li>When Krea drew a wrong digit, the hidden state held the wrong (drawn) digit <span class="num">57%</span> of the time and the typed one <span class="num">25%</span> (44 cases). The error is inside the model before the image is decoded.</li>
+      </ul>
+      <p class="note">Measured on calculator digits only (data/scores/probe_digits.json). Letters were not probed.</p>
+    </section>
+
+    <section class="panel lora">
+      <span class="pill">Training · LoRA</span>
+      <h2>Where the LoRA sits and what it changed</h2>
+      <ul>
+        <li><b>Where:</b> small adapters on self-attention (the fused q, k, v projection and the output o) in all 40 blocks. Rank 16, <span class="num">19.7M</span> parameters, 0.14% of the model. Cross-attention is untouched.</li>
+        <li><b>Trained on:</b> Krea's own frames. Where a frame of a block drew the number right, its display was copied onto the wrong frames, and the model learned to produce that. The display counts fully in the loss, the rest of the frame at 0.1.</li>
+        <li><b>Shipped:</b> merged into the weights (98% of the update survives bf16), so it costs no time: <span class="num">3.45–3.65 s</span> per block vs <span class="num">3.75–3.86 s</span> for base.</li>
+      </ul>
+      <div class="tablewrap">
+        <table class="res" aria-label="Accuracy, base vs LoRA v2, numbers never trained on">
+          <tr><th>Calculator, typed numbers</th><th class="n">Base</th><th class="n">v2</th></tr>
+          <tr><td>s1 (trained on)</td><td class="n">56 / 61%</td><td class="n">86 / 94%</td></tr>
+          <tr><td>s0 (never trained on)</td><td class="n">52 / 60%</td><td class="n">87 / 93%</td></tr>
+          <tr><td>s2 (added in round 2)</td><td class="n">49 / 30%</td><td class="n">77 / 65%</td></tr>
+        </table>
+      </div>
+      <p class="note">Share of frames right by OCR / 7-segment reader, with the writer and lock in the loop.</p>
+      <p><b>How it helps:</b> self-attention is where the display's tokens read the memory. The LoRA makes them copy and hold what the memory shows, so a block no longer drifts from 23476 to 29476. With the prompt alone (nothing written into memory), v2 does not switch: it holds the old number in <span class="num">27–57%</span> of frames, base in <span class="num">4–28%</span>. It learned to keep the memory's text, not to read the prompt.</p>
+    </section>
+
+    <section class="panel">
+      <span class="pill">Test · 17 Nov</span>
+      <h2>Letters on other surfaces</h2>
+      <p>Same loop, with the general writer, on surfaces the LoRA never saw. Base vs v2, share of frames right by OCR, 2 seeds:</p>
+      <div class="tablewrap">
+        <table class="res" aria-label="Text scene test, first results">
+          <tr><th>Surface</th><th class="n">Base</th><th class="n">v2</th></tr>
+          <tr><td>Car dashboard, numbers</td><td class="n">95%</td><td class="n">94%</td></tr>
+          <tr><td>Bus LED route sign, numbers</td><td class="n">82%</td><td class="n">94%</td></tr>
+          <tr><td>Hanging door sign, words</td><td class="n">52%</td><td class="n">100%</td></tr>
+          <tr><td>Taxi roof light, words</td><td class="n">82%</td><td class="n">91%</td></tr>
+          <tr><td>Sticky note, names</td><td class="n">100%</td><td class="n">100%</td></tr>
+          <tr><td><b>Mean</b></td><td class="n"><b>82%</b></td><td class="n"><b>96%</b></td></tr>
+        </table>
+      </div>
+      <p>With the general writer putting the text into memory, base Krea already keeps it on most surfaces, letters included. v2, trained only on calculator digits, adds on three of five and holds the scene steadier: on the door sign base's camera dives into the sign and the scene breaks up, while v2 stays put with every word right.</p>
+      <p class="note">The LoRA saw only calculator digits; cross-attention, the path that reads the prompt, has no adapter yet.</p>
+    </section>
+  </div>
+</div>
+</body></html>

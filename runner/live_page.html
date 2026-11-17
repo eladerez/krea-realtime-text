@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Live Sign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<style>
+:root {
+  --bg: #eef0f2; --panel: #ffffff; --ink: #14171c; --muted: #5c6470; --line: #d6dae0;
+  --accent: #d4550f; --ok: #0f7a5a; --warn: #a33a1f;
+  --sans: "IBM Plex Sans", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1114; --panel: #181b20; --ink: #e9ebee; --muted: #98a0ab; --line: #2b3038; --accent: #f07a3a; --ok: #3fc39a; --warn: #ef7a5e; } }
+:root[data-theme="dark"] { --bg: #0f1114; --panel: #181b20; --ink: #e9ebee; --muted: #98a0ab; --line: #2b3038; --accent: #f07a3a; --ok: #3fc39a; --warn: #ef7a5e; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); padding: 20px 16px 40px; }
+.wrap { max-width: 900px; margin: 0 auto; display: grid; gap: 14px; }
+h1 { margin: 0; font-size: 1.35rem; }
+.lede { margin: 2px 0 0; color: var(--muted); font-size: 0.92rem; }
+.stage { background: #000; border-radius: 8px; overflow: hidden; aspect-ratio: 832 / 480; }
+canvas { width: 100%; height: 100%; display: block; }
+.board { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.cell { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+.k { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
+.v { font-family: var(--mono); font-size: 1.3rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.v.typed { color: var(--accent); }
+.pad { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+.pad button { font-family: var(--mono); font-size: 1.05rem; padding: 10px 0; border-radius: 6px; border: 1px solid var(--line);
+  background: var(--panel); color: var(--ink); cursor: pointer; }
+.pad button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.log { font-family: var(--mono); font-size: 0.82rem; color: var(--muted); max-height: 160px; overflow: auto;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+.v.ok { color: var(--ok); } .v.bad { color: var(--warn); }
+.sub { font-size: 0.75rem; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
+.status { font-family: var(--mono); font-size: 0.82rem; color: var(--muted); }
+.status.bad { color: var(--warn); }
+@media (max-width: 480px) { .pad { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Live Sign</h1>
+    <p class="lede">Krea Realtime 14B is generating this video now. Type digits: before its next block the model's memory
+      is rewritten with your number, and it keeps generating from there. Backspace deletes, Reset (Esc) restores the start.</p>
+  </header>
+  <div class="stage"><canvas id="cv" width="832" height="480"></canvas></div>
+  <div class="board">
+    <div class="cell"><div class="k">You typed</div><div class="v typed" id="typed">-</div></div>
+    <div class="cell"><div class="k">Written into the video</div><div class="v" id="shown">-</div></div>
+    <div class="cell"><div class="k">Display reads (OCR)</div><div class="v" id="disp">-</div>
+      <div class="sub" id="disppct">checked after every block</div></div>
+    <div class="cell"><div class="k">Frames / s (generated)</div><div class="v" id="fps">-</div></div>
+    <div class="cell"><div class="k">Key to screen, median</div><div class="v" id="lat">-</div></div>
+  </div>
+  <div class="pad" id="pad" aria-label="Digits"></div>
+  <p class="status" id="status">Connecting...</p>
+  <div class="log" id="log" aria-live="polite"></div>
+</div>
+<script>
+const cv = document.getElementById("cv"), ctx = cv.getContext("2d");
+const $ = (id) => document.getElementById(id);
+let ws, prefix = "", digits = "", startDigits = "", seq = 0;
+const keyTime = {}, latencies = [], frameQ = [];
+let lastShown = 0, frameInterval = 280, lastChecked = -1;
+
+function sendText() {
+  seq += 1;
+  keyTime[seq] = performance.now();
+  const text = prefix + digits;
+  $("typed").textContent = text;
+  if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: "text", text, seq, t: Date.now() }));
+}
+function key(k) {
+  if (/^[0-9]$/.test(k)) { digits = (digits + k).slice(-5); sendText(); }
+  else if (k === "Backspace") { digits = digits.slice(0, -1); sendText(); }
+  else if (k === "Escape") { digits = startDigits; sendText(); }
+}
+document.addEventListener("keydown", (e) => {
+  if (/^[0-9]$/.test(e.key) || e.key === "Backspace" || e.key === "Escape") { e.preventDefault(); key(e.key); }
+});
+$("pad").append(...["1","2","3","4","5","6","7","8","9","0","Backspace","Escape"].map((k) => {
+  const b = document.createElement("button");
+  b.textContent = k === "Backspace" ? "⌫" : k === "Escape" ? "Reset" : k;
+  b.addEventListener("click", () => key(k));
+  return b;
+}));
+
+function log(line) { const d = document.createElement("div"); d.textContent = line; $("log").prepend(d); }
+
+function connect() {
+  ws = new WebSocket((location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/ws");
+  ws.binaryType = "arraybuffer";
+  ws.onopen = () => { $("status").textContent = "Connected. Waiting for frames..."; $("status").classList.remove("bad"); };
+  ws.onclose = () => { $("status").textContent = "Disconnected. Retrying..."; $("status").classList.add("bad"); setTimeout(connect, 1500); };
+  ws.onmessage = (ev) => {
+    if (typeof ev.data === "string") {
+      const m = JSON.parse(ev.data);
+      if (m.type === "hello") {
+        const t = m.text || "", st = m.start ?? t;  // code-live-lcd-r1 #1: Reset goes back to the start number
+        const i = t.search(/[0-9]+$/), j = st.search(/[0-9]+$/);
+        prefix = i >= 0 ? t.slice(0, i) : t; digits = i >= 0 ? t.slice(i) : "";
+        startDigits = j >= 0 ? st.slice(j) : "";
+        seq = Math.max(seq, m.seq || 0);
+        if (m.title) { document.title = m.title; document.querySelector("h1").textContent = m.title; }
+        $("typed").textContent = t; $("shown").textContent = t;
+      }
+      return;
+    }
+    const buf = new Uint8Array(ev.data);
+    const n = (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
+    const meta = JSON.parse(new TextDecoder().decode(buf.subarray(4, 4 + n)));
+    const blob = new Blob([buf.subarray(4 + n)], { type: "image/jpeg" });
+    if (meta.n && meta.block_s) {  // code-live-r1 #7: pace by the block's own time / frames
+      frameInterval = Math.min(800, Math.max(30, 1000 * meta.block_s / meta.n));
+      $("fps").textContent = (meta.n / meta.block_s).toFixed(1);
+    }
+    createImageBitmap(blob).then((img) => {
+      frameQ.push({ img, meta });
+      while (frameQ.length > 30) { const d = frameQ.shift(); d.img.close(); }  // code-live-r1 #10: cap here too
+    });
+  };
+}
+
+function show(item) {
+  // the dual view sends two frames side by side; a portrait screen (a phone held upright) stacks them instead
+  const img = item.img, dual = img.width > 1.5 * img.height * (832 / 480);
+  const stack = dual && window.innerWidth < window.innerHeight;
+  const w = stack ? img.width / 2 : img.width, h = stack ? img.height * 2 : img.height;
+  if (w !== cv.width || h !== cv.height) {
+    cv.width = w; cv.height = h;
+    document.querySelector(".stage").style.aspectRatio = `${w} / ${h}`;
+    document.querySelector(".wrap").style.maxWidth = dual && !stack ? "1500px" : "";
+  }
+  if (stack) {
+    ctx.drawImage(img, 0, 0, w, img.height, 0, 0, w, img.height);
+    ctx.drawImage(img, w, 0, w, img.height, 0, img.height, w, img.height);
+  } else {
+    ctx.drawImage(img, 0, 0, cv.width, cv.height);
+  }
+  const m = item.meta;
+  if (m.shown) $("shown").textContent = m.shown;
+  if (m.display && m.display.checked !== lastChecked) {  // the checker's reading of this block's last frame
+    const d = m.display, ok = d.verdict === "ok";
+    lastChecked = d.checked;
+    $("disp").textContent = (d.reads || "unreadable") + (ok ? " \u2713" : " \u2717");
+    $("disp").className = "v " + (ok ? "ok" : "bad");
+    $("disppct").textContent = `${d.ok_pct}% of ${d.checked} blocks read right`;
+    if (!ok) log(`display reads "${d.reads || "nothing"}", should be "${d.want}"` + (d.fix_queued ? ": fixing before the next block" : ""));
+  }
+  const done = Object.keys(keyTime).map(Number).filter((s) => s <= m.applied_seq);
+  if (done.length) {  // code-live-r1 #8: the latest key's latency and the oldest pending key's, per write
+    const now = performance.now();
+    const latest = Math.max(...done), oldest = Math.min(...done);
+    const ms = now - keyTime[latest], oldestMs = now - keyTime[oldest];
+    if (latest === m.applied_seq) {
+      latencies.push(ms);
+      log(`key #${latest} -> "${m.shown}" on screen after ${(ms / 1000).toFixed(2)} s (first key of this write: ${(oldestMs / 1000).toFixed(2)} s; frame ${m.frame})`);
+      if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: "lat", seq: latest, ms, oldest_ms: oldestMs, frame: m.frame }));
+    }
+    for (const s of done) delete keyTime[s];
+  }
+  if (latencies.length) {
+    const a = [...latencies].sort((x, y) => x - y);
+    $("lat").textContent = (a[Math.floor(a.length / 2)] / 1000).toFixed(2) + " s";
+  }
+  $("status").textContent = `Frame ${m.frame}, block ${m.block_s}s` + (m.wrote ? ", text written this block" : "");
+}
+function tick(t) {
+  if (frameQ.length && t - lastShown >= frameInterval) {
+    // keep at most ~one block buffered: if behind, skip ahead so keys stay responsive
+    while (frameQ.length > 14) { const d = frameQ.shift(); d.img.close(); }
+    const it = frameQ.shift(); show(it); it.img.close(); lastShown = t;
+  }
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+connect();
+</script>
+</body>
+</html>

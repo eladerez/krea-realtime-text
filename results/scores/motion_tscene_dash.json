@@ -1,0 +1,202 @@
+{
+ "replay_T_base_dash": {
+  "videos": {
+   "replay_T_base_dash-s101": {
+    "frame_to_frame": 2.833,
+    "over_12_frames": 18.883,
+    "segments": [
+     {
+      "blocks": [
+       1,
+       12
+      ],
+      "dx": 149.718,
+      "dy": -20.91,
+      "zoom": 1.031,
+      "inliers": 183
+     },
+     {
+      "blocks": [
+       14,
+       25
+      ],
+      "dx": 147.944,
+      "dy": -3.714,
+      "zoom": 0.981,
+      "inliers": 196
+     },
+     {
+      "blocks": [
+       27,
+       38
+      ],
+      "dx": 144.136,
+      "dy": -34.399,
+      "zoom": 1.102,
+      "inliers": 61
+     },
+     {
+      "blocks": [
+       40,
+       41
+      ],
+      "dx": 8.833,
+      "dy": -2.284,
+      "zoom": 1.001,
+      "inliers": 1012
+     }
+    ]
+   },
+   "replay_T_base_dash-s102": {
+    "frame_to_frame": 2.569,
+    "over_12_frames": 19.08,
+    "segments": [
+     {
+      "blocks": [
+       1,
+       12
+      ],
+      "dx": 95.233,
+      "dy": -14.065,
+      "zoom": 1.049,
+      "inliers": 175
+     },
+     {
+      "blocks": [
+       14,
+       25
+      ],
+      "dx": 162.127,
+      "dy": -17.551,
+      "zoom": 0.992,
+      "inliers": 114
+     },
+     {
+      "blocks": [
+       27,
+       38
+      ],
+      "dx": 105.431,
+      "dy": -15.106,
+      "zoom": 1.029,
+      "inliers": 128
+     },
+     {
+      "blocks": [
+       40,
+       41
+      ],
+      "dx": 5.119,
+      "dy": -0.25,
+      "zoom": 1.0,
+      "inliers": 1224
+     }
+    ]
+   }
+  },
+  "frame_to_frame": 2.701,
+  "over_12_frames": 18.981,
+  "zoom_mean": 1.023,
+  "abs_dx_mean": 102.3
+ },
+ "replay_T_lora2_dash": {
+  "videos": {
+   "replay_T_lora2_dash-s101": {
+    "frame_to_frame": 1.879,
+    "over_12_frames": 17.259,
+    "segments": [
+     {
+      "blocks": [
+       1,
+       12
+      ],
+      "dx": 125.233,
+      "dy": -0.617,
+      "zoom": 0.963,
+      "inliers": 223
+     },
+     {
+      "blocks": [
+       14,
+       25
+      ],
+      "dx": 75.552,
+      "dy": -6.876,
+      "zoom": 0.999,
+      "inliers": 307
+     },
+     {
+      "blocks": [
+       27,
+       38
+      ],
+      "dx": 159.548,
+      "dy": -1.395,
+      "zoom": 0.957,
+      "inliers": 220
+     },
+     {
+      "blocks": [
+       40,
+       41
+      ],
+      "dx": 1.636,
+      "dy": -0.385,
+      "zoom": 1.0,
+      "inliers": 1251
+     }
+    ]
+   },
+   "replay_T_lora2_dash-s102": {
+    "frame_to_frame": 2.952,
+    "over_12_frames": 23.065,
+    "segments": [
+     {
+      "blocks": [
+       1,
+       12
+      ],
+      "dx": 119.385,
+      "dy": -7.199,
+      "zoom": 0.988,
+      "inliers": 244
+     },
+     {
+      "blocks": [
+       14,
+       25
+      ],
+      "dx": 152.23,
+      "dy": -6.472,
+      "zoom": 0.974,
+      "inliers": 288
+     },
+     {
+      "blocks": [
+       27,
+       38
+      ],
+      "dx": 157.947,
+      "dy": -5.215,
+      "zoom": 0.965,
+      "inliers": 248
+     },
+     {
+      "blocks": [
+       40,
+       41
+      ],
+      "dx": 1.001,
+      "dy": -0.729,
+      "zoom": 1.001,
+      "inliers": 1252
+     }
+    ]
+   }
+  },
+  "frame_to_frame": 2.415,
+  "over_12_frames": 20.162,
+  "zoom_mean": 0.981,
+  "abs_dx_mean": 99.1
+ }
+}

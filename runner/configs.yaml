@@ -1,0 +1,2956 @@
+# The core comparison (PLAN.md): Krea Realtime 14B against the model it was distilled from, Wan2.1-T2V-14B.
+# All configs: 832x480, 16 fps, same prompts (prompts/prompts.jsonl), one RTX PRO 6000.
+#   prompts: all | ref20 (the 20 prompts with targets OPEN, COFFEE, BOOK NOW, ADD TO CART: every scene, 4 lengths)
+#   preflight: the prompts and seeds the timing run makes (its videos count toward the full run)
+
+krea_rt:         # Krea Realtime 14B, the real-time setting from its model card: 4 denoising steps, ~5 s (7 blocks)
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3   # Krea's server default
+  prompts: all
+  seeds: [0, 1]
+  preflight: {prompts: [screen_open, storefront_coffee, paper_book_now], seeds: [0]}
+
+krea_rt_long:    # same model and settings, ~30 s (40 blocks): does text decay over a long session?
+  backend: krea
+  steps: 4
+  blocks: 40
+  kv_cache_num_frames: 3
+  prompts: all
+  seeds: [0]
+  preflight: {prompts: [screen_open], seeds: [0]}
+
+wan14b_ref:      # reference: Wan2.1-T2V-14B, bidirectional, 50 steps, CFG 5, shift 5, Wan's negative prompt (its defaults)
+  backend: wan
+  steps: 50
+  guidance: 5.0
+  flow_shift: 5.0
+  frames: 81
+  prompts: ref20
+  seeds: [0]
+  preflight: {prompts: [screen_open, storefront_coffee, paper_book_now], seeds: [0]}
+
+vae_ceiling:     # D1: text clips at 12-72 px through Wan's VAE only (scripts/vae_ceiling.py), no generation
+  backend: vae
+
+# Solaris-hard set (prompts/hard.jsonl): text-heavy pages, small text, numbers, changing text. Same models and settings.
+krea_rt_hard:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  prompt_file: prompts/hard.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [dense_shop], seeds: [0]}
+
+krea_rt_long_hard:
+  backend: krea
+  steps: 4
+  blocks: 40
+  kv_cache_num_frames: 3
+  prompt_file: prompts/hard.jsonl
+  seeds: [0]
+  preflight: {prompts: [dense_shop], seeds: [0]}
+
+wan14b_ref_hard:
+  backend: wan
+  steps: 50
+  guidance: 5.0
+  flow_shift: 5.0
+  frames: 81
+  prompt_file: prompts/hard.jsonl
+  seeds: [0]
+  preflight: {prompts: [dense_shop], seeds: [0]}
+
+# D2, text anchor (runner/gen_krea.py AnchoredSession): same as the long configs, plus the anchor.
+krea_rt_long_anchor:
+  backend: krea
+  steps: 4
+  blocks: 40
+  kv_cache_num_frames: 3
+  anchor: text
+  prompts: all
+  seeds: [0]
+  preflight: {prompts: [screen_open], seeds: [0]}
+
+krea_rt_long_hard_anchor:
+  backend: krea
+  steps: 4
+  blocks: 40
+  kv_cache_num_frames: 3
+  anchor: text
+  prompt_file: prompts/hard.jsonl
+  seeds: [0]
+  preflight: {prompts: [dense_shop], seeds: [0]}
+
+# Why does "ADD TO CART" fail? Phrases with and without 2-letter words (prompts/phrases.jsonl), 2 scenes x 12 phrases.
+krea_rt_phrases:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  prompt_file: prompts/phrases.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [screen_add_to_cart], seeds: [0]}
+
+# OCR checker in the loop (gen_krea.py generate(verify=...)): a block whose text is visible but misspelled is
+# generated again from the same state with new noise, up to 4 tries. Same prompts and seeds as the plain configs.
+krea_rt_phrases_verify:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  verify: true
+  verify_tries: 4
+  prompt_file: prompts/phrases.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [screen_add_to_cart], seeds: [0]}
+
+krea_rt_hard_verify:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  verify: true
+  verify_tries: 4
+  prompt_file: prompts/hard.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [numbers_price], seeds: [0]}
+
+# Step 8: Wan's side of the phrase test (same 24 prompts, seed 0): is the 2-letter-word failure the base model's or
+# the real-time recipe's?
+wan14b_ref_phrases:
+  backend: wan
+  steps: 50
+  guidance: 5.0
+  flow_shift: 5.0
+  frames: 81
+  prompt_file: prompts/phrases.jsonl
+  seeds: [0]
+  preflight: {prompts: [screen_add_to_cart], seeds: [0]}
+
+# Step 9, Runway's hybrid ("image models render text-heavy views whenever a brief pause is acceptable, while video
+# models handle continuous interaction"): Qwen-Image renders the text-heavy view, Krea animates from it.
+# Hard set without the changing-text prompts (12 prompts: dense, small, numbers).
+qwen_frames:
+  backend: qwen
+  prompt_file: prompts/hard.jsonl
+  kinds: [dense, small, numbers]
+  seeds: [0, 1]
+  preflight: {prompts: [numbers_price], seeds: [0]}
+
+krea_rt_hybrid:          # vs krea_rt_hard on the same prompts and seeds
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  start_frame: true
+  prompt_file: prompts/hard.jsonl
+  kinds: [dense, small, numbers]
+  seeds: [0, 1]
+  preflight: {prompts: [numbers_price], seeds: [0]}
+
+krea_rt_long_hybrid_anchor:   # vs krea_rt_long_hard and krea_rt_long_hard_anchor (seed 0)
+  backend: krea
+  steps: 4
+  blocks: 40
+  kv_cache_num_frames: 3
+  start_frame: true
+  anchor: text
+  prompt_file: prompts/hard.jsonl
+  kinds: [dense, small, numbers]
+  seeds: [0]
+  preflight: {prompts: [numbers_price], seeds: [0]}
+
+# D2 variant (Elad, 26 Oct 2026: "Add it"): on text-heavy pages the "all targets right" anchor fired in 1 of 16
+# videos. This one anchors the frame with the most targets right so far and replaces it when a better one appears.
+krea_rt_long_hard_anchor_best:
+  backend: krea
+  steps: 4
+  blocks: 40
+  kv_cache_num_frames: 3
+  anchor: best
+  prompt_file: prompts/hard.jsonl
+  seeds: [0]
+  preflight: {prompts: [dense_shop], seeds: [0]}
+
+# Step 10 (Elad, 27 Oct 2026: "I want you to try with FLUX.1 kontext"): the same hybrid with FLUX.1 Kontext [dev]
+# as the image model (runner/gen_kontext.py), two ways. Same 12 prompts and seeds as step 9.
+#   draw: Kontext draws the view from the prompt (Qwen-Image's job in step 9)
+#   fix:  Kontext edits the frame the plain Krea video showed (krea_rt_hard, frame 8 = 0.5 s) to correct its text
+kontext_draw:
+  backend: kontext
+  mode: draw
+  out: data/start_frames_kontext_draw
+  prompt_file: prompts/hard.jsonl
+  kinds: [dense, small, numbers]
+  seeds: [0, 1]
+  preflight: {prompts: [numbers_price], seeds: [0]}
+
+kontext_fix:
+  backend: kontext
+  mode: fix
+  source: krea_rt_hard
+  source_frame: 8
+  out: data/start_frames_kontext_fix
+  prompt_file: prompts/hard.jsonl
+  kinds: [dense, small, numbers]
+  seeds: [0, 1]
+  preflight: {prompts: [numbers_price], seeds: [0]}
+
+krea_rt_hybrid_kontext_draw:          # vs krea_rt_hybrid (Qwen) and krea_rt_hard
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_kontext_draw
+  prompt_file: prompts/hard.jsonl
+  kinds: [dense, small, numbers]
+  seeds: [0, 1]
+  preflight: {prompts: [numbers_price], seeds: [0]}
+
+krea_rt_hybrid_kontext_fix:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_kontext_fix
+  prompt_file: prompts/hard.jsonl
+  kinds: [dense, small, numbers]
+  seeds: [0, 1]
+  preflight: {prompts: [numbers_price], seeds: [0]}
+
+krea_rt_long_hybrid_kontext_draw_anchor:   # vs krea_rt_long_hybrid_anchor (Qwen), seed 0
+  backend: krea
+  steps: 4
+  blocks: 40
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_kontext_draw
+  anchor: text
+  prompt_file: prompts/hard.jsonl
+  kinds: [dense, small, numbers]
+  seeds: [0]
+  preflight: {prompts: [numbers_price], seeds: [0]}
+
+krea_rt_long_hybrid_kontext_fix_anchor:
+  backend: krea
+  steps: 4
+  blocks: 40
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_kontext_fix
+  anchor: text
+  prompt_file: prompts/hard.jsonl
+  kinds: [dense, small, numbers]
+  seeds: [0]
+  preflight: {prompts: [numbers_price], seeds: [0]}
+
+# Step 11 (Elad, 27 Oct 2026: "queue step 11 on the GCP"): fix Krea's frame label by label. Step 10's single
+# instruction made Kontext write every target into the menu bar. prompts/fix_labels.json (OCR of each frame, built on
+# the Jetson by prompts/make_fix_labels.py) gives one 'Replace "X" with "Y"' per misspelled label. Two editors:
+# Kontext at guidance 3.5 (model card 2.5; more weight on the instruction) and Qwen-Image-Edit (Apache-2.0, the edit
+# model of Qwen-Image, whose stills were 98% right in step 9). Same 12 prompts x 2 seeds; Krea 5 s from each.
+kontext_fix_labels:
+  backend: kontext
+  mode: fix_labels
+  guidance: 3.5
+  source: krea_rt_hard
+  source_frame: 8
+  out: data/start_frames_kontext_fix_labels
+  prompt_file: prompts/hard.jsonl
+  kinds: [dense, small, numbers]
+  seeds: [0, 1]
+  preflight: {prompts: [numbers_price], seeds: [0]}
+
+qwenedit_fix_labels:
+  backend: qwen_edit
+  editor: qwen_edit
+  mode: fix_labels
+  source: krea_rt_hard
+  source_frame: 8
+  out: data/start_frames_qwenedit_fix_labels
+  prompt_file: prompts/hard.jsonl
+  kinds: [dense, small, numbers]
+  seeds: [0, 1]
+  preflight: {prompts: [numbers_price], seeds: [0]}
+
+krea_rt_hybrid_kontext_fix_labels:     # vs krea_rt_hybrid_kontext_fix (step 10) and krea_rt_hybrid (Qwen draw)
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_kontext_fix_labels
+  prompt_file: prompts/hard.jsonl
+  kinds: [dense, small, numbers]
+  seeds: [0, 1]
+  preflight: {prompts: [numbers_price], seeds: [0]}
+
+krea_rt_hybrid_qwenedit_fix_labels:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_qwenedit_fix_labels
+  prompt_file: prompts/hard.jsonl
+  kinds: [dense, small, numbers]
+  seeds: [0, 1]
+  preflight: {prompts: [numbers_price], seeds: [0]}
+
+# Step 12 (Elad, 27 Oct 2026: "queue the Helios as step 12"): Helios-Distilled 14B (runner/gen_helios.py), a 2026
+# real-time model with a different design from Krea, on the same prompts. 640x384 and 24 fps are its own defaults
+# (Krea: 832x480, 16 fps), so its letters get ~0.8x the pixels per side. 132 frames = 4 chunks = 5.5 s; 726 = 30 s.
+helios_hard:          # vs krea_rt_hard
+  backend: helios
+  frames: 132
+  prompt_file: prompts/hard.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [dense_shop], seeds: [0]}
+
+helios_phrases:       # vs krea_rt_phrases and wan14b_ref_phrases: the middle-word swap
+  backend: helios
+  frames: 132
+  prompt_file: prompts/phrases.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [screen_add_to_cart], seeds: [0]}
+
+helios_long_hard:     # vs krea_rt_long_hard: drift over 30 s
+  backend: helios
+  frames: 726
+  prompt_file: prompts/hard.jsonl
+  seeds: [0]
+  preflight: {prompts: [dense_shop], seeds: [0]}
+
+# Step 13 (Elad, 28 Oct 2026: "yes"): does camera motion cost text? Solaris moves the camera (rotate, zoom, pan); our
+# other sets mostly asked for a steady shot. prompts/camera.jsonl: 4 scenes x 3 texts x 4 moves (steady, pan, push,
+# orbit), the same scene and text with only the camera sentence changed. Krea, same settings as krea_rt.
+krea_rt_camera:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  prompt_file: prompts/camera.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [screen_open_pan], seeds: [0]}
+
+# Step 14 (Elad, 28 Oct 2026: "VTR-Bench", smoke test first): Krea on the published VTR-Bench (github.com/hardenyu21/
+# VTR-Bench @ 2ee26e7), scored by its own evaluator (Qwen3.8-27B judge, WER and 20-question Video Score).
+# Smoke test: 10 prompts, 2 per category (prompts/vtr_smoke.jsonl). Krea from the prompt alone, and Krea's best run
+# (from a start picture, as krea_rt_hybrid). Same Krea settings as krea_rt (5 s).
+qwen_vtr_smoke:
+  backend: qwen
+  out: data/start_frames_vtr
+  prompt_file: prompts/vtr_smoke.jsonl
+  seeds: [0]
+  preflight: {prompts: [UI-0001], seeds: [0]}
+
+krea_rt_vtr_smoke:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  prompt_file: prompts/vtr_smoke.jsonl
+  seeds: [0]
+  preflight: {prompts: [UI-0001], seeds: [0]}
+
+krea_rt_vtr_smoke_hybrid:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_vtr
+  prompt_file: prompts/vtr_smoke.jsonl
+  seeds: [0]
+  preflight: {prompts: [UI-0001], seeds: [0]}
+
+vtr_eval_smoke:       # runs VTR-Bench's evaluator on the configs below, after they are generated (same VM)
+  backend: vtr
+  evaluate: [krea_rt_vtr_smoke, krea_rt_vtr_smoke_hybrid]
+
+# Step 15 (Elad, 28 Oct 2026: "Test both ways to do a click"): text that changes on an interaction, Solaris-style.
+# prompts/interaction.jsonl: 6 actions x 2 screens x 2 ways (one_prompt; switch: gen_krea.py swaps the prompt at a
+# block, as Solaris's language model rewrites it). Scored by scripts/interaction_summary.py.
+krea_rt_interaction:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  prompt_file: prompts/interaction.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [laptop_cart_switch], seeds: [0]}
+
+# Step 16 (Elad, 28 Oct 2026: "Do it"): in step 15 the text never followed a prompt switch (0/20): Krea's memory copied
+# the old text forward. Here the memory is cleared at the switch (gen_krea.py, reset): a fresh Krea session on the new
+# prompt for the remaining blocks, either from nothing ("full") or from the current frame blurred so letters are gone
+# but layout stays ("blur", Gaussian radius 12: radius 8 left "HOME" readable to OCR). Switch rows only.
+krea_rt_interaction_reset_blur:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  reset: blur
+  blur_radius: 12
+  prompt_file: prompts/interaction_switch.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [laptop_cart_switch], seeds: [0]}
+
+krea_rt_interaction_reset_full:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  reset: full
+  prompt_file: prompts/interaction_switch.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [laptop_cart_switch], seeds: [0]}
+
+# Step 17 (Elad, 28 Oct 2026: "Do 1 and 2 and then 3"): change only the text in Krea's memory at the switch.
+# textbench/erase.py finds the old text by OCR on the newest frame and fills its box with the label's own background.
+#   erase_restart: option 1, a fresh session from the current frame with only the old text erased (sharp otherwise)
+#   erase_memory:  option 2, no restart: the old text is erased in Krea's pixel cache and the last two latents are
+#                  re-encoded from it (gen_krea.py edit_memory); the session continues with the new prompt
+krea_rt_interaction_erase_restart:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  reset: erase
+  prompt_file: prompts/interaction_switch.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [laptop_toggle_switch], seeds: [0]}
+
+krea_rt_interaction_erase_memory:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  memory_edit: erase
+  prompt_file: prompts/interaction_switch.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [laptop_toggle_switch], seeds: [0]}
+
+# Step 18, option 3: no restart and no edit; at the switch the old text's tokens are hidden from the denoising
+# attention (gen_krea.py masked_attention) for the next 2 blocks, so new frames cannot copy it from memory.
+krea_rt_interaction_mask_attention:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  memory_edit: mask
+  mask_blocks: 2
+  prompt_file: prompts/interaction_switch.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [laptop_toggle_switch], seeds: [0]}
+
+# Steps 15-18 second reader (Elad, 29 Oct 2026: "Do all"): VTR-Bench's judge model reads the text before and after the
+# click and compares the scene (runner/judge_clips.py). All click and typing videos.
+judge_interaction:
+  backend: judge
+  evaluate: [krea_rt_interaction, krea_rt_interaction_reset_blur, krea_rt_interaction_reset_full,
+             krea_rt_interaction_erase_restart, krea_rt_interaction_erase_memory, krea_rt_interaction_mask_attention]
+
+# Step 20 (Elad, 30 Oct 2026: "Do all options"): put the new text, the exact string a Solaris-style language model
+# knows, into Krea at the click (textbench/write_text.py draws it where the old text was, in its colour and size).
+#   write_memory:  option 1, written into the memory (9 cached frames + last two latents), then continue
+#   write_anchor:  option 2, the same plus the written frame kept in the oldest memory slot for the rest of the video
+#   guide_written: option 3, memory untouched; the new frames are steered towards the written text between
+#                  denoising passes for 2 blocks (all passes but the last)
+krea_rt_interaction_write_memory:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  memory_edit: write
+  prompt_file: prompts/interaction_switch.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [laptop_toggle_switch], seeds: [0]}
+
+krea_rt_interaction_write_anchor:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  memory_edit: write_anchor
+  prompt_file: prompts/interaction_switch.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [laptop_toggle_switch], seeds: [0]}
+
+krea_rt_interaction_guide_written:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  guide: written_text
+  guide_blocks: 2
+  prompt_file: prompts/interaction_switch.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [laptop_toggle_switch], seeds: [0]}
+
+judge_write:
+  backend: judge
+  evaluate: [krea_rt_interaction_write_memory, krea_rt_interaction_write_anchor, krea_rt_interaction_guide_written]
+
+judge_write_v2:      # step 20 rerun with inside-the-box colours
+  backend: judge
+  evaluate: [krea_rt_interaction_write_memory, krea_rt_interaction_write_anchor]
+
+# Step 21 (Elad, 30 Oct 2026: "Run it now"): like W1/W2 but only the characters that differ are changed (CART 2 ->
+# CART 3: only the digit); Krea's own letters stay. Falls back to rewriting the whole label when the letters cannot
+# be separated or OCR does not read the edit. Tested on 16 step-15 frames: 16/16 read, 9 partial, 7 full.
+krea_rt_interaction_write_partial:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  memory_edit: write
+  write_partial: true
+  prompt_file: prompts/interaction_switch.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [laptop_toggle_switch], seeds: [0]}
+
+krea_rt_interaction_write_partial_anchor:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  memory_edit: write_anchor
+  write_partial: true
+  prompt_file: prompts/interaction_switch.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [laptop_toggle_switch], seeds: [0]}
+
+judge_write_partial:
+  backend: judge
+  evaluate: [krea_rt_interaction_write_partial, krea_rt_interaction_write_partial_anchor]
+
+# Step 22 (Elad, 30 Oct 2026: "Run Solaris like scenes"): the click test in busy, moving scenes modelled on Solaris's
+# demos (prompts/solaris.jsonl: try-on mirror, living-room TV, salad bar, online store, delivery app, station board,
+# arena scoreboard; 6 of 8 with camera or hand motion). Switch only vs the step-21 fixes (changed characters only).
+krea_rt_solaris:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  prompt_file: prompts/solaris.jsonl
+  seeds: [0, 1, 2]
+  preflight: {prompts: [store_push_switch], seeds: [0]}
+
+krea_rt_solaris_write:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  memory_edit: write
+  write_partial: true
+  prompt_file: prompts/solaris.jsonl
+  seeds: [0, 1, 2]
+  preflight: {prompts: [store_push_switch], seeds: [0]}
+
+krea_rt_solaris_write_anchor:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  memory_edit: write_anchor
+  write_partial: true
+  prompt_file: prompts/solaris.jsonl
+  seeds: [0, 1, 2]
+  preflight: {prompts: [store_push_switch], seeds: [0]}
+
+judge_solaris:
+  backend: judge
+  evaluate: [krea_rt_solaris, krea_rt_solaris_write, krea_rt_solaris_write_anchor]
+  prompt_file: prompts/solaris.jsonl
+  answers: answers_solaris.jsonl
+  where: in the scene (screens, signs, boards and labels)
+
+# Step 22b (Elad, 31 Oct 2026: "In the train station the text floats with the camera movement"): the memory frames
+# move with the camera (station board: 11-17 px across the 9), but the text was pasted at the newest frame's spot in
+# all 9, so Krea kept it fixed to the screen. track_boxes: each older frame gets the box where its area moved
+# (textbench/write_text.py track_boxes). Offline on the real memory frames: within 0-4 px of the scene's shift.
+krea_rt_solaris_write_track:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  memory_edit: write
+  write_partial: true
+  track_boxes: true
+  prompt_file: prompts/solaris.jsonl
+  seeds: [0, 1, 2]
+  preflight: {prompts: [station_board_switch], seeds: [2]}
+
+judge_solaris_track:
+  backend: judge
+  evaluate: [krea_rt_solaris_write_track]
+  prompt_file: prompts/solaris.jsonl
+  answers: answers_solaris_track.jsonl
+  where: in the scene (screens, signs, boards and labels)
+
+# Step 23 (Elad, 31 Oct 2026: "I want to test how close can I get to Solaris and then solve the text problem", "Do a
+# and b"): Solaris's own demos (prompts/solaris2.jsonl), 13 blocks, with and without a Qwen-Image start frame (Solaris's
+# "starting state"). Phase A: switch only. Phase B: the text fix (changed characters, tracked boxes, matched font
+# weight and width) on the 4 text scenes. Judge: the post's two user-study questions plus the text reads.
+qwen_solaris2:
+  backend: qwen
+  out: data/start_frames_solaris2
+  prompt_file: prompts/solaris2.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [salad_switch], seeds: [0]}
+
+krea_rt_solaris2:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  prompt_file: prompts/solaris2.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [salad_switch], seeds: [0]}
+
+krea_rt_solaris2_start:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_solaris2
+  prompt_file: prompts/solaris2.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [salad_switch], seeds: [0]}
+
+krea_rt_solaris2_write:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  memory_edit: write
+  write_partial: true
+  track_boxes: true
+  prompt_file: prompts/solaris2.jsonl
+  kinds: [text]
+  seeds: [0, 1]
+  preflight: {prompts: [salad_switch], seeds: [0]}
+
+krea_rt_solaris2_start_write:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_solaris2
+  memory_edit: write
+  write_partial: true
+  track_boxes: true
+  prompt_file: prompts/solaris2.jsonl
+  kinds: [text]
+  seeds: [0, 1]
+  preflight: {prompts: [salad_switch], seeds: [0]}
+
+judge_solaris2:
+  backend: judge
+  evaluate: [krea_rt_solaris2, krea_rt_solaris2_start, krea_rt_solaris2_write, krea_rt_solaris2_start_write]
+  prompt_file: prompts/solaris2.jsonl
+  answers: answers_solaris2.jsonl
+  where: in the scene (screens, signs, posters, panels and labels)
+  study: true
+
+# Step 24 (Elad, 31 Oct 2026: "the text look pasted on the camera screen, not the screen inside the movie"; 1 Nov:
+# "Yes"): step 23's start + write, the text written on the panel's own plane (textbench/write_surface.py) instead of
+# in an upright box.
+krea_rt_solaris2_start_surface:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_solaris2
+  memory_edit: write
+  write_partial: true
+  write_surface: true
+  prompt_file: prompts/solaris2.jsonl
+  kinds: [text]
+  seeds: [0, 1]
+  preflight: {prompts: [salad_switch], seeds: [0]}
+
+judge_surface:
+  backend: judge
+  evaluate: [krea_rt_solaris2_start_surface]
+  prompt_file: prompts/solaris2.jsonl
+  answers: answers_surface.jsonl
+  where: in the scene (screens, signs, posters, panels and labels)
+  study: true
+
+# Step 25a: step 20's option 3 again, now that it runs (the step-20 add_noise patch never applied: PLAN.md
+# correction). The new frames' predicted clean latent is steered towards the written text before the 909 and 714
+# passes, for 2 blocks; memory untouched. Same prompts and seeds as step 20's write_memory for comparison.
+krea_rt_interaction_guide_v2:
+  backend: krea
+  steps: 4
+  blocks: 7
+  kv_cache_num_frames: 3
+  guide: written_text
+  guide_blocks: 2
+  prompt_file: prompts/interaction_switch.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [laptop_toggle_switch], seeds: [0]}
+
+judge_guide2:
+  backend: judge
+  evaluate: [krea_rt_interaction_guide_v2]
+  answers: answers_guide2.jsonl
+
+# Step 25b (Elad, 1 Nov 2026: placeholders drawn by Krea, real letters swapped in at the end): does Krea draw a
+# stable placeholder? prompts/make_placeholder_prompts.py: 4 text scenes x X / O / ABC / blocks / blank, no action.
+# Scored offline (letter count and position per frame).
+krea_rt_placeholder:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  prompt_file: prompts/placeholder.jsonl
+  seeds: [0, 1, 2]
+  preflight: {prompts: [salad_x], seeds: [0]}
+
+# Step 24b (Elad, 1 Nov 2026: "only the now with seed 0 looks good"; "Yes"): step 24 again with the word-level
+# edit (textbench/write_text.py partial_words) and the size-scaled erase margin. No judge (step 24's judge rated
+# the box and surface writes the same; the reel is the check).
+krea_rt_solaris2_start_surface2:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_solaris2
+  memory_edit: write
+  write_partial: true
+  write_surface: true
+  prompt_file: prompts/solaris2.jsonl
+  kinds: [text]
+  seeds: [0, 1]
+  preflight: {prompts: [salad_switch], seeds: [1]}
+
+# Step 25c: Krea draws a blank label; the starting text is placed on it in memory at block 2, then step 23's actions
+# (blocks 4, 7, 10) through the step-24b write. prompts/make_blank_place_prompts.py.
+krea_rt_blank_place:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  memory_edit: write
+  write_partial: true
+  write_surface: true
+  prompt_file: prompts/blank_place.jsonl
+  seeds: [0, 1, 2]
+  preflight: {prompts: [salad_blank_place], seeds: [1]}
+
+# Step 26 (Elad, 1 Nov 2026: 3D letters standing on a desk while the camera pans; "Yes"). prompts/letters3d.jsonl.
+qwen_letters3d:
+  backend: qwen
+  out: data/start_frames_letters3d
+  prompt_file: prompts/letters3d.jsonl
+  seeds: [0, 1, 2]
+  preflight: {prompts: [runway_pan], seeds: [0]}
+
+krea_rt_letters3d:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  prompt_file: prompts/letters3d.jsonl
+  seeds: [0, 1, 2]
+  preflight: {prompts: [runway_pan], seeds: [0]}
+
+krea_rt_letters3d_start:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_letters3d
+  prompt_file: prompts/letters3d.jsonl
+  seeds: [0, 1, 2]
+  preflight: {prompts: [runway_pan], seeds: [0]}
+
+# Step 25c again with the two fixes (blank-label finder, edit box joined with the label's quad).
+krea_rt_blank_place2:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  memory_edit: write
+  write_partial: true
+  write_surface: true
+  prompt_file: prompts/blank_place.jsonl
+  seeds: [0, 1, 2]
+  preflight: {prompts: [salad_blank_place], seeds: [0]}
+
+# Step 26b (Elad, 1 Nov 2026: "I want the 3d letters to change after several frames like we did to the 2d letters").
+# Click at block 4 (frame 42) of krea_rt_letters3d_start. prompts/make_letters3d_change_prompts.py.
+krea_rt_letters3d_switch:          # baseline: prompt switch only
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_letters3d
+  prompt_file: prompts/letters3d_switch.jsonl
+  seeds: [0, 1, 2]
+  preflight: {prompts: [runway_pan], seeds: [0]}
+
+qwenedit_letters3d:                # the pause: the frame before the click redrawn with the new word
+  backend: qwen_edit
+  editor: qwen_edit
+  mode: edit
+  source: krea_rt_letters3d_start
+  source_frame: 41
+  out: data/start_frames_qwenedit_letters3d
+  prompt_file: prompts/letters3d_change.jsonl
+  seeds: [0, 1, 2]
+  preflight: {prompts: [runway_pan], seeds: [0]}
+
+krea_rt_letters3d_change:          # Krea restarts from the edited frame (10 blocks: frames 42-155 of the shown video)
+  backend: krea
+  steps: 4
+  blocks: 10
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_qwenedit_letters3d
+  prompt_file: prompts/letters3d_change.jsonl
+  seeds: [0, 1, 2]
+  preflight: {prompts: [runway_pan], seeds: [0]}
+
+# Step 27 (Elad, 1 Nov 2026: "Can use the pause method on the 2d text too?"; "Yes"). prompts/pause2d.jsonl.
+qwenedit_pause2d:                  # the pause: frame 29 (just before the first action) redrawn with the new text
+  backend: qwen_edit
+  editor: qwen_edit
+  mode: edit
+  source: krea_rt_solaris2_start
+  source_frame: 29
+  out: data/start_frames_qwenedit_pause2d
+  prompt_file: prompts/pause2d.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [salad_switch], seeds: [0]}
+
+krea_rt_pause2d:                   # Krea restarts from the edited frame (11 blocks: frames 30-155 of the shown video)
+  backend: krea
+  steps: 4
+  blocks: 11
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_qwenedit_pause2d
+  prompt_file: prompts/pause2d.jsonl
+  seeds: [0, 1]
+  preflight: {prompts: [salad_switch], seeds: [0]}
+
+# Step 25c again with the three fixes after the rerun (merged letters, panel width limit, frame-edge regions).
+krea_rt_blank_place3:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  memory_edit: write
+  write_partial: true
+  write_surface: true
+  prompt_file: prompts/blank_place.jsonl
+  seeds: [0, 1, 2]
+  preflight: {prompts: [salad_blank_place], seeds: [0]}
+
+# Step 28: start image + memory write + anchor at 30 s (40 blocks). Step 23's 4 text scenes and 2 seeds, same schedule
+# (changes by block 9), so most of the video tests whether the last written text holds. Each write replaces the anchor.
+krea_rt_long_start_write_anchor:
+  backend: krea
+  steps: 4
+  blocks: 40
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_solaris2
+  memory_edit: write_anchor
+  write_partial: true
+  track_boxes: true
+  prompt_file: prompts/solaris2.jsonl
+  kinds: [text]
+  seeds: [0, 1]
+  preflight: {prompts: [salad_switch], seeds: [0]}
+
+# Step 28b: what does the anchor do at 30 s (no anchor), and does the surface write fix the floating card (with anchor)?
+krea_rt_long_start_write:
+  backend: krea
+  steps: 4
+  blocks: 40
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_solaris2
+  memory_edit: write
+  write_partial: true
+  track_boxes: true
+  prompt_file: prompts/solaris2.jsonl
+  kinds: [text]
+  seeds: [0, 1]
+  preflight: {prompts: [salad_switch], seeds: [0]}
+
+krea_rt_long_start_surface_anchor:
+  backend: krea
+  steps: 4
+  blocks: 40
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_solaris2
+  memory_edit: write_anchor
+  write_partial: true
+  write_surface: true
+  prompt_file: prompts/solaris2.jsonl
+  kinds: [text]
+  seeds: [0, 1]
+  preflight: {prompts: [salad_switch], seeds: [0]}
+
+# Step 31: the surface write with the three faults fixed (textbench/write_surface.py v2: whole label found, margin at the panel's edge,
+# retry on tilted text). Same 8 videos as krea_rt_long_start_surface_anchor. On the study's scenes, so the method is settled before any new scene is seen.
+krea_rt_long_start_surface_v2_anchor:
+  backend: krea
+  steps: 4
+  blocks: 40
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_solaris2
+  memory_edit: write_anchor
+  write_partial: true
+  write_surface: true
+  write_surface_v2: true
+  prompt_file: prompts/solaris2.jsonl
+  kinds: [text]
+  seeds: [0, 1]
+  preflight: {prompts: [salad_switch], seeds: [0]}
+
+# Step 32: the held-out test. 20 new scenes (prompts/heldout.jsonl), 3 seeds, each method at 13 blocks from a start frame. Rules fixed in HELDOUT.md
+# before any of these exists. Overlay comes from krea_rt_heldout_start, offline (scripts/overlay_videos.py).
+qwen_heldout:
+  backend: qwen
+  out: data/start_frames_heldout
+  prompt_file: prompts/heldout.jsonl
+  seeds: [0, 1, 2]
+  preflight: {prompts: [thermostat_switch], seeds: [0]}
+
+krea_rt_heldout_start:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  prompt_file: prompts/heldout.jsonl
+  kinds: [text]
+  seeds: [0, 1, 2]
+  preflight: {prompts: [thermostat_switch], seeds: [0]}
+
+krea_rt_heldout_write:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  memory_edit: write
+  write_partial: true
+  track_boxes: true
+  prompt_file: prompts/heldout.jsonl
+  kinds: [text]
+  seeds: [0, 1, 2]
+  preflight: {prompts: [thermostat_switch], seeds: [0]}
+
+krea_rt_heldout_surface_v2:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  memory_edit: write
+  write_partial: true
+  write_surface: true
+  write_surface_v2: true
+  prompt_file: prompts/heldout.jsonl
+  kinds: [text]
+  seeds: [0, 1, 2]
+  preflight: {prompts: [thermostat_switch], seeds: [0]}
+
+krea_rt_heldout_mask:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  memory_edit: mask
+  mask_blocks: 2
+  prompt_file: prompts/heldout.jsonl
+  kinds: [text]
+  seeds: [0, 1, 2]
+  preflight: {prompts: [thermostat_switch], seeds: [0]}
+
+# Step 32, 30 s on the new scenes (Elad, 4 Nov 2026: "30s run"): is the scene-drift finding real? Seed 0 only, 40 blocks.
+krea_rt_heldout_long_write_anchor:
+  backend: krea
+  steps: 4
+  blocks: 40
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  memory_edit: write_anchor
+  write_partial: true
+  track_boxes: true
+  prompt_file: prompts/heldout.jsonl
+  kinds: [text]
+  seeds: [0]
+  preflight: {prompts: [thermostat_switch], seeds: [0]}
+
+krea_rt_heldout_long_surface_v2_anchor:
+  backend: krea
+  steps: 4
+  blocks: 40
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  memory_edit: write_anchor
+  write_partial: true
+  write_surface: true
+  write_surface_v2: true
+  prompt_file: prompts/heldout.jsonl
+  kinds: [text]
+  seeds: [0]
+  preflight: {prompts: [thermostat_switch], seeds: [0]}
+
+# Step 34: re-write slipped text (textbench/refresh.py). 20 new scenes (prompts/fresh.jsonl), 3 seeds, 13 blocks, from a
+# start frame. Rules fixed in FRESH.md before any of these exists.
+qwen_fresh:
+  backend: qwen
+  out: data/start_frames_fresh
+  prompt_file: prompts/fresh.jsonl
+  seeds: [0, 1, 2]
+  preflight: {prompts: [taxi_switch], seeds: [0]}
+
+krea_rt_fresh_start:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  prompt_file: prompts/fresh.jsonl
+  kinds: [text]
+  seeds: [0, 1, 2]
+  preflight: {prompts: [taxi_switch], seeds: [0]}
+
+krea_rt_fresh_write:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  memory_edit: write
+  write_partial: true
+  track_boxes: true
+  prompt_file: prompts/fresh.jsonl
+  kinds: [text]
+  seeds: [0, 1, 2]
+  preflight: {prompts: [taxi_switch], seeds: [0]}
+
+krea_rt_fresh_refresh:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  memory_edit: write
+  write_partial: true
+  track_boxes: true
+  refresh: true
+  prompt_file: prompts/fresh.jsonl
+  kinds: [text]
+  seeds: [0, 1, 2]
+  preflight: {prompts: [taxi_switch], seeds: [0]}
+
+# Step 35 (FRESH_ADDENDUM.md score 8): VTR-Bench's judge model transcribes one frame per block, never told the wanted text
+# (runner/read_frames.py; scored by scripts/score_reader.py). Runs after the re-write VM, on the videos in the bucket.
+# Step 36 (Elad, 9 Nov 2026: "Is there a way to change just the letters but keep the letters part of the scene?"; "Yes").
+krea_rt_fresh_editwrite:           # the memory write, letters redrawn by Qwen-Image-Edit (textbench/edit_write.py)
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  memory_edit: write
+  editor: qwen_edit                # served by runner/edit_server.py; the GPU is handed over at each switch
+  track_boxes: true
+  prompt_file: prompts/fresh.jsonl
+  kinds: [text]
+  seeds: [0]
+  preflight: {prompts: [taxi_switch], seeds: [0]}
+
+read_editwrite:                    # step 36: the blind reader (step 35) on the editor-write videos
+  backend: reader
+  evaluate: [krea_rt_fresh_editwrite]
+  prompt_file: prompts/fresh.jsonl
+  answers: answers_read_editwrite.jsonl
+
+read_fresh:
+  backend: reader
+  evaluate: [krea_rt_fresh_start, krea_rt_fresh_write, krea_rt_fresh_refresh]
+  prompt_file: prompts/fresh.jsonl
+  answers: answers_read_fresh.jsonl
+
+read_heldout:
+  backend: reader
+  evaluate: [krea_rt_heldout_start, krea_rt_heldout_write, krea_rt_heldout_surface_v2, krea_rt_heldout_mask]
+  prompt_file: prompts/heldout.jsonl
+  answers: answers_read_heldout.jsonl
+
+# Step 37 (Elad, 9 Nov 2026: "yes"): the editor write on 20 new scenes, rules frozen in EDITOR.md before any is generated.
+qwen_editor:
+  backend: qwen
+  out: data/start_frames_editor
+  prompt_file: prompts/editor.jsonl
+  seeds: [0]
+  preflight: {prompts: [ferry_switch], seeds: [0]}
+
+krea_rt_editor_start:              # Krea alone (prompt switch only)
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_editor
+  prompt_file: prompts/editor.jsonl
+  kinds: [text]
+  seeds: [0]
+  preflight: {prompts: [ferry_switch], seeds: [0]}
+
+krea_rt_editor_write:              # the memory write, our font (as krea_rt_fresh_write)
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_editor
+  memory_edit: write
+  write_partial: true
+  track_boxes: true
+  prompt_file: prompts/editor.jsonl
+  kinds: [text]
+  seeds: [0]
+  preflight: {prompts: [ferry_switch], seeds: [0]}
+
+krea_rt_editor_edit:               # the editor write, Qwen-Image-Edit 50 steps (as krea_rt_fresh_editwrite, mask fixed)
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_editor
+  memory_edit: write
+  editor: qwen_edit
+  track_boxes: true
+  prompt_file: prompts/editor.jsonl
+  kinds: [text]
+  seeds: [0]
+  preflight: {prompts: [ferry_switch], seeds: [0]}
+
+krea_rt_editor_fast:               # the editor write, 8-step Lightning editor
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_editor
+  memory_edit: write
+  editor: qwen_edit_fast
+  track_boxes: true
+  prompt_file: prompts/editor.jsonl
+  kinds: [text]
+  seeds: [0]
+  preflight: {prompts: [ferry_switch], seeds: [0]}
+
+read_editor:                       # step 35's blind AI reader on all four
+  backend: reader
+  evaluate: [krea_rt_editor_start, krea_rt_editor_write, krea_rt_editor_edit, krea_rt_editor_fast]
+  prompt_file: prompts/editor.jsonl
+  answers: answers_read_editor.jsonl
+
+# Step 38 (RESIDENT.md): the fast editor kept on the GPU beside Krea (fused Lightning LoRA, fp8 weights), editing a crop
+# around the label at 512x768-equivalent pixels; Krea's text encoder leaves the GPU after encoding the run's prompts. Same
+# scenes, start images and seed as step 37, so it is compared paired with krea_rt_editor_fast.
+krea_rt_resident:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_editor
+  memory_edit: write
+  editor: qwen_edit_resident
+  track_boxes: true
+  prompt_file: prompts/editor.jsonl
+  kinds: [text]
+  seeds: [0]
+  preflight: {prompts: [ferry_switch], seeds: [0]}
+
+read_resident:
+  backend: reader
+  evaluate: [krea_rt_resident]
+  prompt_file: prompts/editor.jsonl
+  answers: answers_read_resident.jsonl
+
+# Step 39 (PLAN.md): the latent text-swap model. Training stills (prompts/swap_train.jsonl, 600 scenes in no other prompt
+# file), drawn at Krea's 832x480; triplets with step 38's resident editor (runner/gen_swap_data.py); training
+# (runner/train_swap.py, held out by object).
+swap_scenes:
+  backend: qwen
+  out: data/swap_scenes
+  prompt_file: prompts/swap_train.jsonl
+  size: [832, 480]
+  seeds: [0]
+  preflight: {prompts: [swap_0000_ev_charger, swap_0001_water_cooler], seeds: [0]}
+
+swap_data:
+  backend: swapdata
+  out: data/swap_data
+  stills: data/swap_scenes
+  prompt_file: prompts/swap_train.jsonl
+  seeds: [0]
+  preflight: {prompts: [swap_0000_ev_charger, swap_0001_water_cooler], seeds: [0]}
+
+swap_train:
+  backend: swaptrain
+  data: data/swap_data
+  out: data/swap_model
+  width: 128
+  steps: 20000
+  batch: 64
+  lr: 0.0002
+
+# Step 39's test (SWAP.md): prompts/swap_test.jsonl, 20 new scenes. Start images by Qwen-Image (seed 0); three methods,
+# same start image and seed: our font (as krea_rt_editor_write), the editor (step 37's fast editor: RESIDENT.md Q1 was
+# "not shown"), the swap model (runner/edit_server.py --swap, served beside the fast editor).
+qwen_swaptest:
+  backend: qwen
+  out: data/start_frames_swaptest
+  prompt_file: prompts/swap_test.jsonl
+  seeds: [0]
+  preflight: {prompts: [dishwasher_switch], seeds: [0]}
+
+krea_rt_swaptest_font:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_swaptest
+  memory_edit: write
+  write_partial: true
+  track_boxes: true
+  prompt_file: prompts/swap_test.jsonl
+  kinds: [text]
+  seeds: [0]
+  preflight: {prompts: [dishwasher_switch], seeds: [0]}
+
+krea_rt_swaptest_editor:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_swaptest
+  memory_edit: write
+  editor: qwen_edit_fast
+  track_boxes: true
+  prompt_file: prompts/swap_test.jsonl
+  kinds: [text]
+  seeds: [0]
+  preflight: {prompts: [dishwasher_switch], seeds: [0]}
+
+krea_rt_swaptest_swap:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_swaptest
+  memory_edit: write
+  editor: swap_latent
+  track_boxes: true
+  prompt_file: prompts/swap_test.jsonl
+  kinds: [text]
+  seeds: [0]
+  preflight: {prompts: [dishwasher_switch], seeds: [0]}
+
+read_swaptest:
+  backend: reader
+  evaluate: [krea_rt_swaptest_font, krea_rt_swaptest_editor, krea_rt_swaptest_swap]
+  prompt_file: prompts/swap_test.jsonl
+  answers: answers_read_swaptest.jsonl
+
+swap_train_v2:                     # step 39 v2: the old letters painted out of the O input (tuned on the held-out objects)
+  backend: swaptrain
+  data: data/swap_data
+  out: data/swap_model_v2
+  hide_label: true
+  width: 128
+  steps: 20000
+  batch: 64
+  lr: 0.0002
+
+# Step 40a (SPEED.md): label editors on step 39's 179 held-out windows, one VM, one after another (runner/edit_bakeoff.py)
+edit_bakeoff:
+  backend: editbake
+  data: data/swap_data
+  out: data/edit_bakeoff
+  candidates: [rsste, qwen_edit_2511_4step_512, flux2_klein_4b_512, qwen_edit_8step_512]
+
+# Step 40a fine-tune (SPEED.md): RS-STE on synthetic label pairs with numbers (runner/rsste_finetune.py)
+rsste_ft:
+  backend: rsstetrain
+  data: data/swap_data
+  out: data/rsste_ft
+  steps: 12000
+  batch: 64
+  lr: 0.00005
+  workers: 40
+
+# Step 40a, the fp8 check (SPEED.md): Qwen-Image-Edit-2511 4-step with weights stored in fp8, on the same windows
+edit_bakeoff_fp8:
+  backend: editbake
+  data: data/swap_data
+  out: data/edit_bakeoff_fp8
+  candidates: [qwen_edit_2511_4step_512_fp8]
+
+# Step 40b (SPEED.md): the 40a fast editors in Krea, on step 39's test scenes (prompts/swap_test.jsonl, 20 new scenes).
+# Font and editor are krea_rt_swaptest_font / krea_rt_swaptest_editor above (never run in step 39). The fast editors
+# stay on the GPU beside Krea (runner/edit_server.py --fast-editors), so they run on their own VM (gen_krea.py: a
+# resident editor cannot share a process with the parked step 37 editor).
+krea_rt_swaptest_klein:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_swaptest
+  memory_edit: write
+  editor: flux2_klein
+  track_boxes: true
+  prompt_file: prompts/swap_test.jsonl
+  kinds: [text]
+  seeds: [0]
+  preflight: {prompts: [dishwasher_switch], seeds: [0]}
+
+krea_rt_swaptest_qwen2511:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_swaptest
+  memory_edit: write
+  editor: qwen_edit_2511_fp8
+  track_boxes: true
+  prompt_file: prompts/swap_test.jsonl
+  kinds: [text]
+  seeds: [0]
+  preflight: {prompts: [dishwasher_switch], seeds: [0]}
+
+read_40b:
+  backend: reader
+  evaluate: [krea_rt_swaptest_font, krea_rt_swaptest_editor, krea_rt_swaptest_klein, krea_rt_swaptest_qwen2511]
+  prompt_file: prompts/swap_test.jsonl
+  answers: answers_read_40b.jsonl
+
+# Step 40c (SPEED.md): the fine-tuned RS-STE as the editor in Krea, on 40b's scenes
+krea_rt_swaptest_rsste:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_swaptest
+  memory_edit: write
+  editor: rsste
+  rsste_weights: data/rsste_ft/state_dict.pt
+  rsste_numbers: rsste
+  track_boxes: true
+  prompt_file: prompts/swap_test.jsonl
+  kinds: [text]
+  seeds: [0]
+  preflight: {prompts: [dishwasher_switch], seeds: [0]}
+
+read_40c:
+  backend: reader
+  evaluate: [krea_rt_swaptest_rsste]
+  prompt_file: prompts/swap_test.jsonl
+  answers: answers_read_40c.jsonl
+
+# Step 40c timing reruns (SPEED.md 40c Changes): font and klein again on seed 0 with per-block times (gen_krea block_t);
+
+# their reading is 40b's; these only time the whole stall per switch.
+
+krea_rt_swaptest_font_t:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_swaptest
+  memory_edit: write
+  write_partial: true
+  track_boxes: true
+  prompt_file: prompts/swap_test.jsonl
+  kinds: [text]
+  seeds: [0]
+  preflight: {prompts: [dishwasher_switch], seeds: [0]}
+
+krea_rt_swaptest_klein_t:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_swaptest
+  memory_edit: write
+  editor: flux2_klein
+  track_boxes: true
+  prompt_file: prompts/swap_test.jsonl
+  kinds: [text]
+  seeds: [0]
+  preflight: {prompts: [dishwasher_switch], seeds: [0]}
+
+
+# Step 40d (SPEED.md): a second sample per scene, seed 1 (new start image by Qwen-Image seed 1, Krea seed 1), all five methods.
+
+qwen_swaptest_s1:
+  backend: qwen
+  out: data/start_frames_swaptest
+  prompt_file: prompts/swap_test.jsonl
+  seeds: [1]
+  preflight: {prompts: [dishwasher_switch], seeds: [1]}
+
+krea_rt_swaptest_font_s1:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_swaptest
+  memory_edit: write
+  write_partial: true
+  track_boxes: true
+  prompt_file: prompts/swap_test.jsonl
+  kinds: [text]
+  seeds: [1]
+  preflight: {prompts: [dishwasher_switch], seeds: [1]}
+
+krea_rt_swaptest_editor_s1:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_swaptest
+  memory_edit: write
+  editor: qwen_edit_fast
+  track_boxes: true
+  prompt_file: prompts/swap_test.jsonl
+  kinds: [text]
+  seeds: [1]
+  preflight: {prompts: [dishwasher_switch], seeds: [1]}
+
+krea_rt_swaptest_klein_s1:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_swaptest
+  memory_edit: write
+  editor: flux2_klein
+  track_boxes: true
+  prompt_file: prompts/swap_test.jsonl
+  kinds: [text]
+  seeds: [1]
+  preflight: {prompts: [dishwasher_switch], seeds: [1]}
+
+krea_rt_swaptest_qwen2511_s1:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_swaptest
+  memory_edit: write
+  editor: qwen_edit_2511_fp8
+  track_boxes: true
+  prompt_file: prompts/swap_test.jsonl
+  kinds: [text]
+  seeds: [1]
+  preflight: {prompts: [dishwasher_switch], seeds: [1]}
+
+krea_rt_swaptest_rsste_s1:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_swaptest
+  memory_edit: write
+  editor: rsste
+  rsste_weights: data/rsste_ft/state_dict.pt
+  rsste_numbers: rsste
+  track_boxes: true
+  prompt_file: prompts/swap_test.jsonl
+  kinds: [text]
+  seeds: [1]
+  preflight: {prompts: [dishwasher_switch], seeds: [1]}
+
+read_40d:
+  backend: reader
+  evaluate: [krea_rt_swaptest_font_s1, krea_rt_swaptest_editor_s1, krea_rt_swaptest_klein_s1, krea_rt_swaptest_qwen2511_s1, krea_rt_swaptest_rsste_s1]
+  prompt_file: prompts/swap_test.jsonl
+  answers: answers_read_40d.jsonl
+
+# Step 40, the look (SPEED.md Changes, 15 Nov 2026): the blind AI rater (runner/rate_look.py) on seed 0's videos
+look_40b:
+  backend: looker
+  evaluate: [krea_rt_swaptest_font, krea_rt_swaptest_editor, krea_rt_swaptest_klein, krea_rt_swaptest_qwen2511, krea_rt_swaptest_rsste]
+  prompt_file: prompts/swap_test.jsonl
+  answers: answers_look_40b.jsonl
+
+# Step 40e, the digit demo (SPEED.md): race tower "LAP 7" -> "LAP d" (d = 0-9), font write and FLUX.2 klein, seed 0.
+# Both in one Krea process: the font config has no editor, so the resident klein editor serves the klein config only.
+krea_demo_font:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_swaptest
+  memory_edit: write
+  write_partial: true
+  track_boxes: true
+  prompt_file: prompts/demo_digits.jsonl
+  kinds: [text]
+  seeds: [0]
+  preflight: {prompts: [race_track_digit3], seeds: [0]}
+
+krea_demo_klein:
+  backend: krea
+  steps: 4
+  blocks: 13
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_swaptest
+  memory_edit: write
+  editor: flux2_klein
+  track_boxes: true
+  prompt_file: prompts/demo_digits.jsonl
+  kinds: [text]
+  seeds: [0]
+  preflight: {prompts: [race_track_digit3], seeds: [0]}
+
+# LIVE.md Phase 1: the live sign. Krea generates block after block from the 40b race-tower start image while the viewer
+# types digits; each typed text is written into Krea's memory before the next block (runner/gen_krea.py --live).
+live_race:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_swaptest
+  start_id: race_track_switch
+  seed: 0
+  live_text: "LAP 7"
+  live_prompt: 'A car racing circuit with a tall tower showing the race position. The tower shows bold white letters. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A car racing circuit with a tall tower showing the race position. The cars pass the line, and it now reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: true
+  track_boxes: true
+  live_blocks: 400
+  port: 8000
+
+# LIVE.md Phase 1, Elad 15 Nov: "I want to see a calculator". Step 34's calculator scene (prompts/fresh.jsonl
+# calculator_switch), seed 1's start image (the clearest display), its prompts; the switch prompt is its tested one.
+live_calc:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right     # a calculator display is right-aligned; the label box is widened to the left
+  live_max_chars: 5
+  live_reset_blocks: 13 # LIVE.md Changes: Krea drifted off the calculator after ~30 blocks; restart from the start image
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. A finger presses the keys, and it now reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  port: 8000
+
+# LIVE.md, Elad 15 Nov: "I don't want to see the digits like they are pasted". The live calculator with FLUX.2 klein
+# (resident beside Krea, runner/edit_server.py --fast-editors) redrawing the display in its own style, and prompts that
+# do not name the number (the first session drew "9876" on the papers as well): the memory write alone carries it.
+live_calc_klein:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  editor: flux2_klein
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. A finger presses the keys. Its small grey screen shows bold black digits. The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  port: 8000
+
+# LIVE.md, Elad 15 Nov 20:18: "I don't see the numbers just jebrish" with live_calc_klein (prompts without the number:
+# Krea pulled the written digits towards random LCD glyphs). The number is back in the prompt, tied to the display, in
+# the scene's own first prompt (not the switch wording "a finger presses the keys, and it now reads", used when Krea also
+# drew the number on the papers).
+live_calc_klein2:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  editor: flux2_klein
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  port: 8000
+
+live_calc_klein3:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  editor: flux2_klein
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  port: 8000
+  live_check: true          # LIVE.md Changes (15 Nov): OCR the display after every block (textbench/display_check.py)
+  live_fix_score: 0.8       # a detector reading this sure, wrong on 2 blocks in a row, is fixed before the next
+  # live_fix_font_after: unset: klein only (code-check-r1 #3: our font brings back the pasted patch Elad rejected)
+  live_fix_max: 4           # then stop fixing until the display reads right again, a reset or a new number
+
+# LIVE.md (15 Nov 2026): lock vs pin, a scripted typing replay. Arms A-D share the scene, prompts and resets.
+# A: klein as in session 1909 (klein writes, the OCR checker's fixes).
+replay_A_klein:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  editor: flux2_klein
+  live_check: true
+  live_fix_score: 0.8
+  live_fix_max: 4
+
+# B: the 7-segment writer (textbench/write_lcd.py) and the anchor, no klein.
+replay_B_lcd:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  live_writer: lcd
+  live_anchor: true
+
+# LIVE.md (16 Nov 2026): the live calculator on setup C, the replay 2 winner (lock 95% / 91% by the 7-segment reader,
+# 3.88 s blocks): the 7-segment writer, the anchor and the per-block lock; no klein, no OCR checker.
+live_calc_lcd:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  port: 8000
+  live_writer: lcd
+  live_anchor: true
+  live_lock: true
+
+live_calc_dual:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: "Live Calculator: Krea alone vs with the lock"
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  port: 8000
+  live_writer: lcd
+  live_anchor: true
+  live_lock: true
+  live_dual: true  # each frame twice: as Krea made it | after the lock (LIVE.md, 16 Nov)
+
+# C: B + the per-block lock (frames and memory rewritten where the 7-segment reader reads wrong).
+replay_C_lock:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  live_writer: lcd
+  live_anchor: true
+  live_lock: true
+
+# D: B + the latent pin (the LCD's latents steered to the written memory's in every pass, t=0 included).
+replay_D_pin:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  live_writer: lcd
+  live_anchor: true
+  live_pin: true
+
+# The replay: one process, Krea loaded once; 2 noise seeds from the seed-1 start image; 40 blocks each (3 resets).
+replay_calc:
+  backend: live
+  editor: flux2_klein  # starts the edit server for arm A
+  live_replay:
+    arms: [replay_B_lcd, replay_C_lock, replay_D_pin, replay_A_klein]  # klein last: its edit server cannot stop the others
+    seeds: [1, 2]
+    start_seed: 1
+    blocks: 40
+    script: [[2, "1"], [6, "68"], [10, "23456"], [15, "0"], [19, "2456"], [24, "7"], [28, "80917"], [33, "23476"]]
+
+# LIVE.md (16 Nov 2026, option 2: every digit on screen drawn by Krea). E: C's lock without rewriting the frames shown
+# (only Krea's memory is corrected, when it reads wrong). E2: E with the memory rewritten after every block.
+replay_E_memlock:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  live_writer: lcd
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false   # frames shown as Krea made them; only the memory is corrected
+
+replay_E2_memalways:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  live_writer: lcd
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lock_memory: always  # the memory rewritten after every block, also when it reads right
+
+replay_memlock:
+  backend: live
+  live_replay:
+    arms: [replay_C_lock, replay_E_memlock, replay_E2_memalways]  # C again: E's frames should be C's before its lock
+    seeds: [1, 2]
+    start_seed: 1
+    blocks: 40
+    script: [[2, "1"], [6, "68"], [10, "23456"], [15, "0"], [19, "2456"], [24, "7"], [28, "80917"], [33, "23476"]]
+
+# LIVE.md (16 Nov 2026): FLUX.2 klein restyles the 7-segment font write while keeping its digits (runner/restyle_test.py;
+# inputs from scripts/restyle_inputs.py, Krea's frames of the option 2 replay with the wanted number in the font).
+restyle_klein:
+  backend: restyle
+  data: data/restyle_inputs
+  out: data/restyle_out
+
+# LIVE.md (16 Nov 2026, Elad: "I want the digits to be part of the scene"; "yes" to the replay): K is option 2 (E: the
+# frames shown as Krea made them, only its memory corrected) with every memory write restyled by FLUX.2 klein beside Krea
+# (runner/edit_server.py mode "restyle"; textbench/restyle.py): the font write's LCD crop restyled, colour-fixed, kept when
+# OCR reads the wanted number (seed 0, else seed 1, else the font). The memory counts as right when the 7-segment reader or
+# OCR reads the number. Compared with E and C of textbench-run-20261116-0542 (same seeds, start and script).
+replay_K_klein:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  live_writer: lcd
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  editor: flux2_klein
+  live_restyle: true
+  live_restyle_seeds: [0, 1]
+
+replay_klein:
+  backend: live
+  editor: flux2_klein  # infra/startup.sh: start the klein edit server (the arms' configs are not scanned)
+  live_replay:
+    arms: [replay_K_klein]
+    seeds: [1, 2]
+    start_seed: 1
+    blocks: 40
+    script: [[2, "1"], [6, "68"], [10, "23456"], [15, "0"], [19, "2456"], [24, "7"], [28, "80917"], [33, "23476"]]
+
+# LIVE.md (16 Nov 2026, Elad: "Can the camera move around the calculator while I type digits?"; "make it a separate
+# run"): setup C (replay_C_lock) with a slow push-in instead of the steady shot; does the tracker, the lock and the
+# writer hold under camera motion? The reset every 13 blocks still returns to the start image (a jump back is expected).
+replay_C_push:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera slowly pushes in toward the calculator. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera slowly pushes in toward the calculator. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  live_writer: lcd
+  live_anchor: true
+  live_lock: true
+  live_track_max_scale: 2.0  # code-klein-r1: past 1.4 the tracker misplaced the display (default scales 0.8-1.4)
+
+replay_camera:
+  backend: live
+  live_replay:
+    arms: [replay_C_push]
+    seeds: [1, 2]
+    start_seed: 1
+    blocks: 40
+    script: [[2, "1"], [6, "68"], [10, "23456"], [15, "0"], [19, "2456"], [24, "7"], [28, "80917"], [33, "23476"]]
+
+# LIVE.md (16 Nov 2026, Elad: "Lets see this in the rt visualizer"): the push-in run (replay_C_push, seed 1) live, in the
+# dual view of live_calc_dual.
+live_calc_push:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: "Live Calculator, camera pushing in: Krea alone vs with the lock"
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera slowly pushes in toward the calculator. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera slowly pushes in toward the calculator. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  port: 8000
+  live_writer: lcd
+  live_anchor: true
+  live_lock: true
+  live_dual: true  # each frame twice: as Krea made it | after the lock (LIVE.md, 16 Nov)
+  live_track_max_scale: 2.0  # as replay_C_push (code-klein-r1..r3)
+
+# LIVE.md (16 Nov 2026, feature steering step 1; Elad: "If we know the feature vector of a certain digit ... can we
+# shift it"): option 2's replay (E: frames as Krea made them, memory corrected with the font) with the transformer's
+# hidden states pooled at each digit place (runner/feature_probe.py) for 4 layers and the 4 denoising calls; labels from
+# the 7-segment reader on the decoded frames. code-probe-r1: 20 random numbers, 2 blocks each (numpy rng 16: each place
+# shows every digit twice, its neighbours vary), so the probe is tested on numbers it was not fitted on; and a control
+# box per place on the keypad (runner/feature_probe.py CONTROL). scripts/probe_digits.py fits linear probes.
+replay_P_probe:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  live_writer: lcd
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_probe:
+    layers: [10, 20, 30, 39]
+
+replay_probe:
+  backend: live
+  live_replay:
+    arms: [replay_P_probe]
+    seeds: [1, 2, 3]
+    start_seed: 1
+    blocks: 42
+    script: [[2, "73463"], [4, "64726"], [6, "43873"], [8, "80689"], [10, "14669"], [12, "66198"], [14, "58580"], [16, "08231"], [18, "79377"], [20, "26215"], [22, "11934"], [24, "00055"], [26, "57908"], [28, "85544"], [30, "35197"], [32, "37452"], [34, "92712"], [36, "49346"], [38, "91800"], [40, "22021"]]
+
+# LIVE.md (16 Nov 2026, Elad: "Show me the best result we have so far on the visualizer"): the steady shot with every
+# memory write restyled by klein (replay_K_klein: the most natural digits) and the lock on the frames shown
+# (setup C: the most accurate), in the dual view: left Krea's frames, right the same after the lock.
+live_calc_best:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: "Live Calculator. Left: Krea alone, klein-styled digits in its memory. Right: wrong frames corrected with our font"
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  port: 8000
+  live_writer: lcd
+  live_anchor: true
+  live_lock: true
+  live_dual: true  # each frame twice: as Krea made it | after the lock (LIVE.md, 16 Nov)
+  editor: flux2_klein
+  live_restyle: true
+  live_restyle_seeds: [0, 1]
+
+# LIVE.md (16 Nov 2026, the LoRA pilot, research/plans/LORA_PILOT.md; Elad: "Yes"): stage 1, collect training samples.
+# Option 2's replay (E: Krea's own frames, memory written with the font and corrected when it reads wrong) with every
+# block's transformer inputs and a corrected target saved (runner/gen_krea.py save_sample, textbench/lora_targets.py;
+# klein restyles the source only when no frame of a block reads right). Each seed types its own 20 random numbers,
+# never the 10 held out for the evaluation (lora_eval_numbers). Then a 20-step training smoke test (lora_smoke).
+replay_L_collect:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  live_writer: lcd
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  editor: flux2_klein
+  live_collect:
+    outside: 0.1
+
+lora_collect:
+  backend: live
+  editor: flux2_klein  # infra/startup.sh: start the klein edit server (the arms' configs are not scanned)
+  lora_smoke: 20
+  live_replay:
+    arms: [replay_L_collect]
+    seeds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+    start_seed: 1
+    blocks: 42
+    random_script:
+      rng: 7
+      numbers: 20
+      first: 2
+      every: 2
+      exclude: ["3907", "58", "71246", "902", "4", "66813", "25", "19374", "8051", "640"]
+
+# LIVE.md (16 Nov 2026, the LoRA pilot stage 2 and 3; Elad: "Yes" to the targets, Krea-sourced only): train the adapters
+# on lora_collect's samples (runner/lora_train.py), then on the same VM evaluate base vs adapters (lora_eval) on the 10
+# numbers no training seed typed, with noise seeds never used in training (101-103). Both arms are option 2 (E): Krea's own
+# frames shown, its memory written with the font and corrected when it reads wrong; scored by scripts/score_replay.py.
+lora_pilot:
+  backend: loratrain
+  samples: live/textbench-run-20261116-1313/lora_samples
+  out: data/lora/pilot
+  args: --steps 3000 --save 250 --max-minutes 150 --sources krea --rank 16 --alpha 16 --lr 1e-4 --layers 0-39
+  eval: lora_eval
+
+replay_V_base:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  live_writer: lcd
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false   # frames shown as Krea made them; only the memory is corrected
+
+replay_V_lora:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  live_writer: lcd
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false   # frames shown as Krea made them; only the memory is corrected
+  live_lora: data/lora/pilot/last.pt  # runner/lora_train.py's last checkpoint (attached in fp32, detached after)
+
+lora_eval:
+  backend: live
+  live_replay:
+    arms: [replay_V_base, replay_V_lora]
+    seeds: [101, 102, 103]
+    start_seed: 1
+    blocks: 42
+    script: [[2, "3907"], [6, "58"], [10, "71246"], [14, "902"], [18, "4"], [22, "66813"], [26, "25"], [30, "19374"], [34, "8051"], [38, "640"]]
+
+replay_V_lora_merged:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  live_writer: lcd
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false   # frames shown as Krea made them; only the memory is corrected
+  live_lora: data/lora/pilot/last.pt  # runner/lora_train.py's last checkpoint (step 3000)
+  live_lora_merge: true  # LIVE.md 16 Nov (next step 1): added into the bf16 weights; restored after the arm
+
+# LIVE.md 16 Nov (Elad: the four next steps): 1. the adapters merged into Krea's weights: speed and accuracy on the
+# held-out numbers (compare lora_eval's attached arm, same noise seeds); 2. new scenes: start images s0 and s2 (other
+# calculators, never trained on), base vs adapters, the same held-out numbers
+lora_eval_merged:
+  backend: live
+  lora_weights: data/lora/pilot/last.pt
+  live_replay:
+    subdir: lora_eval_merged
+    arms: [replay_V_lora_merged]
+    seeds: [101, 102, 103]
+    start_seed: 1
+    blocks: 42
+    script: [[2, "3907"], [6, "58"], [10, "71246"], [14, "902"], [18, "4"], [22, "66813"], [26, "25"], [30, "19374"], [34, "8051"], [38, "640"]]
+
+lora_eval_s0:
+  backend: live
+  lora_weights: data/lora/pilot/last.pt
+  live_replay:
+    subdir: lora_eval_s0
+    arms: [replay_V_base, replay_V_lora]
+    seeds: [101, 102, 103]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "3907"], [6, "58"], [10, "71246"], [14, "902"], [18, "4"], [22, "66813"], [26, "25"], [30, "19374"], [34, "8051"], [38, "640"]]
+
+lora_eval_s2:
+  backend: live
+  lora_weights: data/lora/pilot/last.pt
+  live_replay:
+    subdir: lora_eval_s2
+    arms: [replay_V_base, replay_V_lora]
+    seeds: [101, 102, 103]
+    start_seed: 2
+    blocks: 42
+    script: [[2, "3907"], [6, "58"], [10, "71246"], [14, "902"], [18, "4"], [22, "66813"], [26, "25"], [30, "19374"], [34, "8051"], [38, "640"]]
+
+# LIVE.md 17 Nov (step 3, v2): an on-policy round. Collect with the pilot's adapters attached on s1 and s2 (new noise
+# seeds, new random numbers, the held-out numbers excluded; Krea-sourced targets only, no klein), then train from the
+# pilot's lora_03000 on rounds 1 + 2 without the t=0 call, then evaluate merged on s0 (unseen), s1, s2
+replay_L2_collect:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  live_writer: lcd
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_collect:
+    outside: 0.1
+  live_lora: data/lora/pilot/last.pt  # on-policy: the pilot's adapters attached while collecting
+
+lora_collect2_s1:
+  backend: live
+  lora_weights: data/lora/pilot/last.pt
+  live_replay:
+    subdir: lora_collect2_s1
+    arms: [replay_L2_collect]
+    seeds: [21, 22, 23, 24, 25, 26, 27]
+    start_seed: 1
+    blocks: 42
+    random_script:
+      rng: 8
+      numbers: 20
+      first: 2
+      every: 2
+      exclude: ["3907", "58", "71246", "902", "4", "66813", "25", "19374", "8051", "640"]
+
+lora_collect2_s2:
+  backend: live
+  lora_weights: data/lora/pilot/last.pt
+  live_replay:
+    subdir: lora_collect2_s2
+    arms: [replay_L2_collect]
+    seeds: [31, 32, 33, 34, 35, 36, 37]
+    start_seed: 2
+    blocks: 42
+    random_script:
+      rng: 9
+      numbers: 20
+      first: 2
+      every: 2
+      exclude: ["3907", "58", "71246", "902", "4", "66813", "25", "19374", "8051", "640"]
+
+lora_v2:
+  backend: loratrain
+  samples: live/textbench-run-20261116-1313/lora_samples,live/textbench-run-20261116-2217/lora_samples
+  out: data/lora/v2
+  lora_weights: data/lora/pilot/lora_03000.pt
+  args: --steps 1500 --save 250 --max-minutes 100 --sources krea --rank 16 --alpha 16 --lr 1e-4 --layers 0-39 --skip-last --init data/lora/pilot/lora_03000.pt --repeat 1,2 --source-ocr-agree 0,1
+  eval: lora_eval_v2_s0,lora_eval_v2_s1,lora_eval_v2_s2
+
+replay_V_lora2:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  live_writer: lcd
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false   # frames shown as Krea made them; only the memory is corrected
+  live_lora: data/lora/v2/last.pt  # the v2 adapters
+  live_lora_merge: true  # as shipped: merged into the bf16 weights
+
+lora_eval_v2_s0:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v2_s0
+    arms: [replay_V_lora2]
+    seeds: [101, 102, 103]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "3907"], [6, "58"], [10, "71246"], [14, "902"], [18, "4"], [22, "66813"], [26, "25"], [30, "19374"], [34, "8051"], [38, "640"]]
+
+lora_eval_v2_s1:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v2_s1
+    arms: [replay_V_lora2]
+    seeds: [101, 102, 103]
+    start_seed: 1
+    blocks: 42
+    script: [[2, "3907"], [6, "58"], [10, "71246"], [14, "902"], [18, "4"], [22, "66813"], [26, "25"], [30, "19374"], [34, "8051"], [38, "640"]]
+
+lora_eval_v2_s2:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v2_s2
+    arms: [replay_V_lora2]
+    seeds: [101, 102, 103]
+    start_seed: 2
+    blocks: 42
+    script: [[2, "3907"], [6, "58"], [10, "71246"], [14, "902"], [18, "4"], [22, "66813"], [26, "25"], [30, "19374"], [34, "8051"], [38, "640"]]
+
+# LIVE.md 17 Nov (Elad: "Do option 1"): does the v2 LoRA carry to other scenes? Start images of 4 new scenes with a
+# number on a grey LCD (other objects and settings than the calculator), drawn as the calculator's were (Qwen-Image)
+qwen_newscenes:
+  backend: qwen
+  out: data/start_frames_newscenes
+  prompt_file: prompts/newscenes.jsonl
+  seeds: [0, 1, 2]
+  preflight: {prompts: [kitchen_scale_lcd], seeds: [0]}
+
+# LIVE.md 17 Nov (option 1, new scenes): the 7-segment reader and writer do not run on the new scenes (the LCD finder
+# spills onto white plastic or glass; the timer and multimeter hold 3-4 digits), so the test is prompt-only: a typed
+# number only switches the prompt, nothing is written into memory, and OCR scores (scripts/score_replay.py --ocr-only).
+# Base vs v2 merged; calculator s0 under the same condition as the reference.
+replay_P_base_calc_s0:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Display
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_anchor: true
+  live_prompt_only: true
+
+replay_P_lora2_calc_s0:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Display
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_anchor: true
+  live_prompt_only: true
+  live_lora: data/lora/v2/last.pt
+  live_lora_merge: true
+
+pscene_calc_s0:
+  backend: live
+  lora_weights: data/lora/v2/last.pt
+  live_replay:
+    subdir: pscene_calc_s0
+    arms: [replay_P_base_calc_s0, replay_P_lora2_calc_s0]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "3907"], [6, "58"], [10, "71246"], [14, "902"], [18, "4"], [22, "66813"], [26, "25"], [30, "19374"], [34, "8051"], [38, "640"]]
+
+replay_P_base_kitchen_scale:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_newscenes
+  start_id: kitchen_scale_lcd
+  seed: 1
+  live_title: Live Display
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A white digital kitchen scale on a wooden kitchen counter beside a bowl of flour and an egg. Its small grey LCD screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A white digital kitchen scale on a wooden kitchen counter beside a bowl of flour and an egg. Its small grey LCD screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_anchor: true
+  live_prompt_only: true
+
+replay_P_lora2_kitchen_scale:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_newscenes
+  start_id: kitchen_scale_lcd
+  seed: 1
+  live_title: Live Display
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A white digital kitchen scale on a wooden kitchen counter beside a bowl of flour and an egg. Its small grey LCD screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A white digital kitchen scale on a wooden kitchen counter beside a bowl of flour and an egg. Its small grey LCD screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_anchor: true
+  live_prompt_only: true
+  live_lora: data/lora/v2/last.pt
+  live_lora_merge: true
+
+pscene_kitchen_scale:
+  backend: live
+  lora_weights: data/lora/v2/last.pt
+  live_replay:
+    subdir: pscene_kitchen_scale
+    arms: [replay_P_base_kitchen_scale, replay_P_lora2_kitchen_scale]
+    seeds: [101, 102]
+    start_seed: 1
+    blocks: 42
+    script: [[2, "3907"], [6, "58"], [10, "71246"], [14, "902"], [18, "4"], [22, "66813"], [26, "25"], [30, "19374"], [34, "8051"], [38, "640"]]
+
+replay_P_base_bathroom_scale:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_newscenes
+  start_id: bathroom_scale_lcd
+  seed: 1
+  live_title: Live Display
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A glass bathroom scale on a white tiled bathroom floor beside a folded towel. Its small grey LCD screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A glass bathroom scale on a white tiled bathroom floor beside a folded towel. Its small grey LCD screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_anchor: true
+  live_prompt_only: true
+
+replay_P_lora2_bathroom_scale:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_newscenes
+  start_id: bathroom_scale_lcd
+  seed: 1
+  live_title: Live Display
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A glass bathroom scale on a white tiled bathroom floor beside a folded towel. Its small grey LCD screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A glass bathroom scale on a white tiled bathroom floor beside a folded towel. Its small grey LCD screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_anchor: true
+  live_prompt_only: true
+  live_lora: data/lora/v2/last.pt
+  live_lora_merge: true
+
+pscene_bathroom_scale:
+  backend: live
+  lora_weights: data/lora/v2/last.pt
+  live_replay:
+    subdir: pscene_bathroom_scale
+    arms: [replay_P_base_bathroom_scale, replay_P_lora2_bathroom_scale]
+    seeds: [101, 102]
+    start_seed: 1
+    blocks: 42
+    script: [[2, "3907"], [6, "58"], [10, "71246"], [14, "902"], [18, "4"], [22, "66813"], [26, "25"], [30, "19374"], [34, "8051"], [38, "640"]]
+
+replay_P_base_multimeter:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_newscenes
+  start_id: multimeter_lcd
+  seed: 1
+  live_title: Live Display
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A yellow digital multimeter on an electronics workbench beside a circuit board and a soldering iron. Its small grey LCD screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A yellow digital multimeter on an electronics workbench beside a circuit board and a soldering iron. Its small grey LCD screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_anchor: true
+  live_prompt_only: true
+
+replay_P_lora2_multimeter:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_newscenes
+  start_id: multimeter_lcd
+  seed: 1
+  live_title: Live Display
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A yellow digital multimeter on an electronics workbench beside a circuit board and a soldering iron. Its small grey LCD screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A yellow digital multimeter on an electronics workbench beside a circuit board and a soldering iron. Its small grey LCD screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_anchor: true
+  live_prompt_only: true
+  live_lora: data/lora/v2/last.pt
+  live_lora_merge: true
+
+pscene_multimeter:
+  backend: live
+  lora_weights: data/lora/v2/last.pt
+  live_replay:
+    subdir: pscene_multimeter
+    arms: [replay_P_base_multimeter, replay_P_lora2_multimeter]
+    seeds: [101, 102]
+    start_seed: 2
+    blocks: 42
+    script: [[2, "3907"], [6, "58"], [10, "71246"], [14, "902"], [18, "4"], [22, "66813"], [26, "25"], [30, "19374"], [34, "8051"], [38, "640"]]
+
+replay_P_base_timer:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_newscenes
+  start_id: timer_lcd
+  seed: 1
+  live_title: Live Display
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A white digital kitchen timer stuck on a fridge door beside a shopping list. Its small grey LCD screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A white digital kitchen timer stuck on a fridge door beside a shopping list. Its small grey LCD screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_anchor: true
+  live_prompt_only: true
+
+replay_P_lora2_timer:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_newscenes
+  start_id: timer_lcd
+  seed: 1
+  live_title: Live Display
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A white digital kitchen timer stuck on a fridge door beside a shopping list. Its small grey LCD screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A white digital kitchen timer stuck on a fridge door beside a shopping list. Its small grey LCD screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_anchor: true
+  live_prompt_only: true
+  live_lora: data/lora/v2/last.pt
+  live_lora_merge: true
+
+pscene_timer:
+  backend: live
+  lora_weights: data/lora/v2/last.pt
+  live_replay:
+    subdir: pscene_timer
+    arms: [replay_P_base_timer, replay_P_lora2_timer]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "3907"], [6, "58"], [10, "71246"], [14, "902"], [18, "4"], [22, "66813"], [26, "25"], [30, "19374"], [34, "8051"], [38, "640"]]
+
+# LIVE.md 17 Nov (route 1, step 2): base vs v2 merged with the general writer (live_writer paste: the typed field
+# pasted into memory in a plain font at the tracked line; the memory-only lock reads by OCR), on 5 text scenes: the
+# calculator (reference) and 4 surfaces never trained on, 2 with numbers, 3 with words (letters never trained on)
+replay_T_base_dash:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: dashboard_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "245"
+  live_line: "RANGE 245"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'The inside of an electric car, seen from the driver''s seat, with a wide screen on the dashboard. The screen shows a bold white label. It reads "RANGE {text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'The inside of an electric car, seen from the driver''s seat, with a wide screen on the dashboard. The screen shows a bold white label. It reads "RANGE {text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+
+replay_T_lora2_dash:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: dashboard_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "245"
+  live_line: "RANGE 245"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'The inside of an electric car, seen from the driver''s seat, with a wide screen on the dashboard. The screen shows a bold white label. It reads "RANGE {text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'The inside of an electric car, seen from the driver''s seat, with a wide screen on the dashboard. The screen shows a bold white label. It reads "RANGE {text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v2/last.pt
+  live_lora_merge: true
+
+tscene_dash:
+  backend: live
+  lora_weights: data/lora/v2/last.pt
+  live_replay:
+    subdir: tscene_dash
+    arms: [replay_T_base_dash, replay_T_lora2_dash]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "238"], [6, "199"], [10, "312"], [14, "87"], [18, "150"], [22, "264"], [26, "45"], [30, "301"], [34, "120"], [38, "9"]]
+
+replay_T_base_bus:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: bus_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "42"
+  live_line: "ROUTE 42"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A city bus waiting at a stop on a sunny street, seen from the front. Above its windscreen is a bright orange display. It reads "ROUTE {text}". The camera slowly pushes in towards it. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A city bus waiting at a stop on a sunny street, seen from the front. Above its windscreen is a bright orange display. It reads "ROUTE {text}". The camera slowly pushes in towards it. Realistic, natural light, high detail.'
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+
+replay_T_lora2_bus:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: bus_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "42"
+  live_line: "ROUTE 42"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A city bus waiting at a stop on a sunny street, seen from the front. Above its windscreen is a bright orange display. It reads "ROUTE {text}". The camera slowly pushes in towards it. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A city bus waiting at a stop on a sunny street, seen from the front. Above its windscreen is a bright orange display. It reads "ROUTE {text}". The camera slowly pushes in towards it. Realistic, natural light, high detail.'
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v2/last.pt
+  live_lora_merge: true
+
+tscene_bus:
+  backend: live
+  lora_weights: data/lora/v2/last.pt
+  live_replay:
+    subdir: tscene_bus
+    arms: [replay_T_base_bus, replay_T_lora2_bus]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "7"], [6, "15"], [10, "128"], [14, "3"], [18, "61"], [22, "204"], [26, "9"], [30, "33"], [34, "480"], [38, "52"]]
+
+replay_T_base_door:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: door_sign_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "CLOSED"
+  live_line: "CLOSED"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads "{text}". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail.'
+  live_switch_prompt: 'The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads "{text}". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+
+replay_T_lora2_door:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: door_sign_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "CLOSED"
+  live_line: "CLOSED"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads "{text}". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail.'
+  live_switch_prompt: 'The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads "{text}". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v2/last.pt
+  live_lora_merge: true
+
+tscene_door:
+  backend: live
+  lora_weights: data/lora/v2/last.pt
+  live_replay:
+    subdir: tscene_door
+    arms: [replay_T_base_door, replay_T_lora2_door]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "OPEN"], [6, "SALE"], [10, "EXIT"], [14, "WELCOME"], [18, "SORRY"], [22, "PUSH"], [26, "FULL"], [30, "HELLO"], [34, "LUNCH"], [38, "BYE"]]
+
+replay_T_base_taxi:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: taxi_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "FREE"
+  live_line: "FREE"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A yellow taxi parked at a curb at night, with a lit sign on its roof. The roof sign shows bold black letters. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A yellow taxi parked at a curb at night, with a lit sign on its roof. The roof sign shows bold black letters. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+
+replay_T_lora2_taxi:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: taxi_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "FREE"
+  live_line: "FREE"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A yellow taxi parked at a curb at night, with a lit sign on its roof. The roof sign shows bold black letters. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A yellow taxi parked at a curb at night, with a lit sign on its roof. The roof sign shows bold black letters. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v2/last.pt
+  live_lora_merge: true
+
+tscene_taxi:
+  backend: live
+  lora_weights: data/lora/v2/last.pt
+  live_replay:
+    subdir: tscene_taxi
+    arms: [replay_T_base_taxi, replay_T_lora2_taxi]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "BUSY"], [6, "OFF"], [10, "HIRED"], [14, "FULL"], [18, "CITY"], [22, "TAXI"], [26, "STOP"], [30, "NIGHT"], [34, "CALL"], [38, "HOME"]]
+
+replay_T_base_note:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: sticky_note_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "MOM"
+  live_line: "CALL MOM"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A white fridge door with a yellow sticky note in the middle. The note has bold black marker letters. It reads "CALL {text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A white fridge door with a yellow sticky note in the middle. The note has bold black marker letters. It reads "CALL {text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+
+replay_T_lora2_note:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: sticky_note_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "MOM"
+  live_line: "CALL MOM"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A white fridge door with a yellow sticky note in the middle. The note has bold black marker letters. It reads "CALL {text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A white fridge door with a yellow sticky note in the middle. The note has bold black marker letters. It reads "CALL {text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v2/last.pt
+  live_lora_merge: true
+
+tscene_note:
+  backend: live
+  lora_weights: data/lora/v2/last.pt
+  live_replay:
+    subdir: tscene_note
+    arms: [replay_T_base_note, replay_T_lora2_note]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "DAD"], [6, "ANNA"], [10, "BOB"], [14, "LISA"], [18, "TOM"], [22, "MAX"], [26, "ELLA"], [30, "SAM"], [34, "JOE"], [38, "KIM"]]
+
+# LIVE.md 17 Nov (Elad: "The camera is not moving for the lora results"; "yes"): can v2 still move the camera when
+# asked? The bus (push in) and door (pan right) tscene prompts already asked for motion; taxi and note asked for a
+# steady shot: here with "The camera slowly pushes in." instead. Base vs v2 merged; text and motion scored
+replay_M_base_taxi:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: taxi_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "FREE"
+  live_line: "FREE"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A yellow taxi parked at a curb at night, with a lit sign on its roof. The roof sign shows bold black letters. It reads "{text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A yellow taxi parked at a curb at night, with a lit sign on its roof. The roof sign shows bold black letters. It reads "{text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+
+replay_M_lora2_taxi:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: taxi_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "FREE"
+  live_line: "FREE"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A yellow taxi parked at a curb at night, with a lit sign on its roof. The roof sign shows bold black letters. It reads "{text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A yellow taxi parked at a curb at night, with a lit sign on its roof. The roof sign shows bold black letters. It reads "{text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v2/last.pt
+  live_lora_merge: true
+
+mscene_taxi:
+  backend: live
+  lora_weights: data/lora/v2/last.pt
+  live_replay:
+    subdir: mscene_taxi
+    arms: [replay_M_base_taxi, replay_M_lora2_taxi]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "BUSY"], [6, "OFF"], [10, "HIRED"], [14, "FULL"], [18, "CITY"], [22, "TAXI"], [26, "STOP"], [30, "NIGHT"], [34, "CALL"], [38, "HOME"]]
+
+replay_M_base_note:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: sticky_note_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "MOM"
+  live_line: "CALL MOM"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A white fridge door with a yellow sticky note in the middle. The note has bold black marker letters. It reads "CALL {text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A white fridge door with a yellow sticky note in the middle. The note has bold black marker letters. It reads "CALL {text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+
+replay_M_lora2_note:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: sticky_note_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "MOM"
+  live_line: "CALL MOM"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A white fridge door with a yellow sticky note in the middle. The note has bold black marker letters. It reads "CALL {text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A white fridge door with a yellow sticky note in the middle. The note has bold black marker letters. It reads "CALL {text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v2/last.pt
+  live_lora_merge: true
+
+mscene_note:
+  backend: live
+  lora_weights: data/lora/v2/last.pt
+  live_replay:
+    subdir: mscene_note
+    arms: [replay_M_base_note, replay_M_lora2_note]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "DAD"], [6, "ANNA"], [10, "BOB"], [14, "LISA"], [18, "TOM"], [22, "MAX"], [26, "ELLA"], [30, "SAM"], [34, "JOE"], [38, "KIM"]]

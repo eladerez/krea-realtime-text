@@ -1,0 +1,40 @@
+[project]
+name = "realtime-text-bench"
+version = "0.1.0"
+description = "Does text survive real-time, few-step, frame-by-frame video generation?"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "numpy",
+    "pillow",
+    "opencv-python-headless",
+    "imageio[pyav]",
+    "rapidocr-onnxruntime",
+    "rapidfuzz",
+]
+
+[dependency-groups]
+dev = ["pytest"]
+# GPU VM only: the Wan2.1-T2V-14B reference (runner/gen_wan.py). Krea runs in its own environment
+# (third_party/krea-realtime, its uv.lock).
+gen = [
+    "torch==2.9.*",
+    "torchvision==0.24.*",  # Qwen-Image-Edit's processor (step 11)
+    "diffusers==0.35.1",
+    "transformers>=4.51,<5",
+    "accelerate",
+    "sentencepiece",
+    "protobuf",
+    "ftfy",
+    "regex",
+    "pyyaml",
+    "av",
+    "huggingface_hub",
+    "peft==0.17.1",  # step 37: the 8-step Lightning LoRA for Qwen-Image-Edit (runner/edit_server.py)
+]
+
+[tool.uv]
+default-groups = ["dev"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
