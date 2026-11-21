@@ -2954,3 +2954,4660 @@ mscene_note:
     start_seed: 0
     blocks: 42
     script: [[2, "DAD"], [6, "ANNA"], [10, "BOB"], [14, "LISA"], [18, "TOM"], [22, "MAX"], [26, "ELLA"], [30, "SAM"], [34, "JOE"], [38, "KIM"]]
+
+# LIVE.md 17 Nov (Elad: "do all 3 options"; v3): collection on 8 text surfaces (none of the 5 test surfaces), base Krea
+# (it moves when asked; v2 resists zoom), the general writer with automatic ink, the memory-only lock read by OCR,
+# targets by lora_targets.build_text; each surface twice: the camera pushing in and panning right; typed text drawn from
+# number ranges or word lists without the test values
+replay_X_elevator_push:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: elevator_switch
+  start_seed: 1
+  seed: 1
+  live_title: Live Text
+  live_text: "3"
+  live_line: "FLOOR 3"
+  live_align: center
+  live_max_chars: 24
+  live_reset_blocks: 13
+  live_prompt: 'The inside of a steel elevator with a display above the doors. The display shows a bold amber label. It reads "FLOOR {text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_switch_prompt: 'The inside of a steel elevator with a display above the doors. The display shows a bold amber label. It reads "FLOOR {text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_writer: paste
+  live_paste_ink: auto
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_collect:
+    outside: 0.1
+  live_script_digits: [1, 2]
+
+replay_X_elevator_pan:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: elevator_switch
+  start_seed: 1
+  seed: 1
+  live_title: Live Text
+  live_text: "3"
+  live_line: "FLOOR 3"
+  live_align: center
+  live_max_chars: 24
+  live_reset_blocks: 13
+  live_prompt: 'The inside of a steel elevator with a display above the doors. The display shows a bold amber label. It reads "FLOOR {text}". The camera slowly pans to the right. Realistic, natural light, high detail.'
+  live_switch_prompt: 'The inside of a steel elevator with a display above the doors. The display shows a bold amber label. It reads "FLOOR {text}". The camera slowly pans to the right. Realistic, natural light, high detail.'
+  live_writer: paste
+  live_paste_ink: auto
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_collect:
+    outside: 0.1
+  live_script_digits: [1, 2]
+
+replay_X_queue_push:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: queue_switch
+  start_seed: 1
+  seed: 1
+  live_title: Live Text
+  live_text: "37"
+  live_line: "NOW SERVING 37"
+  live_align: center
+  live_max_chars: 24
+  live_reset_blocks: 13
+  live_prompt: 'A pharmacy counter with a sign "PHARMACY" above it and a red display on the wall, people waiting. The display shows a bold red line. It reads "NOW SERVING {text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A pharmacy counter with a sign "PHARMACY" above it and a red display on the wall, people waiting. The display shows a bold red line. It reads "NOW SERVING {text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_writer: paste
+  live_paste_ink: auto
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_collect:
+    outside: 0.1
+  live_script_digits: [2, 3]
+
+replay_X_queue_pan:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: queue_switch
+  start_seed: 1
+  seed: 1
+  live_title: Live Text
+  live_text: "37"
+  live_line: "NOW SERVING 37"
+  live_align: center
+  live_max_chars: 24
+  live_reset_blocks: 13
+  live_prompt: 'A pharmacy counter with a sign "PHARMACY" above it and a red display on the wall, people waiting. The display shows a bold red line. It reads "NOW SERVING {text}". The camera slowly pans to the right. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A pharmacy counter with a sign "PHARMACY" above it and a red display on the wall, people waiting. The display shows a bold red line. It reads "NOW SERVING {text}". The camera slowly pans to the right. Realistic, natural light, high detail.'
+  live_writer: paste
+  live_paste_ink: auto
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_collect:
+    outside: 0.1
+  live_script_digits: [2, 3]
+
+replay_X_tv_push:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: tv_volume_switch
+  start_seed: 1
+  seed: 1
+  live_title: Live Text
+  live_text: "24"
+  live_line: "VOLUME 24"
+  live_align: center
+  live_max_chars: 24
+  live_reset_blocks: 13
+  live_prompt: 'A living room television showing a nature film, with a bar at the bottom of the screen. Above the bar is a bold white label. It reads "VOLUME {text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A living room television showing a nature film, with a bar at the bottom of the screen. Above the bar is a bold white label. It reads "VOLUME {text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_writer: paste
+  live_paste_ink: auto
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_collect:
+    outside: 0.1
+  live_script_digits: [1, 2]
+
+replay_X_tv_pan:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: tv_volume_switch
+  start_seed: 1
+  seed: 1
+  live_title: Live Text
+  live_text: "24"
+  live_line: "VOLUME 24"
+  live_align: center
+  live_max_chars: 24
+  live_reset_blocks: 13
+  live_prompt: 'A living room television showing a nature film, with a bar at the bottom of the screen. Above the bar is a bold white label. It reads "VOLUME {text}". The camera slowly pans to the right. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A living room television showing a nature film, with a bar at the bottom of the screen. Above the bar is a bold white label. It reads "VOLUME {text}". The camera slowly pans to the right. Realistic, natural light, high detail.'
+  live_writer: paste
+  live_paste_ink: auto
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_collect:
+    outside: 0.1
+  live_script_digits: [1, 2]
+
+replay_X_platform_push:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: platform_switch
+  start_seed: 1
+  seed: 1
+  live_title: Live Text
+  live_text: "4"
+  live_line: "PLATFORM 4"
+  live_align: center
+  live_max_chars: 24
+  live_reset_blocks: 13
+  live_prompt: 'A train station hall with a large departures board hanging from the ceiling and people walking below it. The board shows one bold amber line on black. It reads "PLATFORM {text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A train station hall with a large departures board hanging from the ceiling and people walking below it. The board shows one bold amber line on black. It reads "PLATFORM {text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_writer: paste
+  live_paste_ink: auto
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_collect:
+    outside: 0.1
+  live_script_digits: [1, 2]
+
+replay_X_platform_pan:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: platform_switch
+  start_seed: 1
+  seed: 1
+  live_title: Live Text
+  live_text: "4"
+  live_line: "PLATFORM 4"
+  live_align: center
+  live_max_chars: 24
+  live_reset_blocks: 13
+  live_prompt: 'A train station hall with a large departures board hanging from the ceiling and people walking below it. The board shows one bold amber line on black. It reads "PLATFORM {text}". The camera slowly pans to the right. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A train station hall with a large departures board hanging from the ceiling and people walking below it. The board shows one bold amber line on black. It reads "PLATFORM {text}". The camera slowly pans to the right. Realistic, natural light, high detail.'
+  live_writer: paste
+  live_paste_ink: auto
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_collect:
+    outside: 0.1
+  live_script_digits: [1, 2]
+
+replay_X_coffee_push:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: coffee_machine_switch
+  start_seed: 1
+  seed: 1
+  live_title: Live Text
+  live_text: "STRONG"
+  live_line: "STRONG"
+  live_align: center
+  live_max_chars: 24
+  live_reset_blocks: 13
+  live_prompt: 'An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads "{text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_switch_prompt: 'An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads "{text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_writer: paste
+  live_paste_ink: auto
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_collect:
+    outside: 0.1
+  live_script_pool: ["READY", "WAIT", "SOON", "GO", "EMPTY", "MILK", "BREAD", "TEA", "COFFEE", "BLUE", "GREEN", "GOLD", "SILVER", "NORTH", "SOUTH", "EAST", "WEST", "WORK", "PARK", "BEACH", "LAKE", "RIVER", "MOON", "STAR", "SUN", "RAIN", "SNOW", "WIND", "FIRE", "TOYS", "TOOLS", "SHOES", "PLATES", "CUPS", "MUGS", "LAMPS", "DARK", "MILD", "HOT", "COLD", "FAST", "SLOW", "NEW", "OLD", "BIG", "SMALL", "LEFT", "RIGHT", "UP", "DOWN", "FRESH", "SWEET", "SPICY", "LIGHT", "EXTRA", "DOUBLE", "KIDS", "GAMES", "CABLES", "BOOKS", "LINENS", "SPOONS"]
+
+replay_X_coffee_pan:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: coffee_machine_switch
+  start_seed: 1
+  seed: 1
+  live_title: Live Text
+  live_text: "STRONG"
+  live_line: "STRONG"
+  live_align: center
+  live_max_chars: 24
+  live_reset_blocks: 13
+  live_prompt: 'An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads "{text}". The camera slowly pans to the right. Realistic, natural light, high detail.'
+  live_switch_prompt: 'An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads "{text}". The camera slowly pans to the right. Realistic, natural light, high detail.'
+  live_writer: paste
+  live_paste_ink: auto
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_collect:
+    outside: 0.1
+  live_script_pool: ["READY", "WAIT", "SOON", "GO", "EMPTY", "MILK", "BREAD", "TEA", "COFFEE", "BLUE", "GREEN", "GOLD", "SILVER", "NORTH", "SOUTH", "EAST", "WEST", "WORK", "PARK", "BEACH", "LAKE", "RIVER", "MOON", "STAR", "SUN", "RAIN", "SNOW", "WIND", "FIRE", "TOYS", "TOOLS", "SHOES", "PLATES", "CUPS", "MUGS", "LAMPS", "DARK", "MILD", "HOT", "COLD", "FAST", "SLOW", "NEW", "OLD", "BIG", "SMALL", "LEFT", "RIGHT", "UP", "DOWN", "FRESH", "SWEET", "SPICY", "LIGHT", "EXTRA", "DOUBLE", "KIDS", "GAMES", "CABLES", "BOOKS", "LINENS", "SPOONS"]
+
+replay_X_box_push:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: moving_box_switch
+  start_seed: 1
+  seed: 1
+  live_title: Live Text
+  live_text: "BOOKS"
+  live_line: "BOOKS"
+  live_align: center
+  live_max_chars: 24
+  live_reset_blocks: 13
+  live_prompt: 'A cardboard moving box on a wooden floor in an empty room. On its side are large black marker letters. It reads "{text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A cardboard moving box on a wooden floor in an empty room. On its side are large black marker letters. It reads "{text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_writer: paste
+  live_paste_ink: auto
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_collect:
+    outside: 0.1
+  live_script_pool: ["READY", "WAIT", "SOON", "GO", "EMPTY", "MILK", "BREAD", "TEA", "COFFEE", "BLUE", "GREEN", "GOLD", "SILVER", "NORTH", "SOUTH", "EAST", "WEST", "WORK", "PARK", "BEACH", "LAKE", "RIVER", "MOON", "STAR", "SUN", "RAIN", "SNOW", "WIND", "FIRE", "TOYS", "TOOLS", "SHOES", "PLATES", "CUPS", "MUGS", "LAMPS", "DARK", "MILD", "HOT", "COLD", "FAST", "SLOW", "NEW", "OLD", "BIG", "SMALL", "LEFT", "RIGHT", "UP", "DOWN", "FRESH", "SWEET", "SPICY", "LIGHT", "EXTRA", "DOUBLE", "KIDS", "GAMES", "CABLES", "BOOKS", "LINENS", "SPOONS"]
+
+replay_X_box_pan:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: moving_box_switch
+  start_seed: 1
+  seed: 1
+  live_title: Live Text
+  live_text: "BOOKS"
+  live_line: "BOOKS"
+  live_align: center
+  live_max_chars: 24
+  live_reset_blocks: 13
+  live_prompt: 'A cardboard moving box on a wooden floor in an empty room. On its side are large black marker letters. It reads "{text}". The camera slowly pans to the right. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A cardboard moving box on a wooden floor in an empty room. On its side are large black marker letters. It reads "{text}". The camera slowly pans to the right. Realistic, natural light, high detail.'
+  live_writer: paste
+  live_paste_ink: auto
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_collect:
+    outside: 0.1
+  live_script_pool: ["READY", "WAIT", "SOON", "GO", "EMPTY", "MILK", "BREAD", "TEA", "COFFEE", "BLUE", "GREEN", "GOLD", "SILVER", "NORTH", "SOUTH", "EAST", "WEST", "WORK", "PARK", "BEACH", "LAKE", "RIVER", "MOON", "STAR", "SUN", "RAIN", "SNOW", "WIND", "FIRE", "TOYS", "TOOLS", "SHOES", "PLATES", "CUPS", "MUGS", "LAMPS", "DARK", "MILD", "HOT", "COLD", "FAST", "SLOW", "NEW", "OLD", "BIG", "SMALL", "LEFT", "RIGHT", "UP", "DOWN", "FRESH", "SWEET", "SPICY", "LIGHT", "EXTRA", "DOUBLE", "KIDS", "GAMES", "CABLES", "BOOKS", "LINENS", "SPOONS"]
+
+replay_X_board_push:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: whiteboard_switch
+  start_seed: 1
+  seed: 1
+  live_title: Live Text
+  live_text: "RED"
+  live_line: "TEAM RED"
+  live_align: center
+  live_max_chars: 24
+  live_reset_blocks: 13
+  live_prompt: 'A meeting room with a whiteboard on the wall and chairs around a table. Large black marker letters are on the whiteboard. It reads "TEAM {text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A meeting room with a whiteboard on the wall and chairs around a table. Large black marker letters are on the whiteboard. It reads "TEAM {text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_writer: paste
+  live_paste_ink: auto
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_collect:
+    outside: 0.1
+  live_script_pool: ["BLUE", "GREEN", "GOLD", "SILVER", "ORANGE", "PURPLE", "PINK", "BLACK", "WHITE", "YELLOW", "TIGERS", "LIONS", "EAGLES", "SHARKS", "WOLVES", "BEARS"]
+
+replay_X_board_pan:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: whiteboard_switch
+  start_seed: 1
+  seed: 1
+  live_title: Live Text
+  live_text: "RED"
+  live_line: "TEAM RED"
+  live_align: center
+  live_max_chars: 24
+  live_reset_blocks: 13
+  live_prompt: 'A meeting room with a whiteboard on the wall and chairs around a table. Large black marker letters are on the whiteboard. It reads "TEAM {text}". The camera slowly pans to the right. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A meeting room with a whiteboard on the wall and chairs around a table. Large black marker letters are on the whiteboard. It reads "TEAM {text}". The camera slowly pans to the right. Realistic, natural light, high detail.'
+  live_writer: paste
+  live_paste_ink: auto
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_collect:
+    outside: 0.1
+  live_script_pool: ["BLUE", "GREEN", "GOLD", "SILVER", "ORANGE", "PURPLE", "PINK", "BLACK", "WHITE", "YELLOW", "TIGERS", "LIONS", "EAGLES", "SHARKS", "WOLVES", "BEARS"]
+
+replay_X_delivery_push:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: delivery_switch
+  start_seed: 0
+  seed: 1
+  live_title: Live Text
+  live_text: "ORDER PLACED"
+  live_line: "ORDER PLACED"
+  live_align: center
+  live_max_chars: 24
+  live_reset_blocks: 13
+  live_prompt: 'A hand holds a smartphone showing a food delivery app with a map. At the top of the screen is a large bold status line. It reads "{text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A hand holds a smartphone showing a food delivery app with a map. At the top of the screen is a large bold status line. It reads "{text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_writer: paste
+  live_paste_ink: auto
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_collect:
+    outside: 0.1
+  live_script_pool: ["ON THE WAY", "DELIVERED", "PACKED", "SHIPPED", "AT THE DOOR", "PREPARING", "PICKED UP", "OUT FOR DELIVERY", "CONFIRMED", "ARRIVING SOON"]
+
+replay_X_delivery_pan:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: delivery_switch
+  start_seed: 0
+  seed: 1
+  live_title: Live Text
+  live_text: "ORDER PLACED"
+  live_line: "ORDER PLACED"
+  live_align: center
+  live_max_chars: 24
+  live_reset_blocks: 13
+  live_prompt: 'A hand holds a smartphone showing a food delivery app with a map. At the top of the screen is a large bold status line. It reads "{text}". The camera slowly pans to the right. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A hand holds a smartphone showing a food delivery app with a map. At the top of the screen is a large bold status line. It reads "{text}". The camera slowly pans to the right. Realistic, natural light, high detail.'
+  live_writer: paste
+  live_paste_ink: auto
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_collect:
+    outside: 0.1
+  live_script_pool: ["ON THE WAY", "DELIVERED", "PACKED", "SHIPPED", "AT THE DOOR", "PREPARING", "PICKED UP", "OUT FOR DELIVERY", "CONFIRMED", "ARRIVING SOON"]
+
+lora_collect3:
+  backend: live
+  live_replay:
+    subdir: lora_collect3
+    arms: [replay_X_elevator_push, replay_X_elevator_pan, replay_X_queue_push, replay_X_queue_pan, replay_X_tv_push, replay_X_tv_pan, replay_X_platform_push, replay_X_platform_pan, replay_X_coffee_push, replay_X_coffee_pan, replay_X_box_push, replay_X_box_pan, replay_X_board_push, replay_X_board_pan, replay_X_delivery_push, replay_X_delivery_pan]
+    seeds: [41]
+    blocks: 42
+    random_script:
+      rng: 10
+      numbers: 20
+      first: 2
+      every: 2
+      exclude: ["0", "3907", "58", "71246", "902", "4", "66813", "25", "19374", "8051", "640", "7", "15", "128", "3", "61", "204", "9", "33", "480", "52", "238", "199", "312", "87", "150", "264", "45", "301", "120"]
+
+# LIVE.md 17 Nov (v3): train from v2 on rounds 1-3 (round 3 = lora_collect3, drawn 3x), without the t=0 call; then
+# v3 merged on the 5 held-out surfaces (tscene prompts and the push-in prompts) and calculator s0 (base and v2 arms of
+# these exact runs exist: tscene_*, mscene_*, lora_eval_s0, lora_eval_v2_s0)
+lora_v3:
+  backend: loratrain
+  samples: live/textbench-run-20261116-1313/lora_samples,live/textbench-run-20261116-2217/lora_samples,live/textbench-run-20261117-1445/lora_samples
+  out: data/lora/v3
+  lora_weights: data/lora/v2/last.pt
+  args: --steps 1500 --save 250 --max-minutes 100 --sources krea --rank 16 --alpha 16 --lr 1e-4 --layers 0-39 --skip-last --init data/lora/v2/last.pt --repeat 1,1,3 --source-ocr-agree 0,1,0
+  eval: lora_eval_v3_dash,lora_eval_v3_bus,lora_eval_v3_door,lora_eval_v3_taxi,lora_eval_v3_note,lora_eval_v3_mtaxi,lora_eval_v3_mnote,lora_eval_v3_calc
+
+replay_T_lora3_dash:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: dashboard_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "245"
+  live_line: "RANGE 245"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'The inside of an electric car, seen from the driver''s seat, with a wide screen on the dashboard. The screen shows a bold white label. It reads "RANGE {text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'The inside of an electric car, seen from the driver''s seat, with a wide screen on the dashboard. The screen shows a bold white label. It reads "RANGE {text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v3/last.pt
+  live_lora_merge: true
+
+lora_eval_v3_dash:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v3_dash
+    arms: [replay_T_lora3_dash]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "238"], [6, "199"], [10, "312"], [14, "87"], [18, "150"], [22, "264"], [26, "45"], [30, "301"], [34, "120"], [38, "9"]]
+
+replay_T_lora3_bus:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: bus_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "42"
+  live_line: "ROUTE 42"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A city bus waiting at a stop on a sunny street, seen from the front. Above its windscreen is a bright orange display. It reads "ROUTE {text}". The camera slowly pushes in towards it. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A city bus waiting at a stop on a sunny street, seen from the front. Above its windscreen is a bright orange display. It reads "ROUTE {text}". The camera slowly pushes in towards it. Realistic, natural light, high detail.'
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v3/last.pt
+  live_lora_merge: true
+
+lora_eval_v3_bus:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v3_bus
+    arms: [replay_T_lora3_bus]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "7"], [6, "15"], [10, "128"], [14, "3"], [18, "61"], [22, "204"], [26, "9"], [30, "33"], [34, "480"], [38, "52"]]
+
+replay_T_lora3_door:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: door_sign_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "CLOSED"
+  live_line: "CLOSED"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads "{text}". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail.'
+  live_switch_prompt: 'The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads "{text}". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v3/last.pt
+  live_lora_merge: true
+
+lora_eval_v3_door:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v3_door
+    arms: [replay_T_lora3_door]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "OPEN"], [6, "SALE"], [10, "EXIT"], [14, "WELCOME"], [18, "SORRY"], [22, "PUSH"], [26, "FULL"], [30, "HELLO"], [34, "LUNCH"], [38, "BYE"]]
+
+replay_T_lora3_taxi:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: taxi_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "FREE"
+  live_line: "FREE"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A yellow taxi parked at a curb at night, with a lit sign on its roof. The roof sign shows bold black letters. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A yellow taxi parked at a curb at night, with a lit sign on its roof. The roof sign shows bold black letters. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v3/last.pt
+  live_lora_merge: true
+
+lora_eval_v3_taxi:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v3_taxi
+    arms: [replay_T_lora3_taxi]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "BUSY"], [6, "OFF"], [10, "HIRED"], [14, "FULL"], [18, "CITY"], [22, "TAXI"], [26, "STOP"], [30, "NIGHT"], [34, "CALL"], [38, "HOME"]]
+
+replay_T_lora3_note:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: sticky_note_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "MOM"
+  live_line: "CALL MOM"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A white fridge door with a yellow sticky note in the middle. The note has bold black marker letters. It reads "CALL {text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A white fridge door with a yellow sticky note in the middle. The note has bold black marker letters. It reads "CALL {text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v3/last.pt
+  live_lora_merge: true
+
+lora_eval_v3_note:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v3_note
+    arms: [replay_T_lora3_note]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "DAD"], [6, "ANNA"], [10, "BOB"], [14, "LISA"], [18, "TOM"], [22, "MAX"], [26, "ELLA"], [30, "SAM"], [34, "JOE"], [38, "KIM"]]
+
+replay_M_lora3_taxi:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: taxi_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "FREE"
+  live_line: "FREE"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A yellow taxi parked at a curb at night, with a lit sign on its roof. The roof sign shows bold black letters. It reads "{text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A yellow taxi parked at a curb at night, with a lit sign on its roof. The roof sign shows bold black letters. It reads "{text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v3/last.pt
+  live_lora_merge: true
+
+lora_eval_v3_mtaxi:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v3_mtaxi
+    arms: [replay_M_lora3_taxi]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "BUSY"], [6, "OFF"], [10, "HIRED"], [14, "FULL"], [18, "CITY"], [22, "TAXI"], [26, "STOP"], [30, "NIGHT"], [34, "CALL"], [38, "HOME"]]
+
+replay_M_lora3_note:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: sticky_note_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "MOM"
+  live_line: "CALL MOM"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A white fridge door with a yellow sticky note in the middle. The note has bold black marker letters. It reads "CALL {text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A white fridge door with a yellow sticky note in the middle. The note has bold black marker letters. It reads "CALL {text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v3/last.pt
+  live_lora_merge: true
+
+lora_eval_v3_mnote:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v3_mnote
+    arms: [replay_M_lora3_note]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "DAD"], [6, "ANNA"], [10, "BOB"], [14, "LISA"], [18, "TOM"], [22, "MAX"], [26, "ELLA"], [30, "SAM"], [34, "JOE"], [38, "KIM"]]
+
+replay_V_lora3:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  live_writer: lcd
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false   # frames shown as Krea made them; only the memory is corrected
+  live_lora: data/lora/v3/last.pt  # the v2 adapters
+  live_lora_merge: true  # as shipped: merged into the bf16 weights
+
+lora_eval_v3_calc:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v3_calc
+    arms: [replay_V_lora3]
+    seeds: [101, 102, 103]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "3907"], [6, "58"], [10, "71246"], [14, "902"], [18, "4"], [22, "66813"], [26, "25"], [30, "19374"], [34, "8051"], [38, "640"]]
+
+# LIVE.md 17 Nov (Elad: "do all 3 options": the live recording): live typing sessions with the general writer and the
+# better LoRA (door, bus: v4, data/lora/v4/last.pt, LIVE.md 18 Nov 10:45 and Elad's go; taxi stays v2 and is not
+# launched: v4 slides off the taxi sign), one surface per
+# session; the next starts when a stop file in the run's storage is written (the VM launcher's live block). The live server keeps
+# every frame and keypress (runner/live_server.py) for scripts/live_cut.py
+live_text_door:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: door_sign_switch
+  seed: 1
+  live_title: "Krea Realtime 14B + text LoRA. Type a word: the sign changes"
+  port: 8000
+  live_blocks: 400
+  live_text: "CLOSED"
+  live_line: "CLOSED"
+  live_align: center
+  live_max_chars: 7  # LIVE.md 18 Nov: 12 digits shrink to a thin line on this sign
+  live_reset_blocks: 13
+  live_prompt: 'The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads "{text}". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail.'
+  live_switch_prompt: 'The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads "{text}". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+live_text_taxi:
+  backend: live
+  lora_weights: data/lora/v2/last.pt
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: taxi_switch
+  seed: 1
+  live_title: "Krea Realtime 14B + text LoRA. Type a word: the roof light changes"
+  port: 8000
+  live_blocks: 400
+  live_text: "FREE"
+  live_line: "FREE"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A yellow taxi parked at a curb at night, with a lit sign on its roof. The roof sign shows bold black letters. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A yellow taxi parked at a curb at night, with a lit sign on its roof. The roof sign shows bold black letters. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v2/last.pt
+  live_lora_merge: true
+
+live_text_bus:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: bus_switch
+  seed: 1
+  live_title: "Krea Realtime 14B + text LoRA. Type a route number"
+  port: 8000
+  live_blocks: 400
+  live_text: "42"
+  live_line: "ROUTE 42"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A city bus waiting at a stop on a sunny street, seen from the front. Above its windscreen is a bright orange display. It reads "ROUTE {text}". The camera slowly pushes in towards it. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A city bus waiting at a stop on a sunny street, seen from the front. Above its windscreen is a bright orange display. It reads "ROUTE {text}". The camera slowly pushes in towards it. Realistic, natural light, high detail.'
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+# LIVE.md 18 Nov (Elad: "Train v4 first"): v3 learned to pan on every prompt (the LoRA does not read the prompt; half its
+# moving data was pan shots), so the sign drifts out of frame. v4: from v2, rounds 1-2 plus only VM A's push-in samples
+# sourced from Krea with the sign tracked on >= 10 of 12 frames (138 of 160), drawn 2x.
+# Same evaluations as v3 (arms replay_*_lora4_*, live_lora data/lora/v4/last.pt).
+lora_v4:
+  backend: loratrain
+  samples: live/textbench-run-20261116-1313/lora_samples,live/textbench-run-20261116-2217/lora_samples,lora_sets/v4_push
+  out: data/lora/v4
+  lora_weights: data/lora/v2/last.pt
+  args: --steps 1500 --save 250 --max-minutes 100 --sources krea --rank 16 --alpha 16 --lr 1e-4 --layers 0-39 --skip-last --init data/lora/v2/last.pt --repeat 1,1,2 --source-ocr-agree 0,1,0
+  eval: lora_eval_v4_dash,lora_eval_v4_bus,lora_eval_v4_door,lora_eval_v4_taxi,lora_eval_v4_note,lora_eval_v4_mtaxi,lora_eval_v4_mnote,lora_eval_v4_calc
+
+replay_T_lora4_dash:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: dashboard_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "245"
+  live_line: "RANGE 245"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'The inside of an electric car, seen from the driver''s seat, with a wide screen on the dashboard. The screen shows a bold white label. It reads "RANGE {text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'The inside of an electric car, seen from the driver''s seat, with a wide screen on the dashboard. The screen shows a bold white label. It reads "RANGE {text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+lora_eval_v4_dash:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v4_dash
+    arms: [replay_T_lora4_dash]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "238"], [6, "199"], [10, "312"], [14, "87"], [18, "150"], [22, "264"], [26, "45"], [30, "301"], [34, "120"], [38, "9"]]
+
+replay_T_lora4_bus:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: bus_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "42"
+  live_line: "ROUTE 42"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A city bus waiting at a stop on a sunny street, seen from the front. Above its windscreen is a bright orange display. It reads "ROUTE {text}". The camera slowly pushes in towards it. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A city bus waiting at a stop on a sunny street, seen from the front. Above its windscreen is a bright orange display. It reads "ROUTE {text}". The camera slowly pushes in towards it. Realistic, natural light, high detail.'
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+lora_eval_v4_bus:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v4_bus
+    arms: [replay_T_lora4_bus]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "7"], [6, "15"], [10, "128"], [14, "3"], [18, "61"], [22, "204"], [26, "9"], [30, "33"], [34, "480"], [38, "52"]]
+
+replay_T_lora4_door:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: door_sign_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "CLOSED"
+  live_line: "CLOSED"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads "{text}". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail.'
+  live_switch_prompt: 'The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads "{text}". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+lora_eval_v4_door:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v4_door
+    arms: [replay_T_lora4_door]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "OPEN"], [6, "SALE"], [10, "EXIT"], [14, "WELCOME"], [18, "SORRY"], [22, "PUSH"], [26, "FULL"], [30, "HELLO"], [34, "LUNCH"], [38, "BYE"]]
+
+replay_T_lora4_taxi:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: taxi_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "FREE"
+  live_line: "FREE"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A yellow taxi parked at a curb at night, with a lit sign on its roof. The roof sign shows bold black letters. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A yellow taxi parked at a curb at night, with a lit sign on its roof. The roof sign shows bold black letters. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+lora_eval_v4_taxi:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v4_taxi
+    arms: [replay_T_lora4_taxi]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "BUSY"], [6, "OFF"], [10, "HIRED"], [14, "FULL"], [18, "CITY"], [22, "TAXI"], [26, "STOP"], [30, "NIGHT"], [34, "CALL"], [38, "HOME"]]
+
+replay_T_lora4_note:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: sticky_note_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "MOM"
+  live_line: "CALL MOM"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A white fridge door with a yellow sticky note in the middle. The note has bold black marker letters. It reads "CALL {text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A white fridge door with a yellow sticky note in the middle. The note has bold black marker letters. It reads "CALL {text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+lora_eval_v4_note:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v4_note
+    arms: [replay_T_lora4_note]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "DAD"], [6, "ANNA"], [10, "BOB"], [14, "LISA"], [18, "TOM"], [22, "MAX"], [26, "ELLA"], [30, "SAM"], [34, "JOE"], [38, "KIM"]]
+
+replay_M_lora4_taxi:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: taxi_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "FREE"
+  live_line: "FREE"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A yellow taxi parked at a curb at night, with a lit sign on its roof. The roof sign shows bold black letters. It reads "{text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A yellow taxi parked at a curb at night, with a lit sign on its roof. The roof sign shows bold black letters. It reads "{text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+lora_eval_v4_mtaxi:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v4_mtaxi
+    arms: [replay_M_lora4_taxi]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "BUSY"], [6, "OFF"], [10, "HIRED"], [14, "FULL"], [18, "CITY"], [22, "TAXI"], [26, "STOP"], [30, "NIGHT"], [34, "CALL"], [38, "HOME"]]
+
+replay_M_lora4_note:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: sticky_note_switch
+  seed: 1
+  live_title: Live Text
+  live_text: "MOM"
+  live_line: "CALL MOM"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A white fridge door with a yellow sticky note in the middle. The note has bold black marker letters. It reads "CALL {text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A white fridge door with a yellow sticky note in the middle. The note has bold black marker letters. It reads "CALL {text}". The camera slowly pushes in. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+lora_eval_v4_mnote:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v4_mnote
+    arms: [replay_M_lora4_note]
+    seeds: [101, 102]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "DAD"], [6, "ANNA"], [10, "BOB"], [14, "LISA"], [18, "TOM"], [22, "MAX"], [26, "ELLA"], [30, "SAM"], [34, "JOE"], [38, "KIM"]]
+
+replay_V_lora4:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: calculator_switch
+  seed: 1
+  live_title: Live Calculator
+  live_text: "68"
+  live_align: right
+  live_max_chars: 5
+  live_reset_blocks: 13
+  live_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A black calculator on an office desk beside a pen and papers. Its small grey screen shows bold black digits. It reads "{text}". The camera holds a steady shot. Realistic, natural light, high detail.'
+  memory_edit: write
+  write_partial: false
+  track_boxes: true
+  live_blocks: 400
+  live_writer: lcd
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false   # frames shown as Krea made them; only the memory is corrected
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true  # as shipped: merged into the bf16 weights
+
+lora_eval_v4_calc:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v4_calc
+    arms: [replay_V_lora4]
+    seeds: [101, 102, 103]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "3907"], [6, "58"], [10, "71246"], [14, "902"], [18, "4"], [22, "66813"], [26, "25"], [30, "19374"], [34, "8051"], [38, "640"]]
+
+
+# LIVE.md 19 Nov (Elad: "Make a movie with more different scenes. It's important that the camera moves"): 8 more
+# surfaces (writer read-back right on their s0 start image, scripts/paste_check.py), each with a moving-camera prompt,
+# base Krea + writer and v4, one noise seed, 10 typed values. Queue and airport gate write their whole line (the field
+# alone left a stray mark / half a letter); the ATM was dropped (the erase dims the AMOUNT label above).
+# platform, queue, elevator, coffee machine were VM A training surfaces (lora_collect3, replay_X_*_push/pan): not held out.
+# lora_weights on each mscene2 config (code-mscene2-r1 #1): startup.sh fetches it for the lora4 arms; no comment on
+# that line (startup.sh's sed keeps the rest of the line: an inline comment made the 19 Nov 09:05 run skip all 8).
+
+replay_X_base_platform:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: platform_switch
+  seed: 1
+  live_title: "Live Text"
+  live_text: "4"
+  live_line: "PLATFORM 4"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A train station hall with a large departures board hanging from the ceiling and people walking below it. The board shows one bold amber line on black. It reads "PLATFORM {text}". The camera slowly pans to the left along the platform, keeping the sign in frame. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A train station hall with a large departures board hanging from the ceiling and people walking below it. The board shows one bold amber line on black. It reads "PLATFORM {text}". The camera slowly pans to the left along the platform, keeping the sign in frame. Realistic, natural light, high detail.'
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+
+replay_X_lora4_platform:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: platform_switch
+  seed: 1
+  live_title: "Live Text"
+  live_text: "4"
+  live_line: "PLATFORM 4"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A train station hall with a large departures board hanging from the ceiling and people walking below it. The board shows one bold amber line on black. It reads "PLATFORM {text}". The camera slowly pans to the left along the platform, keeping the sign in frame. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A train station hall with a large departures board hanging from the ceiling and people walking below it. The board shows one bold amber line on black. It reads "PLATFORM {text}". The camera slowly pans to the left along the platform, keeping the sign in frame. Realistic, natural light, high detail.'
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  lora_weights: data/lora/v4/last.pt
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+replay_X_base_queue:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: queue_switch
+  seed: 1
+  live_title: "Live Text"
+  live_text: "NOW SERVING 37"
+  live_line: "NOW SERVING 37"
+  live_align: center
+  live_max_chars: 16
+  live_reset_blocks: 13
+  live_prompt: 'A pharmacy counter with a sign "PHARMACY" above it and a red display on the wall, people waiting. The display shows a bold red line. It reads "{text}". The camera slowly pans to the right, keeping the display in frame. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A pharmacy counter with a sign "PHARMACY" above it and a red display on the wall, people waiting. The display shows a bold red line. It reads "{text}". The camera slowly pans to the right, keeping the display in frame. Realistic, natural light, high detail.'
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+
+replay_X_lora4_queue:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: queue_switch
+  seed: 1
+  live_title: "Live Text"
+  live_text: "NOW SERVING 37"
+  live_line: "NOW SERVING 37"
+  live_align: center
+  live_max_chars: 16
+  live_reset_blocks: 13
+  live_prompt: 'A pharmacy counter with a sign "PHARMACY" above it and a red display on the wall, people waiting. The display shows a bold red line. It reads "{text}". The camera slowly pans to the right, keeping the display in frame. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A pharmacy counter with a sign "PHARMACY" above it and a red display on the wall, people waiting. The display shows a bold red line. It reads "{text}". The camera slowly pans to the right, keeping the display in frame. Realistic, natural light, high detail.'
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  lora_weights: data/lora/v4/last.pt
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+replay_X_base_garage:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: garage_switch
+  seed: 1
+  live_title: "Live Text"
+  live_text: "42"
+  live_line: "FREE SPACES 42"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'The entrance of a parking garage with a sign "PARKING" and a green display beside the barrier. The display shows a bold green line. It reads "FREE SPACES {text}". The camera slowly arcs to the left around the barrier, keeping the display in frame. Realistic, natural light, high detail.'
+  live_switch_prompt: 'The entrance of a parking garage with a sign "PARKING" and a green display beside the barrier. The display shows a bold green line. It reads "FREE SPACES {text}". The camera slowly arcs to the left around the barrier, keeping the display in frame. Realistic, natural light, high detail.'
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+
+replay_X_lora4_garage:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: garage_switch
+  seed: 1
+  live_title: "Live Text"
+  live_text: "42"
+  live_line: "FREE SPACES 42"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'The entrance of a parking garage with a sign "PARKING" and a green display beside the barrier. The display shows a bold green line. It reads "FREE SPACES {text}". The camera slowly arcs to the left around the barrier, keeping the display in frame. Realistic, natural light, high detail.'
+  live_switch_prompt: 'The entrance of a parking garage with a sign "PARKING" and a green display beside the barrier. The display shows a bold green line. It reads "FREE SPACES {text}". The camera slowly arcs to the left around the barrier, keeping the display in frame. Realistic, natural light, high detail.'
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  lora_weights: data/lora/v4/last.pt
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+replay_X_base_elevator:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: elevator_switch
+  seed: 1
+  live_title: "Live Text"
+  live_text: "3"
+  live_line: "FLOOR 3"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'The inside of a steel elevator with a display above the doors. The display shows a bold amber label. It reads "FLOOR {text}". The camera slowly pans to the right across the doors, keeping the sign in frame. Realistic, natural light, high detail.'
+  live_switch_prompt: 'The inside of a steel elevator with a display above the doors. The display shows a bold amber label. It reads "FLOOR {text}". The camera slowly pans to the right across the doors, keeping the sign in frame. Realistic, natural light, high detail.'
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+
+replay_X_lora4_elevator:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: elevator_switch
+  seed: 1
+  live_title: "Live Text"
+  live_text: "3"
+  live_line: "FLOOR 3"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'The inside of a steel elevator with a display above the doors. The display shows a bold amber label. It reads "FLOOR {text}". The camera slowly pans to the right across the doors, keeping the sign in frame. Realistic, natural light, high detail.'
+  live_switch_prompt: 'The inside of a steel elevator with a display above the doors. The display shows a bold amber label. It reads "FLOOR {text}". The camera slowly pans to the right across the doors, keeping the sign in frame. Realistic, natural light, high detail.'
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  lora_weights: data/lora/v4/last.pt
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+replay_X_base_gas_pump:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: gas_pump_switch
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$24"
+  live_line: "$24"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word "UNLEADED" above it. It reads "{text}". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word "UNLEADED" above it. It reads "{text}". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail.'
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+
+replay_X_lora4_gas_pump:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: gas_pump_switch
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$24"
+  live_line: "$24"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word "UNLEADED" above it. It reads "{text}". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word "UNLEADED" above it. It reads "{text}". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail.'
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  lora_weights: data/lora/v4/last.pt
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+replay_X_base_price_tag:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: price_tag_switch
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$65"
+  live_line: "$65"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads "{text}". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads "{text}". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+
+replay_X_lora4_price_tag:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: price_tag_switch
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$65"
+  live_line: "$65"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads "{text}". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail.'
+  live_switch_prompt: 'A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads "{text}". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail.'
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  lora_weights: data/lora/v4/last.pt
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+replay_X_base_airport_gate:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: airport_gate_switch
+  seed: 1
+  live_title: "Live Text"
+  live_text: "GATE B6"
+  live_line: "GATE B6"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads "{text}". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail.'
+  live_switch_prompt: 'An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads "{text}". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail.'
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+
+replay_X_lora4_airport_gate:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: airport_gate_switch
+  seed: 1
+  live_title: "Live Text"
+  live_text: "GATE B6"
+  live_line: "GATE B6"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads "{text}". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail.'
+  live_switch_prompt: 'An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads "{text}". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail.'
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  lora_weights: data/lora/v4/last.pt
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+replay_X_base_coffee_machine:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: coffee_machine_switch
+  seed: 1
+  live_title: "Live Text"
+  live_text: "STRONG"
+  live_line: "STRONG"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads "{text}". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail.'
+  live_switch_prompt: 'An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads "{text}". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail.'
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+
+replay_X_lora4_coffee_machine:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: coffee_machine_switch
+  seed: 1
+  live_title: "Live Text"
+  live_text: "STRONG"
+  live_line: "STRONG"
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: 'An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads "{text}". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail.'
+  live_switch_prompt: 'An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads "{text}". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail.'
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  lora_weights: data/lora/v4/last.pt
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+
+
+mscene2_platform:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: mscene2_platform
+    arms: [replay_X_base_platform, replay_X_lora4_platform]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "7"], [6, "12"], [10, "3"], [14, "9"], [18, "1"], [22, "15"], [26, "6"], [30, "11"], [34, "2"], [38, "8"]]
+
+mscene2_queue:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: mscene2_queue
+    arms: [replay_X_base_queue, replay_X_lora4_queue]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "NOW SERVING 38"], [6, "NOW SERVING 39"], [10, "NOW SERVING 40"], [14, "NOW SERVING 41"], [18, "NOW SERVING 42"], [22, "NOW SERVING 43"], [26, "NOW SERVING 44"], [30, "NOW SERVING 45"], [34, "NOW SERVING 46"], [38, "NOW SERVING 47"]]
+
+mscene2_garage:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: mscene2_garage
+    arms: [replay_X_base_garage, replay_X_lora4_garage]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "41"], [6, "40"], [10, "39"], [14, "38"], [18, "37"], [22, "36"], [26, "35"], [30, "34"], [34, "33"], [38, "32"]]
+
+mscene2_elevator:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: mscene2_elevator
+    arms: [replay_X_base_elevator, replay_X_lora4_elevator]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "4"], [6, "5"], [10, "6"], [14, "7"], [18, "8"], [22, "9"], [26, "10"], [30, "11"], [34, "12"], [38, "14"]]
+
+mscene2_gas_pump:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: mscene2_gas_pump
+    arms: [replay_X_base_gas_pump, replay_X_lora4_gas_pump]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "$26"], [6, "$29"], [10, "$31"], [14, "$34"], [18, "$37"], [22, "$40"], [26, "$43"], [30, "$46"], [34, "$49"], [38, "$52"]]
+
+mscene2_price_tag:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: mscene2_price_tag
+    arms: [replay_X_base_price_tag, replay_X_lora4_price_tag]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "$59"], [6, "$49"], [10, "$45"], [14, "$39"], [18, "$35"], [22, "$29"], [26, "$25"], [30, "$19"], [34, "$15"], [38, "$9"]]
+
+mscene2_airport_gate:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: mscene2_airport_gate
+    arms: [replay_X_base_airport_gate, replay_X_lora4_airport_gate]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "GATE B9"], [6, "GATE C12"], [10, "GATE A3"], [14, "GATE D7"], [18, "GATE B14"], [22, "GATE C2"], [26, "GATE A10"], [30, "GATE D5"], [34, "GATE B1"], [38, "GATE C8"]]
+
+mscene2_coffee_machine:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: mscene2_coffee_machine
+    arms: [replay_X_base_coffee_machine, replay_X_lora4_coffee_machine]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "MILD"], [6, "DOUBLE"], [10, "LATTE"], [14, "DECAF"], [18, "MOCHA"], [22, "LUNGO"], [26, "HOT"], [30, "ICED"], [34, "STRONG"], [38, "CREMA"]]
+
+
+# LIVE.md 19 Nov (Elad: "Do a, b and c"): make the typed text look part of the scene. Option A (guide): nothing pasted
+# into memory; the text region steered towards the paste in the first denoising passes and hidden from attention in
+# memory, the last pass drawn by Krea (runner/gen_krea.py guide_text). Option B (restyle): klein restyles the pasted
+# region once per write, kept if OCR reads it (textbench/sign_restyle.py), then v4 holds it. Same start images, seeds
+# and typed scripts as the paste clips they are compared with (P: lora_eval_v4_door s101, mscene2_* s101).
+# Option C (teacher): training samples whose target is the same block made from a klein-restyled memory (same noise),
+# collected on 7 other scenes with v4 (abc_collect), for a v5 LoRA trained from v4.
+
+replay_G_lora4_door:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "door_sign_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "CLOSED"
+  live_line: "CLOSED"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "guide"
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+
+replay_R_lora4_door:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "door_sign_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "CLOSED"
+  live_line: "CLOSED"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  editor: "flux2_klein"
+  live_restyle: true
+  live_restyle_seeds: [0, 1]
+
+replay_G_lora4_gas_pump:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "gas_pump_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$24"
+  live_line: "$24"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  lora_weights: "data/lora/v4/last.pt"
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "guide"
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+
+replay_R_lora4_gas_pump:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "gas_pump_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$24"
+  live_line: "$24"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  lora_weights: "data/lora/v4/last.pt"
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  editor: "flux2_klein"
+  live_restyle: true
+  live_restyle_seeds: [0, 1]
+
+replay_G_lora4_price_tag:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "price_tag_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$65"
+  live_line: "$65"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  lora_weights: "data/lora/v4/last.pt"
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "guide"
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+
+replay_R_lora4_price_tag:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "price_tag_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$65"
+  live_line: "$65"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  lora_weights: "data/lora/v4/last.pt"
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  editor: "flux2_klein"
+  live_restyle: true
+  live_restyle_seeds: [0, 1]
+
+replay_G_lora4_airport_gate:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_fresh"
+  start_id: "airport_gate_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "GATE B6"
+  live_line: "GATE B6"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  lora_weights: "data/lora/v4/last.pt"
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "guide"
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+
+replay_R_lora4_airport_gate:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_fresh"
+  start_id: "airport_gate_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "GATE B6"
+  live_line: "GATE B6"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  lora_weights: "data/lora/v4/last.pt"
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  editor: "flux2_klein"
+  live_restyle: true
+  live_restyle_seeds: [0, 1]
+
+replay_G_lora4_coffee_machine:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "coffee_machine_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "STRONG"
+  live_line: "STRONG"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  lora_weights: "data/lora/v4/last.pt"
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "guide"
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+
+replay_R_lora4_coffee_machine:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "coffee_machine_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "STRONG"
+  live_line: "STRONG"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  lora_weights: "data/lora/v4/last.pt"
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  editor: "flux2_klein"
+  live_restyle: true
+  live_restyle_seeds: [0, 1]
+
+abc_eval_door:
+  backend: live
+  editor: flux2_klein
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: abc_eval_door
+    arms: [replay_G_lora4_door, replay_R_lora4_door]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "OPEN"], [6, "SALE"], [10, "EXIT"], [14, "WELCOME"], [18, "SORRY"], [22, "PUSH"], [26, "FULL"], [30, "HELLO"], [34, "LUNCH"], [38, "BYE"]]
+
+abc_eval_gas_pump:
+  backend: live
+  editor: flux2_klein
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: abc_eval_gas_pump
+    arms: [replay_G_lora4_gas_pump, replay_R_lora4_gas_pump]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "$26"], [6, "$29"], [10, "$31"], [14, "$34"], [18, "$37"], [22, "$40"], [26, "$43"], [30, "$46"], [34, "$49"], [38, "$52"]]
+
+abc_eval_price_tag:
+  backend: live
+  editor: flux2_klein
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: abc_eval_price_tag
+    arms: [replay_G_lora4_price_tag, replay_R_lora4_price_tag]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "$59"], [6, "$49"], [10, "$45"], [14, "$39"], [18, "$35"], [22, "$29"], [26, "$25"], [30, "$19"], [34, "$15"], [38, "$9"]]
+
+abc_eval_airport_gate:
+  backend: live
+  editor: flux2_klein
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: abc_eval_airport_gate
+    arms: [replay_G_lora4_airport_gate, replay_R_lora4_airport_gate]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "GATE B9"], [6, "GATE C12"], [10, "GATE A3"], [14, "GATE D7"], [18, "GATE B14"], [22, "GATE C2"], [26, "GATE A10"], [30, "GATE D5"], [34, "GATE B1"], [38, "GATE C8"]]
+
+abc_eval_coffee_machine:
+  backend: live
+  editor: flux2_klein
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: abc_eval_coffee_machine
+    arms: [replay_G_lora4_coffee_machine, replay_R_lora4_coffee_machine]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "MILD"], [6, "DOUBLE"], [10, "LATTE"], [14, "DECAF"], [18, "MOCHA"], [22, "LUNGO"], [26, "HOT"], [30, "ICED"], [34, "STRONG"], [38, "CREMA"]]
+
+replay_C_lora4_bus:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_fresh"
+  start_id: "bus_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "42"
+  live_line: "ROUTE 42"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A city bus waiting at a stop on a sunny street, seen from the front. Above its windscreen is a bright orange display. It reads \"ROUTE {text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A city bus waiting at a stop on a sunny street, seen from the front. Above its windscreen is a bright orange display. It reads \"ROUTE {text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  editor: "flux2_klein"
+  live_restyle_seeds: [0, 1]
+  live_collect:
+    outside: 0.1
+    teacher: true
+  live_script_digits: [1, 3]
+
+replay_C_lora4_taxi:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_fresh"
+  start_id: "taxi_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "FREE"
+  live_line: "FREE"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A yellow taxi parked at a curb at night, with a lit sign on its roof. The roof sign shows bold black letters. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A yellow taxi parked at a curb at night, with a lit sign on its roof. The roof sign shows bold black letters. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  editor: "flux2_klein"
+  live_restyle_seeds: [0, 1]
+  live_collect:
+    outside: 0.1
+    teacher: true
+  live_script_pool: ["BUSY", "OFF", "HIRED", "FULL", "CITY", "TAXI", "STOP", "NIGHT", "CALL", "HOME", "FREE", "PARK", "JFK", "AIRPORT", "DOWNTOWN"]
+
+replay_C_lora4_note:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_fresh"
+  start_id: "sticky_note_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "MOM"
+  live_line: "CALL MOM"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A white fridge door with a yellow sticky note in the middle. The note has bold black marker letters. It reads \"CALL {text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A white fridge door with a yellow sticky note in the middle. The note has bold black marker letters. It reads \"CALL {text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  editor: "flux2_klein"
+  live_restyle_seeds: [0, 1]
+  live_collect:
+    outside: 0.1
+    teacher: true
+  live_script_pool: ["DAD", "ANNA", "BOB", "LISA", "TOM", "MIA", "ZOE", "MAX", "LEO", "NOAH", "EMMA", "OMER", "DANA", "YAEL", "GIL"]
+
+replay_C_lora4_dash:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "dashboard_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "245"
+  live_line: "RANGE 245"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "The inside of an electric car, seen from the driver's seat, with a wide screen on the dashboard. The screen shows a bold white label. It reads \"RANGE {text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "The inside of an electric car, seen from the driver's seat, with a wide screen on the dashboard. The screen shows a bold white label. It reads \"RANGE {text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  editor: "flux2_klein"
+  live_restyle_seeds: [0, 1]
+  live_collect:
+    outside: 0.1
+    teacher: true
+  live_script_digits: [1, 3]
+
+replay_C_lora4_garage:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_fresh"
+  start_id: "garage_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "42"
+  live_line: "FREE SPACES 42"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "The entrance of a parking garage with a sign \"PARKING\" and a green display beside the barrier. The display shows a bold green line. It reads \"FREE SPACES {text}\". The camera slowly arcs to the left around the barrier, keeping the display in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "The entrance of a parking garage with a sign \"PARKING\" and a green display beside the barrier. The display shows a bold green line. It reads \"FREE SPACES {text}\". The camera slowly arcs to the left around the barrier, keeping the display in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  lora_weights: "data/lora/v4/last.pt"
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  editor: "flux2_klein"
+  live_restyle_seeds: [0, 1]
+  live_collect:
+    outside: 0.1
+    teacher: true
+  live_script_digits: [1, 3]
+
+replay_C_lora4_queue:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_fresh"
+  start_id: "queue_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "NOW SERVING 37"
+  live_line: "NOW SERVING 37"
+  live_align: "center"
+  live_max_chars: 16
+  live_reset_blocks: 13
+  live_prompt: "A pharmacy counter with a sign \"PHARMACY\" above it and a red display on the wall, people waiting. The display shows a bold red line. It reads \"{text}\". The camera slowly pans to the right, keeping the display in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A pharmacy counter with a sign \"PHARMACY\" above it and a red display on the wall, people waiting. The display shows a bold red line. It reads \"{text}\". The camera slowly pans to the right, keeping the display in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  lora_weights: "data/lora/v4/last.pt"
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  editor: "flux2_klein"
+  live_restyle_seeds: [0, 1]
+  live_collect:
+    outside: 0.1
+    teacher: true
+  live_script_pool: ["NOW SERVING 12", "NOW SERVING 19", "NOW SERVING 23", "NOW SERVING 28", "NOW SERVING 31", "NOW SERVING 44", "NOW SERVING 46", "NOW SERVING 51", "NOW SERVING 53", "NOW SERVING 58", "NOW SERVING 62", "NOW SERVING 67", "NOW SERVING 71", "NOW SERVING 75", "NOW SERVING 83"]
+
+replay_C_lora4_platform:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "platform_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "4"
+  live_line: "PLATFORM 4"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A train station hall with a large departures board hanging from the ceiling and people walking below it. The board shows one bold amber line on black. It reads \"PLATFORM {text}\". The camera slowly pans to the left along the platform, keeping the sign in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A train station hall with a large departures board hanging from the ceiling and people walking below it. The board shows one bold amber line on black. It reads \"PLATFORM {text}\". The camera slowly pans to the left along the platform, keeping the sign in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  lora_weights: "data/lora/v4/last.pt"
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  editor: "flux2_klein"
+  live_restyle_seeds: [0, 1]
+  live_collect:
+    outside: 0.1
+    teacher: true
+  live_script_digits: [1, 3]
+
+abc_collect:
+  backend: live
+  editor: flux2_klein
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: abc_collect
+    start_seed: 0
+    arms: ["replay_C_lora4_bus", "replay_C_lora4_taxi", "replay_C_lora4_note", "replay_C_lora4_dash", "replay_C_lora4_garage", "replay_C_lora4_queue", "replay_C_lora4_platform"]
+    seeds: [51, 52]
+    blocks: 42
+    random_script:
+      rng: 19
+      numbers: 20
+      first: 2
+      every: 2
+      exclude: ["$15", "$19", "$25", "$26", "$29", "$31", "$34", "$35", "$37", "$39", "$40", "$43", "$45", "$46", "$49", "$52", "$59", "$9", "BYE", "CREMA", "DECAF", "DOUBLE", "EXIT", "FULL", "GATE A10", "GATE A3", "GATE B1", "GATE B14", "GATE B9", "GATE C12", "GATE C2", "GATE C8", "GATE D5", "GATE D7", "HELLO", "HOT", "ICED", "LATTE", "LUNCH", "LUNGO", "MILD", "MOCHA", "OPEN", "PUSH", "SALE", "SORRY", "STRONG", "WELCOME"]
+
+# LIVE.md 19 Nov (option C): v5 = v4 + the teacher samples (abc_collect, textbench-run-20261119-1955; target: the block made
+# from a klein-restyled memory) and v4's push samples (keep the motion); evaluated with the plain paste writer on the 5
+# A/B scenes (same seed, start and scripts as P = lora_eval_v4_door / mscene2_*), so v5's look is compared at full speed.
+lora_v5:
+  backend: loratrain
+  samples: live/textbench-run-20261119-1955/lora_samples,lora_sets/v4_push
+  out: data/lora/v5
+  lora_weights: data/lora/v4/last.pt
+  args: --steps 1500 --save 250 --max-minutes 100 --sources teacher,krea --rank 16 --alpha 16 --lr 1e-4 --layers 0-39 --skip-last --init data/lora/v4/last.pt --repeat 2,1 --source-ocr-agree 0,0
+  eval: lora_eval_v5_door,lora_eval_v5_gas_pump,lora_eval_v5_price_tag,lora_eval_v5_airport_gate,lora_eval_v5_coffee_machine
+
+replay_P_lora5_door:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "door_sign_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "CLOSED"
+  live_line: "CLOSED"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v5/last.pt"
+  live_lora_merge: true
+
+replay_P_lora5_gas_pump:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "gas_pump_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$24"
+  live_line: "$24"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v5/last.pt"
+  live_lora_merge: true
+
+replay_P_lora5_price_tag:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "price_tag_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$65"
+  live_line: "$65"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v5/last.pt"
+  live_lora_merge: true
+
+replay_P_lora5_airport_gate:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_fresh"
+  start_id: "airport_gate_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "GATE B6"
+  live_line: "GATE B6"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v5/last.pt"
+  live_lora_merge: true
+
+replay_P_lora5_coffee_machine:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "coffee_machine_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "STRONG"
+  live_line: "STRONG"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: true
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v5/last.pt"
+  live_lora_merge: true
+
+lora_eval_v5_door:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v5_door
+    arms: [replay_P_lora5_door, replay_GF_lora4_door, replay_GF_lora5_door]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "OPEN"], [6, "SALE"], [10, "EXIT"], [14, "WELCOME"], [18, "SORRY"], [22, "PUSH"], [26, "FULL"], [30, "HELLO"], [34, "LUNCH"], [38, "BYE"]]
+
+lora_eval_v5_gas_pump:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v5_gas_pump
+    arms: [replay_P_lora5_gas_pump, replay_GF_lora4_gas_pump, replay_GF_lora5_gas_pump]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "$26"], [6, "$29"], [10, "$31"], [14, "$34"], [18, "$37"], [22, "$40"], [26, "$43"], [30, "$46"], [34, "$49"], [38, "$52"]]
+
+lora_eval_v5_price_tag:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v5_price_tag
+    arms: [replay_P_lora5_price_tag, replay_GF_lora4_price_tag, replay_GF_lora5_price_tag]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "$59"], [6, "$49"], [10, "$45"], [14, "$39"], [18, "$35"], [22, "$29"], [26, "$25"], [30, "$19"], [34, "$15"], [38, "$9"]]
+
+lora_eval_v5_airport_gate:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v5_airport_gate
+    arms: [replay_P_lora5_airport_gate, replay_GF_lora4_airport_gate, replay_GF_lora5_airport_gate]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "GATE B9"], [6, "GATE C12"], [10, "GATE A3"], [14, "GATE D7"], [18, "GATE B14"], [22, "GATE C2"], [26, "GATE A10"], [30, "GATE D5"], [34, "GATE B1"], [38, "GATE C8"]]
+
+lora_eval_v5_coffee_machine:
+  backend: live
+  live_replay:
+    subdir: lora_eval_v5_coffee_machine
+    arms: [replay_P_lora5_coffee_machine, replay_GF_lora4_coffee_machine, replay_GF_lora5_coffee_machine]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "MILD"], [6, "DOUBLE"], [10, "LATTE"], [14, "DECAF"], [18, "MOCHA"], [22, "LUNGO"], [26, "HOT"], [30, "ICED"], [34, "STRONG"], [38, "CREMA"]]
+
+# LIVE.md 19 Nov (Elad: "yes" to A with a moving target): A, follow: the guide target written again at the sign's
+# tracked place before every guided block, over a tighter region (live_guide_grow 0.2); with v4 (GF4) and with v5 (GF5).
+
+replay_GF_lora4_door:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "door_sign_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "CLOSED"
+  live_line: "CLOSED"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "guide"
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_guide_grow: 0.2
+
+replay_GF_lora5_door:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "door_sign_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "CLOSED"
+  live_line: "CLOSED"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v5/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "guide"
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_guide_grow: 0.2
+
+replay_GF_lora4_gas_pump:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "gas_pump_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$24"
+  live_line: "$24"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "guide"
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_guide_grow: 0.2
+
+replay_GF_lora5_gas_pump:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "gas_pump_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$24"
+  live_line: "$24"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v5/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "guide"
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_guide_grow: 0.2
+
+replay_GF_lora4_price_tag:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "price_tag_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$65"
+  live_line: "$65"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "guide"
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_guide_grow: 0.2
+
+replay_GF_lora5_price_tag:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "price_tag_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$65"
+  live_line: "$65"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v5/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "guide"
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_guide_grow: 0.2
+
+replay_GF_lora4_airport_gate:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_fresh"
+  start_id: "airport_gate_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "GATE B6"
+  live_line: "GATE B6"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "guide"
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_guide_grow: 0.2
+
+replay_GF_lora5_airport_gate:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_fresh"
+  start_id: "airport_gate_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "GATE B6"
+  live_line: "GATE B6"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v5/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "guide"
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_guide_grow: 0.2
+
+replay_GF_lora4_coffee_machine:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "coffee_machine_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "STRONG"
+  live_line: "STRONG"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "guide"
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_guide_grow: 0.2
+
+replay_GF_lora5_coffee_machine:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "coffee_machine_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "STRONG"
+  live_line: "STRONG"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v5/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "guide"
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_guide_grow: 0.2
+
+# LIVE.md 20 Nov (Elad: "Go" on option 2): A-follow on v4 only (GF4), the 5 held-out scenes, same scripts and seed as
+# abc_eval, so it compares with paste (P), A (G) and B (R) from textbench-run-20261119-1955.
+gf4_eval_door:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: gf4_eval_door
+    arms: [replay_GF_lora4_door]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "OPEN"], [6, "SALE"], [10, "EXIT"], [14, "WELCOME"], [18, "SORRY"], [22, "PUSH"], [26, "FULL"], [30, "HELLO"], [34, "LUNCH"], [38, "BYE"]]
+
+gf4_eval_gas_pump:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: gf4_eval_gas_pump
+    arms: [replay_GF_lora4_gas_pump]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "$26"], [6, "$29"], [10, "$31"], [14, "$34"], [18, "$37"], [22, "$40"], [26, "$43"], [30, "$46"], [34, "$49"], [38, "$52"]]
+
+gf4_eval_price_tag:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: gf4_eval_price_tag
+    arms: [replay_GF_lora4_price_tag]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "$59"], [6, "$49"], [10, "$45"], [14, "$39"], [18, "$35"], [22, "$29"], [26, "$25"], [30, "$19"], [34, "$15"], [38, "$9"]]
+
+gf4_eval_airport_gate:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: gf4_eval_airport_gate
+    arms: [replay_GF_lora4_airport_gate]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "GATE B9"], [6, "GATE C12"], [10, "GATE A3"], [14, "GATE D7"], [18, "GATE B14"], [22, "GATE C2"], [26, "GATE A10"], [30, "GATE D5"], [34, "GATE B1"], [38, "GATE C8"]]
+
+gf4_eval_coffee_machine:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: gf4_eval_coffee_machine
+    arms: [replay_GF_lora4_coffee_machine]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "MILD"], [6, "DOUBLE"], [10, "LATTE"], [14, "DECAF"], [18, "MOCHA"], [22, "LUNGO"], [26, "HOT"], [30, "ICED"], [34, "STRONG"], [38, "CREMA"]]
+
+
+# LIVE.md 20 Nov (Elad: "Yes" to the fix test; research/prompt_change/SUMMARY.md): the three no-training fixes on v4,
+# copied from replay_GF_lora4_<scene> with only live_paste_mode and its keys changed. E1/E2: paste for the first 1/2
+# denoising steps (fix 1). X0/X3/X6: prompt switch + old text masked per frame + attention boost c=0 (measure only),
+# 3, 6 on the new text tokens in the sign region (fix 2). AF: A-flow (fix 3). Same scripts and seed as abc_eval.
+
+replay_E1_lora4_door:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "door_sign_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "CLOSED"
+  live_line: "CLOSED"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "early"
+  live_guide_grow: 0.2
+  live_early_steps: 1
+  live_guide_fallback: 2
+
+replay_E2_lora4_door:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "door_sign_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "CLOSED"
+  live_line: "CLOSED"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "early"
+  live_guide_grow: 0.2
+  live_early_steps: 2
+  live_guide_fallback: 2
+
+replay_X0_lora4_door:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "door_sign_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "CLOSED"
+  live_line: "CLOSED"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "xattn"
+  live_guide_grow: 0.2
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_xattn_c: 0
+  live_xattn_measure: true
+  live_xattn_layers: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  live_xattn_nsteps: 2
+  live_xattn_pad: 2
+
+replay_X3_lora4_door:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "door_sign_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "CLOSED"
+  live_line: "CLOSED"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "xattn"
+  live_guide_grow: 0.2
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_xattn_c: 3
+  live_xattn_measure: true
+  live_xattn_layers: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  live_xattn_nsteps: 2
+  live_xattn_pad: 2
+
+replay_X6_lora4_door:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "door_sign_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "CLOSED"
+  live_line: "CLOSED"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "xattn"
+  live_guide_grow: 0.2
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_xattn_c: 6
+  live_xattn_measure: true
+  live_xattn_layers: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  live_xattn_nsteps: 2
+  live_xattn_pad: 2
+
+replay_AF_lora4_door:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "door_sign_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "CLOSED"
+  live_line: "CLOSED"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "flow"
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_guide_grow: 0.2
+  live_flow_fade: [1.0, 0.5]
+
+replay_E1_lora4_gas_pump:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "gas_pump_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$24"
+  live_line: "$24"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "early"
+  live_guide_grow: 0.2
+  live_early_steps: 1
+  live_guide_fallback: 2
+
+replay_E2_lora4_gas_pump:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "gas_pump_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$24"
+  live_line: "$24"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "early"
+  live_guide_grow: 0.2
+  live_early_steps: 2
+  live_guide_fallback: 2
+
+replay_X0_lora4_gas_pump:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "gas_pump_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$24"
+  live_line: "$24"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "xattn"
+  live_guide_grow: 0.2
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_xattn_c: 0
+  live_xattn_measure: true
+  live_xattn_layers: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  live_xattn_nsteps: 2
+  live_xattn_pad: 2
+
+replay_X3_lora4_gas_pump:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "gas_pump_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$24"
+  live_line: "$24"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "xattn"
+  live_guide_grow: 0.2
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_xattn_c: 3
+  live_xattn_measure: true
+  live_xattn_layers: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  live_xattn_nsteps: 2
+  live_xattn_pad: 2
+
+replay_X6_lora4_gas_pump:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "gas_pump_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$24"
+  live_line: "$24"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "xattn"
+  live_guide_grow: 0.2
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_xattn_c: 6
+  live_xattn_measure: true
+  live_xattn_layers: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  live_xattn_nsteps: 2
+  live_xattn_pad: 2
+
+replay_AF_lora4_gas_pump:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "gas_pump_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$24"
+  live_line: "$24"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "flow"
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_guide_grow: 0.2
+  live_flow_fade: [1.0, 0.5]
+
+replay_E1_lora4_price_tag:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "price_tag_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$65"
+  live_line: "$65"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "early"
+  live_guide_grow: 0.2
+  live_early_steps: 1
+  live_guide_fallback: 2
+
+replay_E2_lora4_price_tag:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "price_tag_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$65"
+  live_line: "$65"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "early"
+  live_guide_grow: 0.2
+  live_early_steps: 2
+  live_guide_fallback: 2
+
+replay_X0_lora4_price_tag:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "price_tag_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$65"
+  live_line: "$65"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "xattn"
+  live_guide_grow: 0.2
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_xattn_c: 0
+  live_xattn_measure: true
+  live_xattn_layers: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  live_xattn_nsteps: 2
+  live_xattn_pad: 2
+
+replay_X3_lora4_price_tag:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "price_tag_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$65"
+  live_line: "$65"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "xattn"
+  live_guide_grow: 0.2
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_xattn_c: 3
+  live_xattn_measure: true
+  live_xattn_layers: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  live_xattn_nsteps: 2
+  live_xattn_pad: 2
+
+replay_X6_lora4_price_tag:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "price_tag_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$65"
+  live_line: "$65"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "xattn"
+  live_guide_grow: 0.2
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_xattn_c: 6
+  live_xattn_measure: true
+  live_xattn_layers: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  live_xattn_nsteps: 2
+  live_xattn_pad: 2
+
+replay_AF_lora4_price_tag:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "price_tag_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$65"
+  live_line: "$65"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "flow"
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_guide_grow: 0.2
+  live_flow_fade: [1.0, 0.5]
+
+replay_E1_lora4_airport_gate:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_fresh"
+  start_id: "airport_gate_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "GATE B6"
+  live_line: "GATE B6"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "early"
+  live_guide_grow: 0.2
+  live_early_steps: 1
+  live_guide_fallback: 2
+
+replay_E2_lora4_airport_gate:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_fresh"
+  start_id: "airport_gate_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "GATE B6"
+  live_line: "GATE B6"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "early"
+  live_guide_grow: 0.2
+  live_early_steps: 2
+  live_guide_fallback: 2
+
+replay_X0_lora4_airport_gate:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_fresh"
+  start_id: "airport_gate_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "GATE B6"
+  live_line: "GATE B6"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "xattn"
+  live_guide_grow: 0.2
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_xattn_c: 0
+  live_xattn_measure: true
+  live_xattn_layers: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  live_xattn_nsteps: 2
+  live_xattn_pad: 2
+
+replay_X3_lora4_airport_gate:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_fresh"
+  start_id: "airport_gate_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "GATE B6"
+  live_line: "GATE B6"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "xattn"
+  live_guide_grow: 0.2
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_xattn_c: 3
+  live_xattn_measure: true
+  live_xattn_layers: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  live_xattn_nsteps: 2
+  live_xattn_pad: 2
+
+replay_X6_lora4_airport_gate:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_fresh"
+  start_id: "airport_gate_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "GATE B6"
+  live_line: "GATE B6"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "xattn"
+  live_guide_grow: 0.2
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_xattn_c: 6
+  live_xattn_measure: true
+  live_xattn_layers: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  live_xattn_nsteps: 2
+  live_xattn_pad: 2
+
+replay_AF_lora4_airport_gate:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_fresh"
+  start_id: "airport_gate_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "GATE B6"
+  live_line: "GATE B6"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "flow"
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_guide_grow: 0.2
+  live_flow_fade: [1.0, 0.5]
+
+replay_E1_lora4_coffee_machine:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "coffee_machine_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "STRONG"
+  live_line: "STRONG"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "early"
+  live_guide_grow: 0.2
+  live_early_steps: 1
+  live_guide_fallback: 2
+
+replay_E2_lora4_coffee_machine:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "coffee_machine_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "STRONG"
+  live_line: "STRONG"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "early"
+  live_guide_grow: 0.2
+  live_early_steps: 2
+  live_guide_fallback: 2
+
+replay_X0_lora4_coffee_machine:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "coffee_machine_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "STRONG"
+  live_line: "STRONG"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "xattn"
+  live_guide_grow: 0.2
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_xattn_c: 0
+  live_xattn_measure: true
+  live_xattn_layers: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  live_xattn_nsteps: 2
+  live_xattn_pad: 2
+
+replay_X3_lora4_coffee_machine:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "coffee_machine_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "STRONG"
+  live_line: "STRONG"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "xattn"
+  live_guide_grow: 0.2
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_xattn_c: 3
+  live_xattn_measure: true
+  live_xattn_layers: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  live_xattn_nsteps: 2
+  live_xattn_pad: 2
+
+replay_X6_lora4_coffee_machine:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "coffee_machine_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "STRONG"
+  live_line: "STRONG"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "xattn"
+  live_guide_grow: 0.2
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_xattn_c: 6
+  live_xattn_measure: true
+  live_xattn_layers: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  live_xattn_nsteps: 2
+  live_xattn_pad: 2
+
+replay_AF_lora4_coffee_machine:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "coffee_machine_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "STRONG"
+  live_line: "STRONG"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "flow"
+  live_guide_blocks: 2
+  live_guide_fallback: 2
+  live_guide_follow: true
+  live_guide_grow: 0.2
+  live_flow_fade: [1.0, 0.5]
+
+fix3_eval_door:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: fix3_eval_door
+    arms: [replay_E1_lora4_door, replay_E2_lora4_door, replay_X0_lora4_door, replay_X3_lora4_door, replay_X6_lora4_door, replay_AF_lora4_door]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "OPEN"], [6, "SALE"], [10, "EXIT"], [14, "WELCOME"], [18, "SORRY"], [22, "PUSH"], [26, "FULL"], [30, "HELLO"], [34, "LUNCH"], [38, "BYE"]]
+
+fix3_eval_gas_pump:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: fix3_eval_gas_pump
+    arms: [replay_E1_lora4_gas_pump, replay_E2_lora4_gas_pump, replay_X0_lora4_gas_pump, replay_X3_lora4_gas_pump, replay_X6_lora4_gas_pump, replay_AF_lora4_gas_pump]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "$26"], [6, "$29"], [10, "$31"], [14, "$34"], [18, "$37"], [22, "$40"], [26, "$43"], [30, "$46"], [34, "$49"], [38, "$52"]]
+
+fix3_eval_price_tag:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: fix3_eval_price_tag
+    arms: [replay_E1_lora4_price_tag, replay_E2_lora4_price_tag, replay_X0_lora4_price_tag, replay_X3_lora4_price_tag, replay_X6_lora4_price_tag, replay_AF_lora4_price_tag]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "$59"], [6, "$49"], [10, "$45"], [14, "$39"], [18, "$35"], [22, "$29"], [26, "$25"], [30, "$19"], [34, "$15"], [38, "$9"]]
+
+fix3_eval_airport_gate:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: fix3_eval_airport_gate
+    arms: [replay_E1_lora4_airport_gate, replay_E2_lora4_airport_gate, replay_X0_lora4_airport_gate, replay_X3_lora4_airport_gate, replay_X6_lora4_airport_gate, replay_AF_lora4_airport_gate]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "GATE B9"], [6, "GATE C12"], [10, "GATE A3"], [14, "GATE D7"], [18, "GATE B14"], [22, "GATE C2"], [26, "GATE A10"], [30, "GATE D5"], [34, "GATE B1"], [38, "GATE C8"]]
+
+fix3_eval_coffee_machine:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: fix3_eval_coffee_machine
+    arms: [replay_E1_lora4_coffee_machine, replay_E2_lora4_coffee_machine, replay_X0_lora4_coffee_machine, replay_X3_lora4_coffee_machine, replay_X6_lora4_coffee_machine, replay_AF_lora4_coffee_machine]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "MILD"], [6, "DOUBLE"], [10, "LATTE"], [14, "DECAF"], [18, "MOCHA"], [22, "LUNGO"], [26, "HOT"], [30, "ICED"], [34, "STRONG"], [38, "CREMA"]]
+
+replay_E2K_lora4_door:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "door_sign_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "CLOSED"
+  live_line: "CLOSED"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "early"
+  live_guide_grow: 0.2
+  live_early_steps: 2
+  live_guide_fallback: 2
+  editor: "flux2_klein"
+  live_restyle: true
+  live_restyle_seeds: [0, 1]
+
+fix4_eval_door:
+  backend: live
+  editor: flux2_klein
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: fix4_eval_door
+    arms: [replay_E2K_lora4_door]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "OPEN"], [6, "SALE"], [10, "EXIT"], [14, "WELCOME"], [18, "SORRY"], [22, "PUSH"], [26, "FULL"], [30, "HELLO"], [34, "LUNCH"], [38, "BYE"]]
+
+replay_E2K_lora4_gas_pump:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "gas_pump_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$24"
+  live_line: "$24"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "early"
+  live_guide_grow: 0.2
+  live_early_steps: 2
+  live_guide_fallback: 2
+  editor: "flux2_klein"
+  live_restyle: true
+  live_restyle_seeds: [0, 1]
+
+fix4_eval_gas_pump:
+  backend: live
+  editor: flux2_klein
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: fix4_eval_gas_pump
+    arms: [replay_E2K_lora4_gas_pump]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "$26"], [6, "$29"], [10, "$31"], [14, "$34"], [18, "$37"], [22, "$40"], [26, "$43"], [30, "$46"], [34, "$49"], [38, "$52"]]
+
+replay_E2K_lora4_price_tag:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "price_tag_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$65"
+  live_line: "$65"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "early"
+  live_guide_grow: 0.2
+  live_early_steps: 2
+  live_guide_fallback: 2
+  editor: "flux2_klein"
+  live_restyle: true
+  live_restyle_seeds: [0, 1]
+
+fix4_eval_price_tag:
+  backend: live
+  editor: flux2_klein
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: fix4_eval_price_tag
+    arms: [replay_E2K_lora4_price_tag]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "$59"], [6, "$49"], [10, "$45"], [14, "$39"], [18, "$35"], [22, "$29"], [26, "$25"], [30, "$19"], [34, "$15"], [38, "$9"]]
+
+replay_E2K_lora4_airport_gate:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_fresh"
+  start_id: "airport_gate_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "GATE B6"
+  live_line: "GATE B6"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"{text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "early"
+  live_guide_grow: 0.2
+  live_early_steps: 2
+  live_guide_fallback: 2
+  editor: "flux2_klein"
+  live_restyle: true
+  live_restyle_seeds: [0, 1]
+
+fix4_eval_airport_gate:
+  backend: live
+  editor: flux2_klein
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: fix4_eval_airport_gate
+    arms: [replay_E2K_lora4_airport_gate]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "GATE B9"], [6, "GATE C12"], [10, "GATE A3"], [14, "GATE D7"], [18, "GATE B14"], [22, "GATE C2"], [26, "GATE A10"], [30, "GATE D5"], [34, "GATE B1"], [38, "GATE C8"]]
+
+replay_E2K_lora4_coffee_machine:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "coffee_machine_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "STRONG"
+  live_line: "STRONG"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "early"
+  live_guide_grow: 0.2
+  live_early_steps: 2
+  live_guide_fallback: 2
+  editor: "flux2_klein"
+  live_restyle: true
+  live_restyle_seeds: [0, 1]
+
+fix4_eval_coffee_machine:
+  backend: live
+  editor: flux2_klein
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: fix4_eval_coffee_machine
+    arms: [replay_E2K_lora4_coffee_machine]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "MILD"], [6, "DOUBLE"], [10, "LATTE"], [14, "DECAF"], [18, "MOCHA"], [22, "LUNGO"], [26, "HOT"], [30, "ICED"], [34, "STRONG"], [38, "CREMA"]]
+
+# LIVE.md 20 Nov (Elad on the surface-plane stills: "Looks much better"): E2P = E2 + live_paste_plane (the field
+# written on its surface's plane, textbench/paste_writer.PlaneWriter). The gate types the field only (B9 in GATE B9),
+# as the dashboard's RANGE scripts; scored against the line (score_text.py's template).
+replay_E2P_lora4_door:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "door_sign_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "CLOSED"
+  live_line: "CLOSED"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads \"{text}\". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "early"
+  live_guide_grow: 0.2
+  live_early_steps: 2
+  live_guide_fallback: 2
+  live_paste_plane: true
+
+fix5_eval_door:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: fix5_eval_door
+    arms: [replay_E2P_lora4_door]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "OPEN"], [6, "SALE"], [10, "EXIT"], [14, "WELCOME"], [18, "SORRY"], [22, "PUSH"], [26, "FULL"], [30, "HELLO"], [34, "LUNCH"], [38, "BYE"]]
+
+replay_E2P_lora4_gas_pump:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "gas_pump_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$24"
+  live_line: "$24"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word \"UNLEADED\" above it. It reads \"{text}\". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "early"
+  live_guide_grow: 0.2
+  live_early_steps: 2
+  live_guide_fallback: 2
+  live_paste_plane: true
+
+fix5_eval_gas_pump:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: fix5_eval_gas_pump
+    arms: [replay_E2P_lora4_gas_pump]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "$26"], [6, "$29"], [10, "$31"], [14, "$34"], [18, "$37"], [22, "$40"], [26, "$43"], [30, "$46"], [34, "$49"], [38, "$52"]]
+
+replay_E2P_lora4_price_tag:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "price_tag_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$65"
+  live_line: "$65"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "early"
+  live_guide_grow: 0.2
+  live_early_steps: 2
+  live_guide_fallback: 2
+  live_paste_plane: true
+
+fix5_eval_price_tag:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: fix5_eval_price_tag
+    arms: [replay_E2P_lora4_price_tag]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "$59"], [6, "$49"], [10, "$45"], [14, "$39"], [18, "$35"], [22, "$29"], [26, "$25"], [30, "$19"], [34, "$15"], [38, "$9"]]
+
+replay_E2P_lora4_airport_gate:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_fresh"
+  start_id: "airport_gate_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "B6"
+  live_line: "GATE B6"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"GATE {text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads \"GATE {text}\". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "early"
+  live_guide_grow: 0.2
+  live_early_steps: 2
+  live_guide_fallback: 2
+  live_paste_plane: true
+
+fix5_eval_airport_gate:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: fix5_eval_airport_gate
+    arms: [replay_E2P_lora4_airport_gate]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "B9"], [6, "C12"], [10, "A3"], [14, "D7"], [18, "B14"], [22, "C2"], [26, "A10"], [30, "D5"], [34, "B1"], [38, "C8"]]
+
+replay_E2P_lora4_coffee_machine:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "coffee_machine_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "STRONG"
+  live_line: "STRONG"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads \"{text}\". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail."
+  live_paste_ink: "light"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "early"
+  live_guide_grow: 0.2
+  live_early_steps: 2
+  live_guide_fallback: 2
+  live_paste_plane: true
+
+fix5_eval_coffee_machine:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: fix5_eval_coffee_machine
+    arms: [replay_E2P_lora4_coffee_machine]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "MILD"], [6, "DOUBLE"], [10, "LATTE"], [14, "DECAF"], [18, "MOCHA"], [22, "LUNGO"], [26, "HOT"], [30, "ICED"], [34, "STRONG"], [38, "CREMA"]]
+
+# LIVE.md 20 Nov: E2P on the price tag again after the lock fix (a reading without the small raised "$" counts)
+fix6_eval_price_tag:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: fix6_eval_price_tag
+    arms: [replay_E2P_lora4_price_tag]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "$59"], [6, "$49"], [10, "$45"], [14, "$39"], [18, "$35"], [22, "$29"], [26, "$25"], [30, "$19"], [34, "$15"], [38, "$9"]]
+
+# LIVE.md 21 Nov (fix 2; Elad: "Do 1 and 2"): E2P + the copies of the number Krea leaves off the tag erased from memory
+replay_E2PS_lora4_price_tag:
+  backend: "live"
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: "data/start_frames_heldout"
+  start_id: "price_tag_switch"
+  seed: 1
+  live_title: "Live Text"
+  live_text: "$65"
+  live_line: "$65"
+  live_align: "center"
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_switch_prompt: "A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads \"{text}\". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail."
+  live_paste_ink: "dark"
+  live_writer: "paste"
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_lora: "data/lora/v4/last.pt"
+  live_lora_merge: true
+  live_paste_mode: "early"
+  live_guide_grow: 0.2
+  live_early_steps: 2
+  live_guide_fallback: 2
+  live_paste_plane: true
+  live_paste_strays: true
+
+fix7_eval_price_tag:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: fix7_eval_price_tag
+    arms: [replay_E2PS_lora4_price_tag]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script: [[2, "$59"], [6, "$49"], [10, "$45"], [14, "$39"], [18, "$35"], [22, "$29"], [26, "$25"], [30, "$19"], [34, "$15"], [38, "$9"]]
+
+# LIVE.md 21 Nov (Elad: "Go for the before"): the reel's "before": base Krea Realtime 14B (no LoRA), the typed text
+# only switches the prompt (live_prompt_only: nothing written into memory, no lock), the fix5 scripts, seed 101.
+
+replay_P_base_door:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: door_sign_switch
+  seed: 1
+  live_title: Live Text
+  live_text: CLOSED
+  live_line: CLOSED
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads "{text}". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail.
+  live_switch_prompt: The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads "{text}". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail.
+  live_anchor: false
+  live_prompt_only: true
+
+before_eval_door:
+  backend: live
+  live_replay:
+    subdir: before_eval_door
+    arms: [replay_P_base_door]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script:
+    - [2, OPEN]
+    - [6, SALE]
+    - [10, EXIT]
+    - [14, WELCOME]
+    - [18, SORRY]
+    - [22, PUSH]
+    - [26, FULL]
+    - [30, HELLO]
+    - [34, LUNCH]
+    - [38, BYE]
+
+replay_P_base_gas_pump:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: gas_pump_switch
+  seed: 1
+  live_title: Live Text
+  live_text: $24
+  live_line: $24
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word "UNLEADED" above it. It reads "{text}". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail.
+  live_switch_prompt: A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word "UNLEADED" above it. It reads "{text}". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail.
+  live_anchor: false
+  live_prompt_only: true
+
+before_eval_gas_pump:
+  backend: live
+  live_replay:
+    subdir: before_eval_gas_pump
+    arms: [replay_P_base_gas_pump]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script:
+    - [2, $26]
+    - [6, $29]
+    - [10, $31]
+    - [14, $34]
+    - [18, $37]
+    - [22, $40]
+    - [26, $43]
+    - [30, $46]
+    - [34, $49]
+    - [38, $52]
+
+replay_P_base_price_tag:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: price_tag_switch
+  seed: 1
+  live_title: Live Text
+  live_text: $65
+  live_line: $65
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads "{text}". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail.
+  live_switch_prompt: A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads "{text}". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail.
+  live_anchor: false
+  live_prompt_only: true
+
+before_eval_price_tag:
+  backend: live
+  live_replay:
+    subdir: before_eval_price_tag
+    arms: [replay_P_base_price_tag]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script:
+    - [2, $59]
+    - [6, $49]
+    - [10, $45]
+    - [14, $39]
+    - [18, $35]
+    - [22, $29]
+    - [26, $25]
+    - [30, $19]
+    - [34, $15]
+    - [38, $9]
+
+replay_P_base_airport_gate:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: airport_gate_switch
+  seed: 1
+  live_title: Live Text
+  live_text: B6
+  live_line: GATE B6
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads "GATE {text}". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail.
+  live_switch_prompt: An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads "GATE {text}". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail.
+  live_anchor: false
+  live_prompt_only: true
+
+before_eval_airport_gate:
+  backend: live
+  live_replay:
+    subdir: before_eval_airport_gate
+    arms: [replay_P_base_airport_gate]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script:
+    - [2, B9]
+    - [6, C12]
+    - [10, A3]
+    - [14, D7]
+    - [18, B14]
+    - [22, C2]
+    - [26, A10]
+    - [30, D5]
+    - [34, B1]
+    - [38, C8]
+
+replay_P_base_coffee_machine:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: coffee_machine_switch
+  seed: 1
+  live_title: Live Text
+  live_text: STRONG
+  live_line: STRONG
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads "{text}". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail.
+  live_switch_prompt: An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads "{text}". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail.
+  live_anchor: false
+  live_prompt_only: true
+
+before_eval_coffee_machine:
+  backend: live
+  live_replay:
+    subdir: before_eval_coffee_machine
+    arms: [replay_P_base_coffee_machine]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script:
+    - [2, MILD]
+    - [6, DOUBLE]
+    - [10, LATTE]
+    - [14, DECAF]
+    - [18, MOCHA]
+    - [22, LUNGO]
+    - [26, HOT]
+    - [30, ICED]
+    - [34, STRONG]
+    - [38, CREMA]
+
+# LIVE.md 21 Nov (Elad: "I want an apples to apples comparison"; "Do the a pair"): the before arm with the same
+# weights as the after arm: Krea + LoRA v4 (merged), the typed text only switches the prompt (no memory write, no lock).
+
+replay_P_lora4_door:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: door_sign_switch
+  seed: 1
+  live_title: Live Text
+  live_text: CLOSED
+  live_line: CLOSED
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads "{text}". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail.
+  live_switch_prompt: The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads "{text}". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail.
+  live_anchor: false
+  live_prompt_only: true
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+pairA_eval_door:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: pairA_eval_door
+    arms: [replay_P_lora4_door]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script:
+    - [2, OPEN]
+    - [6, SALE]
+    - [10, EXIT]
+    - [14, WELCOME]
+    - [18, SORRY]
+    - [22, PUSH]
+    - [26, FULL]
+    - [30, HELLO]
+    - [34, LUNCH]
+    - [38, BYE]
+
+replay_P_lora4_gas_pump:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: gas_pump_switch
+  seed: 1
+  live_title: Live Text
+  live_text: $24
+  live_line: $24
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word "UNLEADED" above it. It reads "{text}". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail.
+  live_switch_prompt: A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word "UNLEADED" above it. It reads "{text}". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail.
+  live_anchor: false
+  live_prompt_only: true
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+pairA_eval_gas_pump:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: pairA_eval_gas_pump
+    arms: [replay_P_lora4_gas_pump]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script:
+    - [2, $26]
+    - [6, $29]
+    - [10, $31]
+    - [14, $34]
+    - [18, $37]
+    - [22, $40]
+    - [26, $43]
+    - [30, $46]
+    - [34, $49]
+    - [38, $52]
+
+replay_P_lora4_price_tag:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: price_tag_switch
+  seed: 1
+  live_title: Live Text
+  live_text: $65
+  live_line: $65
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads "{text}". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail.
+  live_switch_prompt: A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads "{text}". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail.
+  live_anchor: false
+  live_prompt_only: true
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+pairA_eval_price_tag:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: pairA_eval_price_tag
+    arms: [replay_P_lora4_price_tag]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script:
+    - [2, $59]
+    - [6, $49]
+    - [10, $45]
+    - [14, $39]
+    - [18, $35]
+    - [22, $29]
+    - [26, $25]
+    - [30, $19]
+    - [34, $15]
+    - [38, $9]
+
+replay_P_lora4_airport_gate:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: airport_gate_switch
+  seed: 1
+  live_title: Live Text
+  live_text: B6
+  live_line: GATE B6
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads "GATE {text}". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail.
+  live_switch_prompt: An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads "GATE {text}". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail.
+  live_anchor: false
+  live_prompt_only: true
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+pairA_eval_airport_gate:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: pairA_eval_airport_gate
+    arms: [replay_P_lora4_airport_gate]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script:
+    - [2, B9]
+    - [6, C12]
+    - [10, A3]
+    - [14, D7]
+    - [18, B14]
+    - [22, C2]
+    - [26, A10]
+    - [30, D5]
+    - [34, B1]
+    - [38, C8]
+
+replay_P_lora4_coffee_machine:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: coffee_machine_switch
+  seed: 1
+  live_title: Live Text
+  live_text: STRONG
+  live_line: STRONG
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads "{text}". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail.
+  live_switch_prompt: An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads "{text}". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail.
+  live_anchor: false
+  live_prompt_only: true
+  live_lora: data/lora/v4/last.pt
+  live_lora_merge: true
+
+pairA_eval_coffee_machine:
+  backend: live
+  lora_weights: data/lora/v4/last.pt
+  live_replay:
+    subdir: pairA_eval_coffee_machine
+    arms: [replay_P_lora4_coffee_machine]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script:
+    - [2, MILD]
+    - [6, DOUBLE]
+    - [10, LATTE]
+    - [14, DECAF]
+    - [18, MOCHA]
+    - [22, LUNGO]
+    - [26, HOT]
+    - [30, ICED]
+    - [34, STRONG]
+    - [38, CREMA]
+
+# LIVE.md 21 Nov (Elad: "Do the ablation"): the method without the LoRA: base Krea + the plane writer, early paste,
+# lock (= replay_E2P_lora4_<scene> without live_lora); fix5's scripts, seed 101. The price tag arm has fix6's lock fix (code).
+
+replay_E2P_base_door:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: door_sign_switch
+  seed: 1
+  live_title: Live Text
+  live_text: CLOSED
+  live_line: CLOSED
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads "{text}". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail.
+  live_switch_prompt: The glass door of a small bakery on a sunny street, with a sign hanging inside the glass. The sign has bold black letters on white. It reads "{text}". The camera slowly pans to the right, keeping it in frame. Realistic, natural light, high detail.
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_paste_mode: early
+  live_guide_grow: 0.2
+  live_early_steps: 2
+  live_guide_fallback: 2
+  live_paste_plane: true
+
+ablate_eval_door:
+  backend: live
+  live_replay:
+    subdir: ablate_eval_door
+    arms: [replay_E2P_base_door]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script:
+    - [2, OPEN]
+    - [6, SALE]
+    - [10, EXIT]
+    - [14, WELCOME]
+    - [18, SORRY]
+    - [22, PUSH]
+    - [26, FULL]
+    - [30, HELLO]
+    - [34, LUNCH]
+    - [38, BYE]
+
+replay_E2P_base_gas_pump:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: gas_pump_switch
+  seed: 1
+  live_title: Live Text
+  live_text: $24
+  live_line: $24
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word "UNLEADED" above it. It reads "{text}". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail.
+  live_switch_prompt: A gas pump at a roadside station with a small screen, a car beside it. The screen shows a bold black price and the word "UNLEADED" above it. It reads "{text}". The camera slowly arcs around the pump, keeping the screen in frame. Realistic, natural light, high detail.
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_paste_mode: early
+  live_guide_grow: 0.2
+  live_early_steps: 2
+  live_guide_fallback: 2
+  live_paste_plane: true
+
+ablate_eval_gas_pump:
+  backend: live
+  live_replay:
+    subdir: ablate_eval_gas_pump
+    arms: [replay_E2P_base_gas_pump]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script:
+    - [2, $26]
+    - [6, $29]
+    - [10, $31]
+    - [14, $34]
+    - [18, $37]
+    - [22, $40]
+    - [26, $43]
+    - [30, $46]
+    - [34, $49]
+    - [38, $52]
+
+replay_E2P_base_price_tag:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: price_tag_switch
+  seed: 1
+  live_title: Live Text
+  live_text: $65
+  live_line: $65
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads "{text}". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail.
+  live_switch_prompt: A denim jacket on a shop rail with a white cardboard tag hanging from the sleeve. The tag has a bold black price. It reads "{text}". The camera slowly pans along the rail of jackets, keeping the tag in frame. Realistic, natural light, high detail.
+  live_paste_ink: dark
+  live_writer: paste
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_paste_mode: early
+  live_guide_grow: 0.2
+  live_early_steps: 2
+  live_guide_fallback: 2
+  live_paste_plane: true
+
+ablate_eval_price_tag:
+  backend: live
+  live_replay:
+    subdir: ablate_eval_price_tag
+    arms: [replay_E2P_base_price_tag]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script:
+    - [2, $59]
+    - [6, $49]
+    - [10, $45]
+    - [14, $39]
+    - [18, $35]
+    - [22, $29]
+    - [26, $25]
+    - [30, $19]
+    - [34, $15]
+    - [38, $9]
+
+replay_E2P_base_airport_gate:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_fresh
+  start_id: airport_gate_switch
+  seed: 1
+  live_title: Live Text
+  live_text: B6
+  live_line: GATE B6
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads "GATE {text}". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail.
+  live_switch_prompt: An airport terminal with large windows and a sign hanging over a gate, travellers walking past. The sign shows bold yellow letters on dark blue. It reads "GATE {text}". The camera slowly pans to the right with the walking travellers, keeping the sign in frame. Realistic, natural light, high detail.
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_paste_mode: early
+  live_guide_grow: 0.2
+  live_early_steps: 2
+  live_guide_fallback: 2
+  live_paste_plane: true
+
+ablate_eval_airport_gate:
+  backend: live
+  live_replay:
+    subdir: ablate_eval_airport_gate
+    arms: [replay_E2P_base_airport_gate]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script:
+    - [2, B9]
+    - [6, C12]
+    - [10, A3]
+    - [14, D7]
+    - [18, B14]
+    - [22, C2]
+    - [26, A10]
+    - [30, D5]
+    - [34, B1]
+    - [38, C8]
+
+replay_E2P_base_coffee_machine:
+  backend: live
+  steps: 4
+  kv_cache_num_frames: 3
+  start_frame: data/start_frames_heldout
+  start_id: coffee_machine_switch
+  seed: 1
+  live_title: Live Text
+  live_text: STRONG
+  live_line: STRONG
+  live_align: center
+  live_max_chars: 12
+  live_reset_blocks: 13
+  live_prompt: An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads "{text}". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail.
+  live_switch_prompt: An espresso machine on a marble counter with a small lit display on its front. The display shows a bold label. It reads "{text}". The camera slowly arcs around the machine, keeping the display in frame. Realistic, natural light, high detail.
+  live_paste_ink: light
+  live_writer: paste
+  live_anchor: false
+  live_lock: true
+  live_lock_frames: false
+  live_paste_mode: early
+  live_guide_grow: 0.2
+  live_early_steps: 2
+  live_guide_fallback: 2
+  live_paste_plane: true
+
+ablate_eval_coffee_machine:
+  backend: live
+  live_replay:
+    subdir: ablate_eval_coffee_machine
+    arms: [replay_E2P_base_coffee_machine]
+    seeds: [101]
+    start_seed: 0
+    blocks: 42
+    script:
+    - [2, MILD]
+    - [6, DOUBLE]
+    - [10, LATTE]
+    - [14, DECAF]
+    - [18, MOCHA]
+    - [22, LUNGO]
+    - [26, HOT]
+    - [30, ICED]
+    - [34, STRONG]
+    - [38, CREMA]

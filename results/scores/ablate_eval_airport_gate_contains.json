@@ -1,0 +1,8 @@
+{
+ "replay_E2P_base_airport_gate/s101": {
+  "frames": 160,
+  "right_fallback": 0.9,
+  "contains": 0.906,
+  "contains_with_start_text": 6
+ }
+}

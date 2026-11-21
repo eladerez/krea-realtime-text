@@ -1,0 +1,1148 @@
+{
+ "line": "GATE B6",
+ "field": "B6",
+ "tmpl": "GATE {text}",
+ "arms": {
+  "replay_P_lora4_airport_gate": {
+   "seeds": {
+    "101": {
+     "frames_read": 160,
+     "right": 0.037,
+     "right_vs_typed": 0.037,
+     "tracker_lost": 0,
+     "right_fallback": 0.037,
+     "blocks_typed_not_shown": 1,
+     "memory_rewrites": 0,
+     "lock_lost": 0,
+     "reads_start_text": 0.916,
+     "block_s_median": 3.312,
+     "rows": [
+      {
+       "frame": 0,
+       "block": 0,
+       "want": "GATEB6",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 3,
+       "block": 0,
+       "want": "GATEB6",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 6,
+       "block": 1,
+       "want": "GATEB6",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 9,
+       "block": 1,
+       "want": "GATEB6",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 12,
+       "block": 1,
+       "want": "GATEB6",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 15,
+       "block": 1,
+       "want": "GATEB6",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 18,
+       "block": 2,
+       "want": "GATEB9",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 21,
+       "block": 2,
+       "want": "GATEB9",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 24,
+       "block": 2,
+       "want": "GATEB9",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 27,
+       "block": 2,
+       "want": "GATEB9",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 30,
+       "block": 3,
+       "want": "GATEB9",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 33,
+       "block": 3,
+       "want": "GATEB9",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 36,
+       "block": 3,
+       "want": "GATEB9",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 39,
+       "block": 3,
+       "want": "GATEB9",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 42,
+       "block": 4,
+       "want": "GATEB9",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 45,
+       "block": 4,
+       "want": "GATEB9",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 48,
+       "block": 4,
+       "want": "GATEB9",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 51,
+       "block": 4,
+       "want": "GATEB9",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 54,
+       "block": 5,
+       "want": "GATEB9",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 57,
+       "block": 5,
+       "want": "GATEB9",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 60,
+       "block": 5,
+       "want": "GATEB9",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 63,
+       "block": 5,
+       "want": "GATEB9",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 66,
+       "block": 6,
+       "want": "GATEC12",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 69,
+       "block": 6,
+       "want": "GATEC12",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 72,
+       "block": 6,
+       "want": "GATEC12",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 75,
+       "block": 6,
+       "want": "GATEC12",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 78,
+       "block": 7,
+       "want": "GATEC12",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 81,
+       "block": 7,
+       "want": "GATEC12",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 84,
+       "block": 7,
+       "want": "GATEC12",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 87,
+       "block": 7,
+       "want": "GATEC12",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 90,
+       "block": 8,
+       "want": "GATEC12",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 93,
+       "block": 8,
+       "want": "GATEC12",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 96,
+       "block": 8,
+       "want": "GATEC12",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 99,
+       "block": 8,
+       "want": "GATEC12",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 102,
+       "block": 9,
+       "want": "GATEC12",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 105,
+       "block": 9,
+       "want": "GATEC12",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 108,
+       "block": 9,
+       "want": "GATEC12",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 111,
+       "block": 9,
+       "want": "GATEC12",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 114,
+       "block": 10,
+       "want": "GATEA3",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 117,
+       "block": 10,
+       "want": "GATEA3",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 120,
+       "block": 10,
+       "want": "GATEA3",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 123,
+       "block": 10,
+       "want": "GATEA3",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 126,
+       "block": 11,
+       "want": "GATEA3",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 129,
+       "block": 11,
+       "want": "GATEA3",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 132,
+       "block": 11,
+       "want": "GATEA3",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 135,
+       "block": 11,
+       "want": "GATEA3",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 138,
+       "block": 12,
+       "want": "GATEA3",
+       "read": "GATEB",
+       "fallback": null
+      },
+      {
+       "frame": 141,
+       "block": 12,
+       "want": "GATEA3",
+       "read": "GATEB",
+       "fallback": null
+      },
+      {
+       "frame": 144,
+       "block": 12,
+       "want": "GATEA3",
+       "read": "GATEB",
+       "fallback": null
+      },
+      {
+       "frame": 147,
+       "block": 12,
+       "want": "GATEA3",
+       "read": "GATEB",
+       "fallback": null
+      },
+      {
+       "frame": 150,
+       "block": 13,
+       "want": "GATEA3",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 153,
+       "block": 13,
+       "want": "GATEA3",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 156,
+       "block": 14,
+       "want": "GATED7",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 159,
+       "block": 14,
+       "want": "GATED7",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 162,
+       "block": 14,
+       "want": "GATED7",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 165,
+       "block": 14,
+       "want": "GATED7",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 168,
+       "block": 15,
+       "want": "GATED7",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 171,
+       "block": 15,
+       "want": "GATED7",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 174,
+       "block": 15,
+       "want": "GATED7",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 177,
+       "block": 15,
+       "want": "GATED7",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 180,
+       "block": 16,
+       "want": "GATED7",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 183,
+       "block": 16,
+       "want": "GATED7",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 186,
+       "block": 16,
+       "want": "GATED7",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 189,
+       "block": 16,
+       "want": "GATED7",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 192,
+       "block": 17,
+       "want": "GATED7",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 195,
+       "block": 17,
+       "want": "GATED7",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 198,
+       "block": 17,
+       "want": "GATED7",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 201,
+       "block": 17,
+       "want": "GATED7",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 204,
+       "block": 18,
+       "want": "GATEB14",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 207,
+       "block": 18,
+       "want": "GATEB14",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 210,
+       "block": 18,
+       "want": "GATEB14",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 213,
+       "block": 18,
+       "want": "GATEB14",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 216,
+       "block": 19,
+       "want": "GATEB14",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 219,
+       "block": 19,
+       "want": "GATEB14",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 222,
+       "block": 19,
+       "want": "GATEB14",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 225,
+       "block": 19,
+       "want": "GATEB14",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 228,
+       "block": 20,
+       "want": "GATEB14",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 231,
+       "block": 20,
+       "want": "GATEB14",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 234,
+       "block": 20,
+       "want": "GATEB14",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 237,
+       "block": 20,
+       "want": "GATEB14",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 240,
+       "block": 21,
+       "want": "GATEB14",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 243,
+       "block": 21,
+       "want": "GATEB14",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 246,
+       "block": 21,
+       "want": "GATEB14",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 249,
+       "block": 21,
+       "want": "GATEB14",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 252,
+       "block": 22,
+       "want": "GATEC2",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 255,
+       "block": 22,
+       "want": "GATEC2",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 258,
+       "block": 22,
+       "want": "GATEC2",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 261,
+       "block": 22,
+       "want": "GATEC2",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 264,
+       "block": 23,
+       "want": "GATEC2",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 267,
+       "block": 23,
+       "want": "GATEC2",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 270,
+       "block": 23,
+       "want": "GATEC2",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 273,
+       "block": 23,
+       "want": "GATEC2",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 276,
+       "block": 24,
+       "want": "GATEC2",
+       "read": "GATEB",
+       "fallback": null
+      },
+      {
+       "frame": 279,
+       "block": 24,
+       "want": "GATEC2",
+       "read": "GATEB",
+       "fallback": null
+      },
+      {
+       "frame": 282,
+       "block": 24,
+       "want": "GATEC2",
+       "read": "GATEB",
+       "fallback": null
+      },
+      {
+       "frame": 285,
+       "block": 24,
+       "want": "GATEC2",
+       "read": "GATEB",
+       "fallback": null
+      },
+      {
+       "frame": 288,
+       "block": 25,
+       "want": "GATEC2",
+       "read": "GATEB",
+       "fallback": null
+      },
+      {
+       "frame": 291,
+       "block": 25,
+       "want": "GATEC2",
+       "read": "GATE",
+       "fallback": null
+      },
+      {
+       "frame": 294,
+       "block": 25,
+       "want": "GATEC2",
+       "read": "GATE",
+       "fallback": null
+      },
+      {
+       "frame": 297,
+       "block": 25,
+       "want": "GATEC2",
+       "read": "GATE",
+       "fallback": null
+      },
+      {
+       "frame": 300,
+       "block": 26,
+       "want": "GATEC2",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 303,
+       "block": 26,
+       "want": "GATEC2",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 306,
+       "block": 27,
+       "want": "GATEA10",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 309,
+       "block": 27,
+       "want": "GATEA10",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 312,
+       "block": 27,
+       "want": "GATEA10",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 315,
+       "block": 27,
+       "want": "GATEA10",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 318,
+       "block": 28,
+       "want": "GATEA10",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 321,
+       "block": 28,
+       "want": "GATEA10",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 324,
+       "block": 28,
+       "want": "GATEA10",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 327,
+       "block": 28,
+       "want": "GATEA10",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 330,
+       "block": 29,
+       "want": "GATEA10",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 333,
+       "block": 29,
+       "want": "GATEA10",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 336,
+       "block": 29,
+       "want": "GATEA10",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 339,
+       "block": 29,
+       "want": "GATEA10",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 342,
+       "block": 30,
+       "want": "GATED5",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 345,
+       "block": 30,
+       "want": "GATED5",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 348,
+       "block": 30,
+       "want": "GATED5",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 351,
+       "block": 30,
+       "want": "GATED5",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 354,
+       "block": 31,
+       "want": "GATED5",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 357,
+       "block": 31,
+       "want": "GATED5",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 360,
+       "block": 31,
+       "want": "GATED5",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 363,
+       "block": 31,
+       "want": "GATED5",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 366,
+       "block": 32,
+       "want": "GATED5",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 369,
+       "block": 32,
+       "want": "GATED5",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 372,
+       "block": 32,
+       "want": "GATED5",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 375,
+       "block": 32,
+       "want": "GATED5",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 378,
+       "block": 33,
+       "want": "GATED5",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 381,
+       "block": 33,
+       "want": "GATED5",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 384,
+       "block": 33,
+       "want": "GATED5",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 387,
+       "block": 33,
+       "want": "GATED5",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 390,
+       "block": 34,
+       "want": "GATEB1",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 393,
+       "block": 34,
+       "want": "GATEB1",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 396,
+       "block": 34,
+       "want": "GATEB1",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 399,
+       "block": 34,
+       "want": "GATEB1",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 402,
+       "block": 35,
+       "want": "GATEB1",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 405,
+       "block": 35,
+       "want": "GATEB1",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 408,
+       "block": 35,
+       "want": "GATEB1",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 411,
+       "block": 35,
+       "want": "GATEB1",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 414,
+       "block": 36,
+       "want": "GATEB1",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 417,
+       "block": 36,
+       "want": "GATEB1",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 420,
+       "block": 36,
+       "want": "GATEB1",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 423,
+       "block": 36,
+       "want": "GATEB1",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 426,
+       "block": 37,
+       "want": "GATEB1",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 429,
+       "block": 37,
+       "want": "GATEB1",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 432,
+       "block": 37,
+       "want": "GATEB1",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 435,
+       "block": 37,
+       "want": "GATEB1",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 438,
+       "block": 38,
+       "want": "GATEC8",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 441,
+       "block": 38,
+       "want": "GATEC8",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 444,
+       "block": 38,
+       "want": "GATEC8",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 447,
+       "block": 38,
+       "want": "GATEC8",
+       "read": "GATEBE",
+       "fallback": null
+      },
+      {
+       "frame": 450,
+       "block": 39,
+       "want": "GATEC8",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 453,
+       "block": 39,
+       "want": "GATEC8",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 456,
+       "block": 40,
+       "want": "GATEC8",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 459,
+       "block": 40,
+       "want": "GATEC8",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 462,
+       "block": 40,
+       "want": "GATEC8",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 465,
+       "block": 40,
+       "want": "GATEC8",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 468,
+       "block": 41,
+       "want": "GATEC8",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 471,
+       "block": 41,
+       "want": "GATEC8",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 474,
+       "block": 41,
+       "want": "GATEC8",
+       "read": "GATEB6",
+       "fallback": null
+      },
+      {
+       "frame": 477,
+       "block": 41,
+       "want": "GATEC8",
+       "read": "GATEB6",
+       "fallback": null
+      }
+     ]
+    }
+   },
+   "right": 0.037,
+   "reads_start_text": 0.916,
+   "right_fallback": 0.037
+  }
+ }
+}

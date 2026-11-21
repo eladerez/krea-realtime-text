@@ -103,16 +103,23 @@ def main() -> None:
     # are masked out in every context frame, so the new frames cannot copy the old text from memory. Cross-attention
     # (keys = 512 prompt tokens) and the KV-recompute pass (flex_attention) are not touched.
     FRAME_TOKENS, GRID_W = 1560, 52
-    MASK: dict = {"tokens": None}
+    # LIVE.md 20 Nov (the fix test, research/prompt_change/SUMMARY.md): MASK["per_frame"], when set, holds one token set
+    # per context latent (the text tracked in each), so on a pan the old letters are hidden where they are in each frame
+    MASK: dict = {"tokens": None, "per_frame": None}
     _attention = causal_model.attention
 
     def masked_attention(q, k, v, *args, **kwargs):
         n_ctx = k.shape[1] - q.shape[1]
-        if MASK["tokens"] is None or n_ctx <= 0 or args or kwargs:
+        pf = MASK["per_frame"]
+        if (MASK["tokens"] is None and pf is None) or n_ctx <= 0 or args or kwargs:
             return _attention(q, k, v, *args, **kwargs)
         keep = torch.ones(k.shape[1], dtype=torch.bool, device=q.device)
-        idx = (torch.arange(n_ctx // FRAME_TOKENS, device=q.device)[:, None] * FRAME_TOKENS
-               + MASK["tokens"].to(q.device)[None, :]).flatten()
+        n_f = n_ctx // FRAME_TOKENS
+        if pf is not None and len(pf) == n_f:
+            idx = torch.cat([f * FRAME_TOKENS + t.to(q.device) for f, t in enumerate(pf)])
+        else:
+            toks = MASK["tokens"] if MASK["tokens"] is not None else torch.unique(torch.cat(list(pf)))
+            idx = (torch.arange(n_f, device=q.device)[:, None] * FRAME_TOKENS + toks.to(q.device)[None, :]).flatten()
         keep[idx[idx < n_ctx]] = False
         out = torch.nn.functional.scaled_dot_product_attention(
             q.transpose(1, 2), k.transpose(1, 2), v.transpose(1, 2), attn_mask=keep[None, None, None, :])
@@ -139,10 +146,106 @@ def main() -> None:
         if GUIDE["lat"] is not None and x0.shape[0] == GUIDE["lat"].shape[0] and (
                 float(timestep.max()) > 0 or GUIDE.get("final")):
             x0 = x0.clone()
-            x0[:, :, GUIDE["mask"]] = GUIDE["lat"][:, :, GUIDE["mask"]].to(x0)
+            if GUIDE.get("bandpass"):
+                # LIVE.md 20 Nov (fix 3, A-flow; FreeText 2601.00535): a target and a mask per latent frame, and only the
+                # target's fine detail (its high frequencies) replaces the prediction's; the low frequencies (the
+                # surface's colour and light) stay the model's, faded from the 909 input to the 714 input
+                t = float(timestep.max())
+                w = GUIDE["fade"][0] if t >= 800 else GUIDE["fade"][1]
+                m = GUIDE["mask"].to(x0)[:, None]
+
+                def high(z):
+                    zf = z.float()
+                    return (zf - torch.nn.functional.avg_pool2d(zf, 5, 1, 2, count_include_pad=False)).to(z.dtype)
+                x0 = x0 + w * m * (high(GUIDE["lat"].to(x0)) - high(x0))
+            else:
+                x0[:, :, GUIDE["mask"]] = GUIDE["lat"][:, :, GUIDE["mask"]].to(x0)
         return _add_noise(self, x0, noise, timestep)
 
     FlowMatchScheduler.add_noise = guided_add_noise
+
+    # LIVE.md 20 Nov (fix 2, research/prompt_change/cross_attention.md; Prompt-to-Prompt 2208.01626 re-weighting, local):
+    # in the layers XB["layers"] at the denoising steps XB["steps"], the sign region's queries (XB["q"], token positions
+    # in the new block) get a bias log(c) on the new text's prompt tokens (XB["k"]); with XB["measure"] the share of their
+    # attention on those tokens, region vs whole frame, is logged (the gate: does the text's attention land on the sign).
+    import math
+    import wan.modules.model as wan_model
+    XB: dict = {"t": None, "q": None, "k": None, "nq": 0, "c": 0.0, "layers": set(), "steps": set(), "measure": False,
+                "stats": []}
+    _xattn_forward = wan_model.WanT2VCrossAttention.forward
+
+    def boosted_xattn(self, x, context, context_lens, crossattn_cache=None):
+        layer = getattr(self, "xb_layer", -1)
+        if XB["q"] is None or layer not in XB["layers"] or XB["t"] not in XB["steps"] or x.shape[1] != XB["nq"] \
+                or not (XB["c"] > 0 or XB["measure"]):
+            return _xattn_forward(self, x, context, context_lens, crossattn_cache=crossattn_cache)
+        b, n, d = x.size(0), self.num_heads, self.head_dim
+        q = self.norm_q(self.q(x)).view(b, -1, n, d)
+        if crossattn_cache is not None:  # as the original: the cache is filled by the first call after a switch
+            if not crossattn_cache["is_init"]:
+                crossattn_cache["is_init"] = True
+                crossattn_cache["k"] = self.norm_k(self.k(context)).view(b, -1, n, d)
+                crossattn_cache["v"] = self.v(context).view(b, -1, n, d)
+            k, v = crossattn_cache["k"], crossattn_cache["v"]
+        else:
+            k, v = self.norm_k(self.k(context)).view(b, -1, n, d), self.v(context).view(b, -1, n, d)
+        qh, kh, vh = (u.transpose(1, 2).to(torch.bfloat16) for u in (q, k, v))
+        bias = torch.zeros(qh.shape[2], kh.shape[2], dtype=torch.float32, device=x.device)
+        if context_lens is not None:  # as flash_attention's k_lens: no attention on the prompt's padding
+            bias[:, int(context_lens[0]):] = float("-inf")
+        if XB["c"] > 0:
+            bias[XB["q"][:, None], XB["k"][None, :]] += math.log(XB["c"])
+        out = torch.nn.functional.scaled_dot_product_attention(qh, kh, vh, attn_mask=bias.to(qh.dtype)[None, None])
+        if XB["measure"] and XB["t"] == max(XB["steps"]):
+            a = torch.softmax(qh.float() @ kh.float().transpose(-1, -2) / math.sqrt(d) + bias, dim=-1)[0]
+            share = a[:, :, XB["k"]].sum(-1)  # [heads, queries]
+            reg, whole = share[:, XB["q"]].mean(-1), share.mean(-1)
+            XB["stats"].append({"layer": layer, "ratio": round(float(reg.mean() / whole.mean().clamp_min(1e-8)), 3),
+                                "max_head": round(float((reg / whole.clamp_min(1e-8)).max()), 3),
+                                "text_share": round(float(whole.mean()), 4)})
+            del a, share
+        return self.o(out.transpose(1, 2).contiguous().flatten(2).to(x.dtype))
+
+    wan_model.WanT2VCrossAttention.forward = boosted_xattn
+    for i, blk in enumerate(models.transformer.model.blocks):
+        blk.cross_attn.xb_layer = i
+
+    # LIVE.md 20 Nov (fix 1, research/prompt_change/feature_injection.md): every transformer call records its timestep
+    # (XB["t"]); EARLY["fn"], when set, runs once just before the denoising call at timestep EARLY["at"]: it puts the real
+    # memory back and rebuilds the KV cache from it, so the first steps were drawn from the pasted memory and the rest
+    # from the real one
+    EARLY: dict = {"fn": None, "at": None, "busy": False}
+
+    def on_transformer_call(_m, args, kwargs):
+        if EARLY["fn"] is None and XB["q"] is None:  # code-fix3-r1 nit 8: no sync when nothing needs the timestep
+            return None
+        t = kwargs.get("timestep")
+        XB["t"] = int(round(float(t.max()))) if t is not None else None  # Krea's are floats (908.84, 713.98)
+        if EARLY["fn"] is not None and not EARLY["busy"] and XB["t"] == EARLY["at"]:
+            at, fn = EARLY["at"], EARLY["fn"]
+            EARLY["busy"] = True
+            try:
+                fn(True)
+            finally:
+                EARLY.update(fn=None, busy=False)
+            XB["t"] = at  # the rebuild's own call set it to 0
+            kwargs["kv_cache"] = models.pipeline.kv_cache1
+            return args, kwargs
+        return None
+
+    models.transformer.register_forward_pre_hook(on_transformer_call, with_kwargs=True)
+
+    GUIDED = ("guide", "early", "xattn", "flow")  # live_paste_mode values that steer instead of pasting
+
+    def shift2d(a: torch.Tensor, dy: int, dx: int) -> torch.Tensor:
+        """`a` moved by (dy, dx) over its last two axes, zeros where it moved in from outside (no wrap-around)."""
+        out = torch.zeros_like(a)
+        h, w = a.shape[-2:]
+        if abs(dy) >= h or abs(dx) >= w:
+            return out
+        out[..., max(dy, 0):h + min(dy, 0), max(dx, 0):w + min(dx, 0)] = \
+            a[..., max(-dy, 0):h + min(-dy, 0), max(-dx, 0):w + min(-dx, 0)]
+        return out
 
     def box_tokens(boxes: list[tuple[int, int, int, int]]) -> torch.Tensor | None:
         """Token positions (within one latent frame) covered by pixel boxes at 832x480: 16 px per token."""
@@ -658,16 +761,40 @@ def main() -> None:
                     self.paster = {"tracker": TextTracker(st, q), "quad": q,
                                    "tmpl": line.upper().replace(cfg["live_text"].upper(), "{text}", 1) if whole else "{text}",
                                    "align": cfg.get("live_paste_align", "center"), "ink": cfg.get("live_paste_ink")}
+                    # LIVE.md 20 Nov (Elad on the surface-plane stills: "Looks much better"): live_paste_plane writes
+                    # only the field, on its surface's plane (textbench/paste_writer.PlaneWriter), measured once here;
+                    # the tracker, the template and the OCR checks stay on the line as before
+                    if cfg.get("live_paste_plane"):
+                        from textbench.paste_writer import PlaneWriter, find_text
+                        own = find_text(st, cfg["live_text"], min_ratio=0.99)  # the field's own OCR box, if read alone
+                        self.paster["plane"] = PlaneWriter(st, own["quad"] if own is not None else hit["quad"],
+                                                           cfg["live_text"].upper(), align="left" if whole else "center",
+                                                           track_quad=q, ink_hint=cfg.get("live_paste_ink"))
+                        print(f"[live] plane writer: {self.paster['plane'].info()}", flush=True)
                 self.need_pin = False
                 self.lora = None
+                # LIVE.md 19 Nov (Elad: "Do a, b and c"): live_paste_mode "guide" (option A, KreaLive.guide_text);
+                # live_restyle with the paste writer (option B, KreaLive.paste_restyle); live_collect teacher (option C,
+                # KreaLive.teacher_block)
+                self.guide_left, self.guide_fails, self.teacher_now, self.guide_fresh = 0, 0, None, False
+                self.restyles: list = []
+                # LIVE.md 20 Nov (the fix test): "early" (fix 1, KreaLive.early_text), "xattn" (fix 2, xattn_text), "flow"
+                # (fix 3, flow_text): no paste in memory, as "guide"
+                assert cfg.get("live_paste_mode", "paste") in ("paste",) + GUIDED, cfg.get("live_paste_mode")
+                self.early_mem = None
+                assert not (cfg.get("live_collect") or {}).get("teacher") or (
+                    cfg.get("live_writer") == "paste" and cfg.get("editor") == "flux2_klein"), \
+                    "live_collect teacher needs the paste writer and klein"
                 # LIVE.md (16 Nov, feature steering step 1): hidden states at the digit places (runner/feature_probe.py)
                 self.probe, self.frame_places, self.steps_done = None, [], 0  # steps_done: the replay's block number
                 # LIVE.md (16 Nov, the LoRA pilot, research/plans/LORA_PILOT.md): live_collect saves each block's
                 # transformer inputs and a corrected target (textbench/lora_targets.py) for runner/lora_train.py
                 self.collect, self.calls, self.prev_raw = cfg.get("live_collect"), [], None
                 if self.collect:
-                    assert self.lcd is not None and cfg.get("live_lock") and not cfg.get("live_lock_frames", True), \
-                        "live_collect needs the 7-segment reader and Krea's own frames (live_lock_frames false)"
+                    # LIVE.md 17 Nov (v3): the general writer's scenes collect too (targets by OCR, lora_targets.build_text)
+                    assert (self.lcd is not None or cfg.get("live_writer") == "paste") and cfg.get("live_lock") \
+                        and not cfg.get("live_lock_frames", True), \
+                        "live_collect needs a writer with a reader and Krea's own frames (live_lock_frames false)"
                     self.collect_dir = ROOT / "logs/live" / os.environ.get("LAUNCH", "local") / "lora_samples"
                     self.collect_dir.mkdir(parents=True, exist_ok=True)
                     self.collect_on, self.prompts_seen = False, {}
@@ -704,7 +831,11 @@ def main() -> None:
                     self.session = cls(params=params, config=config, frame_callback=self.on_frames, models=models)
                     self.session.setup_start_frame(img, models)
                 self.b = 0
-                GUIDE.update(lat=None, mask=None, final=False)  # a new session: the pin is set again by a write
+                GUIDE.update(lat=None, mask=None, final=False, bandpass=False)  # a new session: set again by a write
+                MASK["tokens"], self.guide_left = None, 0  # LIVE.md 19 Nov (option A): no guide left over
+                MASK["per_frame"], XB["q"], self.early_mem = None, None, None  # LIVE.md 20 Nov (the fix test)
+                if EARLY["fn"] is not None:
+                    EARLY.update(fn=None)
                 self.prev_raw = None  # live_collect: a target's encode needs the same session's previous frame
                 # code-replay-r1 #5: every LCD arm writes the shown number into memory once after a (re)start (the pin
                 # needs it for its target), so arms B, C and D differ only in the lock and the pin
@@ -819,10 +950,18 @@ def main() -> None:
                     self.set_pin(lat, g_new)
                 return drawn
 
+            def write_field(self, img: np.ndarray, q, text: str, seed: int = 0) -> np.ndarray:
+                """The paste writer's `text` (the field) on one RGB frame at the tracked quad q: live_paste_plane's
+                PlaneWriter (the field only, on its surface's plane), else textbench/paste_writer.write of the line."""
+                if "plane" in self.paster:
+                    return self.paster["plane"].write(img, q, text.upper(), seed=seed)[0]
+                from textbench.paste_writer import write
+                return write(img, q, self.paster["tmpl"].format(text=text.upper()), self.paster["align"], seed=seed,
+                             ink_hint=self.paster["ink"])[0]
+
             def paste_memory(self, s, text: str) -> int:
                 """live_writer "paste": `text` written (textbench/paste_writer.write) at the tracked line in all 9
                 memory frames (placed once, on the newest), the last two latents re-encoded, as lcd_memory."""
-                from textbench.paste_writer import write
                 cache = list(s.frame_context_cache)
                 if len(cache) != s.frame_context_cache.maxlen or s.current_start_frame < 2:
                     return 0
@@ -830,8 +969,9 @@ def main() -> None:
                 if q is None:
                     return 0
                 words = self.paster["tmpl"].format(text=text.upper())
-                outs = [write(to_rgb(c), q, words, self.paster["align"], seed=i, ink_hint=self.paster["ink"])[0]
-                        for i, c in enumerate(cache)]
+                outs = [self.write_field(to_rgb(c), q, text, seed=i) for i, c in enumerate(cache)]
+                if cfg.get("live_restyle"):  # LIVE.md 19 Nov (option B): klein restyles the paste, kept if OCR reads it
+                    outs = self.paste_restyle(outs, q, words)
                 edited = [to_tensor(o, c) for o, c in zip(outs, cache)]
                 s.frame_context_cache = type(s.frame_context_cache)(edited, maxlen=s.frame_context_cache.maxlen)
                 st = s.current_start_frame
@@ -840,6 +980,365 @@ def main() -> None:
                 if cfg.get("live_anchor"):
                     s.anchor = edited[-1]
                 return len(edited)
+
+            def stray_erase(self, s) -> dict:
+                """LIVE.md 21 Nov (fix 2 for Elad's "The number on the ticket price moved out of the plane"; live_paste_strays):
+                Krea leaves copies of the text on the background in the text's row as the surface moves (fix6: "$4" on
+                the denim left of the tag). After each block, OCR on the newest memory frame finds lines with characters
+                of the texts shown so far that lie (in part) off the tracked surface; their strokes off the surface are
+                inpainted from the background in every memory frame where the tracker finds the surface (the surface,
+                each frame's own, is never touched) and the last two latents re-encoded, as paste_memory."""
+                from textbench.paste_writer import erase_strays, norm, ocr_lines, stray_boxes
+                pw = self.paster["plane"]
+                self.stray_chars = getattr(self, "stray_chars", set(norm(cfg["live_text"]))) | set(norm(self.shown))
+                cache = list(s.frame_context_cache)
+                if len(cache) != s.frame_context_cache.maxlen or s.current_start_frame < 2:
+                    return {"n": 0, "why": "memory not full"}
+                newest = to_rgb(cache[-1])
+                q, _n = self.paster["tracker"].locate(newest)
+                surf = pw.surface_at(q) if q is not None else None
+                if surf is None:
+                    return {"n": 0, "why": "lost" if q is None else "folded"}
+                lines = ocr_lines(newest)
+                boxes = stray_boxes(lines, surf, pw.band_at(q), self.stray_chars,
+                                    0.5 * float(np.linalg.norm(q[3] - q[0])), newest.shape)
+                if not boxes:
+                    return {"n": 0}
+                edited, px, done = [], 0, 0
+                for i, c in enumerate(cache):
+                    rgb = newest if i == len(cache) - 1 else to_rgb(c)
+                    qi = q if i == len(cache) - 1 else self.paster["tracker"].locate(rgb)[0]
+                    si = pw.surface_at(qi) if qi is not None else None
+                    if si is None:  # the surface not found in this frame: left as it is (never erase blind)
+                        edited.append(c)
+                        continue
+                    out, k = erase_strays(rgb, si, boxes, pw.polarity)
+                    edited.append(to_tensor(out, c) if k else c)
+                    px, done = px + k, done + bool(k)
+                info = {"n": len(boxes), "frames": done, "px": px,
+                        "reads": [t for l, t, _ in lines if any(l is b for b in boxes)]}
+                if not done:
+                    return info
+                lat = encode9(edited)  # code-e2ps-r1 should-fix 1: encoded before anything is swapped (as early_swap)
+                s.frame_context_cache = type(s.frame_context_cache)(edited, maxlen=s.frame_context_cache.maxlen)
+                st = s.current_start_frame
+                s.all_latents[:, st - 2:st] = lat[:, 1:3].to(s.all_latents)
+                if cfg.get("live_anchor"):
+                    s.anchor = edited[-1]
+                return info
+
+            def klein_call(self, img, prompt, sd):
+                """klein in "restyle" mode (the prompt as given, on the whole 512 px crop); a timeout turns klein off for
+                the rest of the run (code-lora-r1 should-fix 1)."""
+                saved = EDITOR["fn"].mode
+                EDITOR["fn"].mode = "restyle"
+                try:
+                    return EDITOR["fn"](img, prompt, sd)
+                except TimeoutError:
+                    self.klein_off = True
+                    raise
+                finally:
+                    EDITOR["fn"].mode = saved
+
+            def paste_restyle(self, outs: list, q, words: str) -> list:
+                """Option B (LIVE.md 19 Nov; textbench/sign_restyle.py): klein restyles the text region of the newest
+                pasted memory frame; the kept answer goes into every frame at the same place (the paste is placed once,
+                on the newest, in all 9). Any error or no answer that OCR reads right keeps the font paste."""
+                from textbench import sign_restyle
+                if self.klein_off:
+                    self.restyles.append({"line": words, "how": "font", "skipped": "klein off after a timeout"})
+                    return outs
+                try:
+                    r, info = sign_restyle.restyle(outs[-1], q, words, self.klein_call,
+                                                   seeds=cfg.get("live_restyle_seeds", [0, 1]))
+                except Exception as ex:
+                    self.restyles.append({"line": words, "how": "font", "error": f"{type(ex).__name__}: {ex}"[:300]})
+                    return outs
+                self.restyles.append(info)
+                return [sign_restyle.apply(o, r) for o in outs] if r is not None else outs
+
+            def text_write(self, s, text: str) -> int:
+                """The paste writer's write (a typed change, the lock's rewrite, the write after a (re)start):
+                live_paste_mode "guide" steers Krea's drawing instead of pasting (option A); else paste_memory."""
+                if cfg.get("live_paste_mode") in GUIDED:
+                    self.guide_fails = 0  # code-abc-r1 nit: a new write starts the failure count again
+                    return self.guided_write(s, text)
+                return self.paste_memory(s, text)
+
+            def guided_write(self, s, text: str, follow: bool = False) -> int:
+                """The write of live_paste_mode's method (A "guide", fix 1 "early", fix 2 "xattn", fix 3 "flow")."""
+                mode = cfg.get("live_paste_mode")
+                if mode == "early":
+                    return self.early_text(s, text)
+                if mode == "xattn":
+                    return self.xattn_text(s, text, follow)
+                if mode == "flow":
+                    return self.flow_text(s, text, follow)
+                return self.guide_text(s, text, follow)
+
+            def context_tokens(self, cache: list, grow: float) -> list | None:
+                """LIVE.md 20 Nov: the text region's tokens in each context latent, tracked in its own pixel frames (the
+                3 context latents: the re-encoded oldest frame 0, then frames 1-4 and 5-8 of the 9 cached); a frame where
+                the tracker loses the text takes the union of the others; None when it is lost in all."""
+                from textbench.lora_targets import text_region
+                out = []
+                for group in ([0], [1, 4], [5, 8]):
+                    boxes = []
+                    for i in group:
+                        q, _n = self.paster["tracker"].locate(to_rgb(cache[i]))
+                        if q is not None:
+                            reg = text_region((480, 832), q, grow, grow)
+                            ys, xs = np.nonzero(reg)
+                            if len(xs):
+                                boxes.append((int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1))
+                    out.append(box_tokens(boxes) if boxes else None)
+                found = [t for t in out if t is not None]
+                if not found:
+                    return None
+                union = torch.unique(torch.cat(found))
+                return [t if t is not None else union for t in out]
+
+            def pasted_copies(self, s, text: str, restyle: bool = False):
+                """The paste writer's text on copies of the 9 memory frames (the memory is not changed), placed once on
+                the newest; with the newest frame's quad. (None, None) when the memory is not full or the text is lost.
+                restyle (LIVE.md 20 Nov, E2K = E2 + B): klein restyles the copies' text region as paste_memory's
+                option B does (KreaLive.paste_restyle, kept only if OCR reads it; else the flat paste)."""
+                cache = list(s.frame_context_cache)
+                if len(cache) != s.frame_context_cache.maxlen or s.current_start_frame < 2:
+                    return None, None, cache
+                q, _n = self.paster["tracker"].locate(to_rgb(cache[-1]))
+                if q is None:
+                    return None, None, cache
+                words = self.paster["tmpl"].format(text=text.upper())
+                outs = [self.write_field(to_rgb(c), q, text, seed=i) for i, c in enumerate(cache)]
+                if restyle:
+                    outs = self.paste_restyle(outs, q, words)
+                return [to_tensor(o, c) for o, c in zip(outs, cache)], q, cache
+
+            def early_text(self, s, text: str) -> int:
+                """Fix 1 (LIVE.md 20 Nov; research/prompt_change/feature_injection.md, after Plug-and-Play 2211.12572 and
+                AR-Edit 2611.09795): the next block's first live_early_steps denoising steps are drawn from a memory with
+                the text pasted (copies; KreaLive.step swaps them in), the rest from the real memory, its KV cache
+                rebuilt, with the old text's tokens hidden in each context frame (MASK per frame). The pasted text sets
+                what the letters are; the model's own later steps draw them on the surface where it is in each frame."""
+                tmem, _q, cache = self.pasted_copies(s, text, restyle=bool(cfg.get("live_restyle")))
+                if tmem is None:
+                    return 0
+                self.early_mem = (tmem, self.context_tokens(cache, float(cfg.get("live_guide_grow", 0.35))))
+                self.guide_left, self.guide_fresh = 1, True
+                return len(tmem)
+
+            def early_swap(self, s) -> dict:
+                """Before generate_block: the pasted memory in, and EARLY set to put the real one back (KV rebuilt, MASK
+                per frame) before the denoising step live_early_steps."""
+                tmem, pf = self.early_mem
+                self.early_mem = None
+                n = int(cfg.get("live_early_steps", 1))
+                assert 1 <= n <= 2, "live_early_steps: 1 or 2 (3 would fire on the block-start KV rebuild, t=0)"
+                st, b0 = s.current_start_frame, s.block_idx
+                real, real_lat = list(s.frame_context_cache), s.all_latents[:, st - 2:st].clone()
+                lat = encode9(tmem)[:, 1:3].to(s.all_latents)  # code-fix3-r1 #4: encode before anything is swapped
+                s.frame_context_cache = type(s.frame_context_cache)(tmem, maxlen=s.frame_context_cache.maxlen)
+                s.all_latents[:, st - 2:st] = lat
+
+                def back(rebuild: bool) -> None:
+                    """rebuild (the hook, mid-block): the real memory back, its KV rebuilt, the mask set. Else (the block
+                    ended without the hook firing, or failed): the real latents back; the pixel cache only if the block
+                    did not finish (a finished block's 12 frames already replaced all 9 cached ones; code-fix3-r1 #2)."""
+                    s.all_latents[:, st - 2:st] = real_lat
+                    if rebuild or s.block_idx == b0:
+                        s.frame_context_cache = type(s.frame_context_cache)(real, maxlen=s.frame_context_cache.maxlen)
+                    if rebuild:
+                        MASK["per_frame"] = pf
+                        s.recompute_kv_cache(models)
+                # code-fix3-r1 #1: Krea's timesteps are floats (1000, 908.84, 713.98, 0); the hook rounds, so does this
+                EARLY.update(fn=back, at=int(round(float(s.denoising_step_list[n]))))
+                return {"early_steps": n, "masked": pf is not None}
+
+            def text_token_ids(self, text: str) -> torch.Tensor | None:
+                """Positions of `"text"` (with its quotes) among the prompt's umT5 tokens (Krea's tokenizer, its whitespace
+                cleaning), by the fast tokenizer's character offsets; else by tokenizing the prompt up to its start and end."""
+                tok = models.text_encoder.tokenizer
+                prompt = tok._clean(switch_tmpl.format(text=text))
+                i = prompt.find(f'"{text}"')
+                a, b = (i, i + len(text) + 2) if i >= 0 else (prompt.find(text), prompt.find(text) + len(text))
+                if a < 0:
+                    return None
+                try:
+                    off = tok.tokenizer(prompt, return_offsets_mapping=True, add_special_tokens=True)["offset_mapping"]
+                    ids = [j for j, (u, v) in enumerate(off) if v > a and u < b and v > u]
+                except Exception:
+                    n0 = len(tok.tokenizer(prompt[:a], add_special_tokens=False)["input_ids"])
+                    n1 = len(tok.tokenizer(prompt[:b], add_special_tokens=False)["input_ids"])
+                    ids = list(range(n0, max(n1, n0 + 1)))
+                ids = [j for j in ids if j < 512]
+                return torch.tensor(ids, dtype=torch.long, device="cuda") if ids else None
+
+            def xattn_text(self, s, text: str, follow: bool = False) -> int:
+                """Fix 2 (LIVE.md 20 Nov; research/prompt_change/cross_attention.md): nothing pasted. The prompt already
+                names the new text (KreaLive.step's switch); the old text's tokens are hidden in each context frame (MASK
+                per frame), and in the layers live_xattn_layers at the first live_xattn_nsteps denoising steps the sign region's queries
+                (the newest frame's text region, padded by live_xattn_pad tokens, in every latent frame of the block) get
+                log(live_xattn_c) added on the new text's prompt tokens, for live_guide_blocks blocks."""
+                from textbench.lora_targets import text_region
+                cache = list(s.frame_context_cache)
+                if len(cache) != s.frame_context_cache.maxlen or s.current_start_frame < 2:
+                    return 0
+                q, _n = self.paster["tracker"].locate(to_rgb(cache[-1]))
+                if q is None:
+                    return 0
+                g = float(cfg.get("live_guide_grow", 0.35))
+                pf = self.context_tokens(cache, g)
+                ks = self.text_token_ids(text.upper())
+                reg = text_region((480, 832), q, g, g)
+                ys, xs = np.nonzero(reg)
+                if pf is None or ks is None or not len(xs):
+                    return 0
+                pad = 16 * int(cfg.get("live_xattn_pad", 2))
+                toks = box_tokens([(max(0, int(xs.min()) - pad), max(0, int(ys.min()) - pad),
+                                    min(832, int(xs.max()) + 1 + pad), min(480, int(ys.max()) + 1 + pad))])
+                nf = models.pipeline.num_frame_per_block
+                MASK["per_frame"] = pf
+                XB.update(q=torch.cat([f * FRAME_TOKENS + toks for f in range(nf)]).cuda(), k=ks, nq=nf * FRAME_TOKENS,
+                          c=float(cfg.get("live_xattn_c", 0.0)), layers=set(cfg.get("live_xattn_layers", range(10, 21))),
+                          steps=set(int(round(float(t))) for t in s.denoising_step_list[:int(cfg.get("live_xattn_nsteps", 2))]),
+                          measure=bool(cfg.get("live_xattn_measure")))
+                if not follow:
+                    self.guide_left = int(cfg.get("live_guide_blocks", 2))
+                    self.guide_fresh = True
+                return len(cache)
+
+            def flow_text(self, s, text: str, follow: bool = False) -> int:
+                """Fix 3, A-flow (LIVE.md 20 Nov; research/prompt_change/feature_injection.md, TokenFlow 2307.10373,
+                FreeText 2601.00535): option A with a target per latent frame, moved by the sign's motion over the 9
+                memory frames (tracked quad centres, oldest to newest) to where it will be in that frame; only the
+                target's high frequencies steer (GUIDE bandpass, faded live_flow_fade at the 909 and 714 inputs); the old
+                text hidden in each context frame (MASK per frame)."""
+                import cv2
+                from textbench.lora_targets import text_region
+                tmem, q, cache = self.pasted_copies(s, text)
+                if tmem is None:
+                    return 0
+                g = float(cfg.get("live_guide_grow", 0.35))
+                reg = text_region((480, 832), q, g, g).astype(np.float32) / 255
+                if not reg.any():
+                    return 0
+                q0, _n = self.paster["tracker"].locate(to_rgb(cache[0]))
+                v = ((q.mean(0) - q0.mean(0)) / (len(cache) - 1)) if q0 is not None else np.zeros(2)  # px per frame
+                cells = cv2.resize(reg, (104, 60), interpolation=cv2.INTER_AREA) > 0.3
+                base = encode9(tmem)[0, -1]  # [C, 60, 104]
+                nf = models.pipeline.num_frame_per_block
+                lats, masks = [], []
+                for j in range(nf):  # latent j of the next block: its pixel frames 4j+1..4j+4 after the newest
+                    dx, dy = (int(round(float(c) * (4 * j + 2.5) / 8)) for c in v)
+                    lats.append(shift2d(base, dy, dx))
+                    masks.append(shift2d(torch.from_numpy(cells), dy, dx))
+                GUIDE.update(lat=torch.stack(lats), mask=torch.stack(masks).to(base.device), final=False, bandpass=True,
+                             fade=list(cfg.get("live_flow_fade", [1.0, 0.5])))
+                MASK["per_frame"] = self.context_tokens(cache, g)
+                if not follow:
+                    self.guide_left = int(cfg.get("live_guide_blocks", 2))
+                    self.guide_fresh = True
+                return len(cache)
+
+            def guide_text(self, s, text: str, follow: bool = False) -> int:
+                """Option A (LIVE.md 19 Nov; Elad: "Is there any way to add a component that will help change the
+                letters"): Krea redraws the text itself. Nothing is pasted into memory: the text is pasted on copies of
+                the 9 memory frames, encoded, and set as GUIDE's target over the text region's latent cells for the next
+                live_guide_blocks blocks, in every denoising pass but the last (the t=0 pass draws the region from the
+                714 pass's input, about 29% the steered latent: structure from the paste, look from the model); MASK
+                hides the region's tokens in every context frame meanwhile, so the old (or a pasted) text in memory is
+                not copied."""
+                import cv2
+                from textbench.lora_targets import text_region
+                cache = list(s.frame_context_cache)
+                if len(cache) != s.frame_context_cache.maxlen or s.current_start_frame < 2:
+                    return 0
+                q, _n = self.paster["tracker"].locate(to_rgb(cache[-1]))
+                if q is None:
+                    return 0
+                words = self.paster["tmpl"].format(text=text.upper())
+                outs = [self.write_field(to_rgb(c), q, text, seed=i) for i, c in enumerate(cache)]
+                lat = encode9([to_tensor(o, c) for o, c in zip(outs, cache)])
+                # LIVE.md 19 Nov (A, follow; Elad: "yes"): live_guide_grow (default 0.35, the first run's) pads the region
+                # around the line; a tighter one keeps the steered patch off the surface's edges
+                g = float(cfg.get("live_guide_grow", 0.35))
+                reg = text_region((480, 832), q, g, g).astype(np.float32) / 255
+                if not reg.any():
+                    return 0
+                cells = cv2.resize(reg, (104, 60), interpolation=cv2.INTER_AREA) > 0.3
+                target = lat[0, -1:].repeat(models.pipeline.num_frame_per_block, 1, 1, 1)
+                GUIDE.update(lat=target, mask=torch.from_numpy(cells).to(target.device), final=False, bandpass=False)
+                ys, xs = np.nonzero(reg)
+                MASK["tokens"] = box_tokens([(int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1)])
+                if not follow:  # a follow moves the running guide to where the sign is now; it does not extend it
+                    self.guide_left = int(cfg.get("live_guide_blocks", 2))
+                    self.guide_fresh = True
+                return len(cache)
+
+            def guide_tick(self) -> None:
+                """After a block: one guided block fewer; the last one clears the guide and the mask."""
+                if self.guide_left > 0:
+                    self.guide_left -= 1
+                    if self.guide_left == 0:
+                        GUIDE.update(lat=None, mask=None, final=False, bandpass=False)
+                        MASK["tokens"], MASK["per_frame"], XB["q"] = None, None, None
+
+            def teacher_block(self, s) -> dict:
+                """Option C (LIVE.md 19 Nov): the teacher for this block's training sample. The same block is made first
+                from a memory whose text region klein restyled (the wanted line pasted on the 9 frames, the newest
+                restyled, the answer put into all 9; textbench/sign_restyle.py), with the same noise (the session's
+                generator state saved and put back), and nothing of it is shown; then everything is put back and the
+                block is made as usual (the student, whose transformer calls the sample records). The teacher's output
+                latents are the target where its own frames read the wanted line (lora_targets.build_text)."""
+                from textbench import lora_targets, sign_restyle
+                out: dict = {"ok": False}
+                cache = list(s.frame_context_cache)
+                if len(cache) != s.frame_context_cache.maxlen or s.current_start_frame < 2 or self.klein_off:
+                    out["why"] = "memory not full or klein off"
+                    return out
+                q, _n = self.paster["tracker"].locate(to_rgb(cache[-1]))
+                if q is None:
+                    out["why"] = "text lost"
+                    return out
+                words = self.paster["tmpl"].format(text=self.shown.upper())
+                pasted = [self.write_field(to_rgb(c), q, self.shown, seed=i) for i, c in enumerate(cache)]
+                r, out["klein"] = sign_restyle.restyle(pasted[-1], q, words, self.klein_call,
+                                                       seeds=cfg.get("live_restyle_seeds", [0, 1]))
+                if r is None:
+                    out["why"] = "klein answer not read right"
+                    return out
+                tmem = [to_tensor(sign_restyle.apply(p, r), c) for p, c in zip(pasted, cache)]
+                st, nf = s.current_start_frame, models.pipeline.num_frame_per_block
+                snap, lat_saved, rnd = snapshot(s), s.all_latents[:, st - 2:st + nf].clone(), s.rnd.get_state()
+                chunks, self.chunks = self.chunks, []
+                anchor = getattr(s, "anchor", None)
+                try:
+                    if anchor is not None:  # code-abc-r1 #2: the anchor slot shows the teacher's restyled frame too
+                        s.anchor = tmem[-1]
+                    s.frame_context_cache = type(s.frame_context_cache)(tmem, maxlen=s.frame_context_cache.maxlen)
+                    s.all_latents[:, st - 2:st] = encode9(tmem)[:, 1:3].to(s.all_latents)
+                    s.generate_block(models)
+                    torch.cuda.synchronize()
+                    frames_t = [f for c in self.chunks for f in c]
+                    out["pred"] = s.last_pred.detach().clone()
+                finally:
+                    restore(s, snap)
+                    if anchor is not None:
+                        s.anchor = anchor
+                    s.all_latents[:, st - 2:st + nf] = lat_saved
+                    s.rnd.set_state(rnd)
+                    self.chunks = chunks
+                if len(frames_t) != 12:
+                    out["why"] = f"teacher made {len(frames_t)} frames"
+                    return out
+                res = lora_targets.build_text(frames_t, words, self.paster["tracker"])
+                right = [h == "krea" for h in res["how"]]  # the teacher's own frames only, no repair
+                out.update(ok=sum(right) >= 8, right=sum(right), masks=res["lcd"], verified=right,
+                           frame=frames_t[len(frames_t) // 2])
+                if not out["ok"]:
+                    out["why"] = f"teacher right on {sum(right)}/12 frames"
+                return out
 
             def paste_read(self, frame: np.ndarray) -> tuple[str, bool, int]:
                 """OCR's reading at the tracked line (lines whose centre lies in it, padded by a third of its height
@@ -854,14 +1353,39 @@ def main() -> None:
                 got = sorted((l[:, 0].min(), t) for l, t, _ in ocr_lines(frame)
                              if x0 <= l[:, 0].mean() <= x1 and y0 <= l[:, 1].mean() <= y1)
                 read = "".join(norm(t) for _, t in got)
-                return read, same(read, self.paster["tmpl"].format(text=self.shown.upper())), n_in
+                ok = same(read, self.paster["tmpl"].format(text=self.shown.upper()))
+                lead = self.paster["plane"].lead if "plane" in self.paster else None
+                if not ok and lead and self.shown[:1] == lead["ch"] and len(self.shown) > 1:
+                    # LIVE.md 20 Nov (Elad: "The number on the ticket price moved out of the plane"): OCR misses the
+                    # small raised "$" Krea draws on the price tag; read as wrong, the lock rewrote every block and the
+                    # number drifted off the tag. The text without that symbol counts here (the scores are unchanged).
+                    ok = same(read, self.paster["tmpl"].format(text=self.shown[1:].upper()))
+                return read, ok, n_in
 
             def paste_lock(self, frames: list, s) -> dict:
                 """The memory-only lock (setup E's) for live_writer "paste": the newest frame read by OCR at the
                 tracked line; when it is not the shown text, the memory is written again. Frames are shown as made."""
                 read, ok, n_in = self.paste_read(frames[-1])
-                mem = 0 if ok or n_in <= 0 else self.paste_memory(s, self.shown)  # lost: no blind rewrite
-                return {"raw_last": read, "ok": ok, "memory_fixed": bool(mem), "inliers": n_in}
+                how = None
+                if ok:
+                    self.guide_fails = 0
+                    mem = 0
+                elif n_in <= 0:  # lost: no blind rewrite
+                    mem = 0
+                elif cfg.get("live_paste_mode") in GUIDED:
+                    # LIVE.md 19 Nov (option A): a guide still running is left to finish; after live_guide_fallback
+                    # guides that did not read right, the paste (copied by Krea) makes the text right
+                    if self.guide_left > 0:
+                        mem, how = 0, "guiding"
+                    else:
+                        self.guide_fails += 1
+                        if self.guide_fails >= int(cfg.get("live_guide_fallback", 2)):  # code-abc-r1 nit
+                            mem, how, self.guide_fails = self.paste_memory(s, self.shown), "paste fallback", 0
+                        else:
+                            mem, how = self.guided_write(s, self.shown), "guide"
+                else:
+                    mem = self.paste_memory(s, self.shown)
+                return {"raw_last": read, "ok": ok, "memory_fixed": bool(mem), "inliers": n_in, **({"how": how} if how else {})}
 
             def restyle_safe(self, outs: list, geos: list, text: str, a) -> list:
                 """restyle, any error keeping the font write (code-klein-r1 should-fix 2); after an editor timeout klein
@@ -941,6 +1465,8 @@ def main() -> None:
                 if len(self.calls) != 1 + cfg["steps"] or len(raw_frames) != 12 or self.prev_raw is None:
                     out["why"] = f"calls {len(self.calls)} frames {len(raw_frames)} prev {self.prev_raw is not None}"
                     return out
+                if (self.collect or {}).get("teacher"):
+                    return self.save_teacher_sample(raw_frames, typed, out)
                 editor = None
                 if WRITE["editor"] and not self.klein_off:
                     def editor(img, prompt, seed):
@@ -953,8 +1479,12 @@ def main() -> None:
                             raise
                         finally:
                             EDITOR["fn"].mode = saved
-                res = lora_targets.build(raw_frames, self.shown, self.lcd, self.masks, str(ROOT), self.lay0,
-                                         self.start_box, editor=editor)
+                if self.paster is not None:
+                    res = lora_targets.build_text(raw_frames, self.paster["tmpl"].format(text=self.shown.upper()),
+                                                  self.paster["tracker"])
+                else:
+                    res = lora_targets.build(raw_frames, self.shown, self.lcd, self.masks, str(ROOT), self.lay0,
+                                             self.start_box, editor=editor)
                 base = s.last_pred.detach()
                 changed = any(r is not o for r, o in zip(res["frames"], raw_frames))
                 target = base.clone()
@@ -985,6 +1515,42 @@ def main() -> None:
                         self.collect_dir / f"{name}_f{i}_{res['how'][i].replace(' ', '')}.jpg", quality=88)
                 out.update(saved=True, name=name, changed=changed, right=res["info"]["right"],
                            verified=res["info"]["verified"], source=res["info"]["source"])
+                return out
+
+            def save_teacher_sample(self, raw_frames: list, typed: str, out: dict) -> dict:
+                """Option C (LIVE.md 19 Nov): the block's inputs as save_sample records them (the student's calls) with
+                the teacher's output latents (KreaLive.teacher_block) as the target: weight 1 on the text region's
+                cells of latents whose 4 teacher frames read the wanted line, 0 on the region's cells of the others,
+                `outside` elsewhere (same noise, same memory outside the region: the teacher's latents there are the
+                student's own, nearly)."""
+                from textbench import lora_targets
+                t = self.teacher_now or {}
+                if not t.get("ok"):
+                    out["why"] = "teacher: " + str(t.get("why"))
+                    return out
+                s = self.session
+                w = lora_targets.latent_weights(t["masks"], t["verified"], inside=1.0, outside=self.collect.get("outside", 0.1))
+                if not (w >= 1).any():
+                    out["why"] = "teacher: no latent fully right"
+                    return out
+                key = self.prompt_now
+                if key not in self.prompts_seen:
+                    self.prompts_seen[key] = s.current_prompt_embeds.detach().to("cpu", torch.bfloat16).clone()
+                k = len(list(self.collect_dir.glob("*.pt")))
+                name = f"{os.getpid()}_{self.steps_done:04d}_{k:05d}"
+                info = {"source": "teacher", "source_frame": None, "source_ocr": None, "right": t["right"],
+                        "verified": int(sum(t["verified"])), "n": 12, "klein": t.get("klein")}
+                base = s.last_pred.detach()
+                region = torch.from_numpy(w != np.float32(self.collect.get("outside", 0.1))).to(base.device)[None, :, None]
+                target = torch.where(region, t["pred"].to(base), base)  # code-abc-r1 #4: the student's own outside
+                torch.save({"ctx": self.calls[0], "steps": self.calls[1:], "base": base.to("cpu", torch.bfloat16),
+                            "target": target.to("cpu", torch.bfloat16), "weight": torch.from_numpy(w),
+                            "prompt": key, "typed": typed, "shown": self.shown, "info": info,
+                            "how": ["teacher" if v else "teacher wrong" for v in t["verified"]],
+                            "verified": t["verified"]}, self.collect_dir / f"{name}.pt")
+                Image.fromarray(np.concatenate([raw_frames[len(raw_frames) // 2], t["frame"]], 1)).save(
+                    self.collect_dir / f"{name}_student_teacher.jpg", quality=88)
+                out.update(saved=True, name=name, changed=True, right=t["right"], verified=info["verified"], source="teacher")
                 return out
 
             def place_labels(self, g: dict) -> list:
@@ -1119,6 +1685,7 @@ def main() -> None:
 
             def step(self, typed: str, seq: int):
                 info: dict = {"wrote": False}
+                self.guide_fresh = False  # set by a guide written in this step (KreaLive.guide_text)
                 self.restyles: list = []  # klein restyle calls this block (KreaLive.restyle)
                 self.frame_places = []  # code-probe-r1 nit: per block, as frame_reads
                 with torch.inference_mode():
@@ -1129,10 +1696,15 @@ def main() -> None:
                         # start image with the shown text written on it at the display's box
                         img = np.asarray(start)
                         if self.paster is not None and self.shown != cfg["live_text"]:
-                            from textbench.paste_writer import write as paste_write
-                            img = paste_write(img, self.paster["quad"], self.paster["tmpl"].format(text=self.shown.upper()),
-                                              self.paster["align"], ink_hint=self.paster["ink"])[0]
-                            info["reset_write"] = "paste"
+                            try:  # code-e2p-r1 should-fix 1: a failed write keeps the start image, the run goes on
+                                img = self.write_field(img, self.paster["quad"], self.shown)
+                                info["reset_write"] = "paste"
+                            except Exception as ex:
+                                info["reset_write"] = f"failed: {type(ex).__name__}: {ex}"[:300]
+                            if cfg.get("live_restyle") and info.get("reset_write") == "paste":  # LIVE.md 19 Nov (option B): restyled as the memory's
+                                img = self.paste_restyle([img], self.paster["quad"],
+                                                         self.paster["tmpl"].format(text=self.shown.upper()))[0]
+                                info["reset_restyle"] = self.restyles[-1] if self.restyles else None
                         elif self.lcd is not None and self.shown != cfg["live_text"]:
                             g = self.lcd.geometry(img, affine=self.identity)
                             if g is not None:
@@ -1174,6 +1746,8 @@ def main() -> None:
                     # write_memory needs a full memory anyway)
                     if self.lcd is not None:  # the 7-segment display holds digits only, at most live_max_chars of them
                         typed = "".join(ch for ch in typed if ch in "0123456789")[-cfg.get("live_max_chars", 5):]
+                    elif self.paster is not None:  # code-live-text-r1 #2: the paste writer writes capitals; prompt agrees
+                        typed = typed.upper()[:cfg.get("live_max_chars", 12)].rstrip()
                     if typed != self.shown and typed.strip() and s.block_idx >= 1:  # r2 #4: no empty display
                         prev = s.current_prompt_embeds
                         new_prompt = switch_tmpl.format(text=typed)
@@ -1193,7 +1767,7 @@ def main() -> None:
                             n = 1
                         elif self.paster is not None:
                             try:
-                                n = self.paste_memory(s, typed)
+                                n = self.text_write(s, typed)
                             except Exception as ex:
                                 n = 0
                                 info["edit_error"] = f"{type(ex).__name__}: {ex}"[:300]
@@ -1241,9 +1815,36 @@ def main() -> None:
                     if (self.lcd is not None or self.paster is not None) and self.need_pin and s.block_idx >= 1 \
                             and not info.get("wrote"):
                         try:  # after a (re)start: the shown number written once into memory (the pin's target)
-                            info["post_reset_write"] = (self.paste_memory(s, self.shown) if self.paster is not None
+                            info["post_reset_write"] = (self.text_write(s, self.shown) if self.paster is not None
                                                         else self.lcd_memory(s, self.shown))
                             self.need_pin = False
+                        except Exception as ex:
+                            info["edit_error"] = f"{type(ex).__name__}: {ex}"[:300]
+                    if cfg.get("live_paste_mode") in ("guide", "xattn", "flow") and cfg.get("live_guide_follow") \
+                            and self.guide_left > 0 \
+                            and not self.guide_fresh and s.block_idx >= 1:
+                        # LIVE.md 19 Nov (A, follow): the first A run steered toward where the sign was at the write while
+                        # the camera and the sign moved (a see-through card on the price tag, a smeared gate sign): before
+                        # every further guided block the target is written again at the sign's tracked place
+                        tf = time.perf_counter()
+                        try:
+                            info["guide_follow"] = bool(self.guided_write(s, self.shown, follow=True))
+                        except Exception as ex:
+                            info["edit_error"] = f"{type(ex).__name__}: {ex}"[:300]
+                        info["follow_s"] = round(time.perf_counter() - tf, 3)
+                    self.teacher_now = None
+                    if self.collect and self.collect.get("teacher") and s.block_idx >= 1:
+                        tt = time.perf_counter()
+                        try:  # option C (LIVE.md 19 Nov): a teacher error is logged, never the end of the run
+                            self.teacher_now = self.teacher_block(s)
+                        except Exception as ex:
+                            self.teacher_now = {"ok": False, "why": f"{type(ex).__name__}: {ex}"[:300]}
+                        info["teacher"] = {k: v for k, v in self.teacher_now.items()
+                                           if k not in ("pred", "masks", "verified", "frame")}
+                        info["teacher_s"] = round(time.perf_counter() - tt, 3)
+                    if self.early_mem is not None:  # LIVE.md 20 Nov (fix 1): the pasted memory for the first steps
+                        try:
+                            info["early"] = self.early_swap(s)
                         except Exception as ex:
                             info["edit_error"] = f"{type(ex).__name__}: {ex}"[:300]
                     t1 = time.perf_counter()
@@ -1255,6 +1856,11 @@ def main() -> None:
                     try:
                         self.session.generate_block(models)
                     finally:
+                        if EARLY["fn"] is not None:  # fix 1: never left with the pasted memory (no rebuild needed)
+                            fn = EARLY["fn"]
+                            EARLY.update(fn=None)
+                            fn(False)
+                            info["early_unused"] = True
                         if self.probe is not None:
                             self.probe.disarm()
                         if self.collect:
@@ -1262,6 +1868,11 @@ def main() -> None:
                     torch.cuda.synchronize()
                     t2 = time.perf_counter()  # code-live-r1 #9: block timing ends here, before the OCR below
                     self.b += 1
+                    if cfg.get("live_paste_mode") in GUIDED:
+                        info["guided"] = self.guide_left > 0
+                        if XB["stats"]:  # fix 2's measure: attention on the text tokens, sign region vs the frame
+                            info["xattn"], XB["stats"] = XB["stats"], []
+                        self.guide_tick()
                     frames = [f for c in self.chunks for f in c]
                     if frames:
                         self.last = frames[-1]
@@ -1270,6 +1881,24 @@ def main() -> None:
                     info["ocr_s"] = round(time.perf_counter() - t2, 3)
                     if self.paster is not None and frames and cfg.get("live_lock"):
                         t4 = time.perf_counter()
+                        raw_frames = list(frames)
+                        # LIVE.md 17 Nov (v3): the sample uses the block's output latents (s.last_pred) and its raw
+                        # frames, not the memory, so the lock's rewrite after it does not change it
+                        if self.collect:
+                            tc = time.perf_counter()
+                            try:  # a collection error is logged, never the end of the run
+                                info["collect"] = self.save_sample(raw_frames, typed, info)
+                            except Exception as ex:
+                                info["collect_error"] = f"{type(ex).__name__}: {ex}"[:300]
+                            info["collect_s"] = round(time.perf_counter() - tc, 3)
+                            self.prev_raw = raw_frames[-1]
+                        if cfg.get("live_paste_strays") and "plane" in self.paster:
+                            ts = time.perf_counter()
+                            try:  # before the lock, so a rewrite's pasted copies are made from the cleaned memory
+                                info["strays"] = self.stray_erase(self.session)
+                            except Exception as ex:
+                                info["strays_error"] = f"{type(ex).__name__}: {ex}"[:300]
+                            info["strays_s"] = round(time.perf_counter() - ts, 3)
                         try:  # a lock or reader error is logged, never the end of the session
                             info["lock"] = self.paste_lock(frames, self.session)
                         except Exception as ex:
@@ -1340,24 +1969,41 @@ def main() -> None:
         if not rep:
             sys.path.insert(0, str(ROOT / "runner"))
             from live_server import serve
-            serve(live_generator(cfg), cfg["live_text"], cfg.get("port", 8000), ROOT / "logs/live" / f"{launch}.jsonl",
-                  title=cfg.get("live_title", "Live Sign"))
+            # LIVE.md 17 Nov (live recording): several paste-writer sessions on one VM keep their own log and frames
+            name = f"{launch}_{cfg['start_id']}" if cfg.get("live_writer") == "paste" else launch
+            serve(live_generator(cfg), cfg["live_text"], cfg.get("port", 8000), ROOT / "logs/live" / f"{name}.jsonl",
+                  title=cfg.get("live_title", "Live Sign"),
+                  mode="text" if cfg.get("live_writer") == "paste" else "digits", max_chars=cfg.get("live_max_chars", 5))
             return
         out = ROOT / "logs/live" / launch
         if rep.get("subdir"):  # LIVE.md 16 Nov: several replay configs of the same arms on one VM keep their own files
             out = out / rep["subdir"]
         out.mkdir(parents=True, exist_ok=True)
 
-        def script_for(sd: int) -> list:
+        def script_for(sd: int, acfg: dict | None = None, arm: str = "") -> list:
             """LIVE.md (16 Nov, the LoRA pilot): random_script draws each seed's own numbers (1-5 digits, no leading
             zero, none of `exclude`, the evaluation's held-out numbers); else the config's fixed script."""
             rs = rep.get("random_script")
             if not rs:
                 return rep["script"]
-            rng = np.random.default_rng(int(rs.get("rng", 0)) * 1000 + sd)
+            # LIVE.md 17 Nov (v3): an arm's own word list or digit range (live_script_pool / live_script_digits), and
+            # its own draws (the arm's name in the seed)
+            acfg = acfg or {}
+            rs = {**rs, **({"pool": acfg["live_script_pool"]} if acfg.get("live_script_pool") else {}),
+                  **({"digits": acfg["live_script_digits"]} if acfg.get("live_script_digits") else {})}
+            import zlib
+            rng = np.random.default_rng(int(rs.get("rng", 0)) * 1000 + sd + (zlib.crc32(arm.encode()) % 997 if arm else 0))
             excl, nums = {str(x) for x in rs.get("exclude", [])}, []
+            if rs.get("pool"):  # LIVE.md 17 Nov (v3): words drawn from a list (no repeat back to back)
+                pool = [str(w) for w in rs["pool"] if str(w) not in excl]
+                while len(nums) < rs["numbers"]:
+                    w = pool[int(rng.integers(0, len(pool)))]
+                    if not nums or w != nums[-1]:
+                        nums.append(w)
+                return [[rs["first"] + rs["every"] * i, n] for i, n in enumerate(nums)]
+            lo_d, hi_d = rs.get("digits", [1, 5])
             while len(nums) < rs["numbers"]:
-                k = int(rng.integers(1, 6))
+                k = int(rng.integers(lo_d, hi_d + 1))
                 n = str(int(rng.integers(1 if k > 1 else 0, 10))) + "".join(str(int(d)) for d in rng.integers(0, 10, k - 1))
                 if n not in excl and (not nums or n != nums[-1]):
                     nums.append(n)
@@ -1373,7 +2019,7 @@ def main() -> None:
                 gen = None
                 try:  # code-replay-r1 #3: a failed run is logged; the other runs go on
                     gen = live_generator(acfg)()
-                    script = script_for(sd)
+                    script = script_for(sd, acfg, arm if (acfg.get("live_script_pool") or acfg.get("live_script_digits")) else "")
                     seq, prev = 0, None
                     with (out / f"{arm}-s{sd}.jsonl").open("w") as log:
                         for b in range(rep["blocks"]):
@@ -1415,7 +2061,9 @@ def main() -> None:
                         gen.probe.close()
                     if gen is not None:
                         gen.session.dispose()
-                    GUIDE.update(lat=None, mask=None, final=False)
+                    GUIDE.update(lat=None, mask=None, final=False, bandpass=False)
+                    MASK["tokens"], MASK["per_frame"], XB["q"] = None, None, None  # LIVE.md 19 Nov (A), 20 Nov (fixes)
+                    EARLY.update(fn=None)
                     del frames_all, gen
                     import gc
                     gc.collect()  # code-replay-r1 #6: the session and its generator reference each other

@@ -64,23 +64,39 @@ canvas { width: 100%; height: 100%; display: block; }
 const cv = document.getElementById("cv"), ctx = cv.getContext("2d");
 const $ = (id) => document.getElementById(id);
 let ws, prefix = "", digits = "", startDigits = "", seq = 0;
+// LIVE.md 17 Nov (code-live-text-r1 #1): mode "text" (paste writer): letters, digits, space; the first key after the
+// start or a reset begins a new word; capitals, at most maxChars
+let mode = "digits", maxChars = 5, word = "", startWord = "", fresh = true;
 const keyTime = {}, latencies = [], frameQ = [];
 let lastShown = 0, frameInterval = 280, lastChecked = -1;
 
 function sendText() {
   seq += 1;
   keyTime[seq] = performance.now();
-  const text = prefix + digits;
+  const text = mode === "text" ? word : prefix + digits;
   $("typed").textContent = text;
   if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: "text", text, seq, t: Date.now() }));
 }
+function keyText(k) {
+  if (/^[A-Za-z0-9 ]$/.test(k)) {
+    if (k === " " && (fresh || !word)) return;  // code-live-text-r2 #6: a leading space keeps the new-word state
+    const base = fresh ? "" : word; fresh = false;
+    word = (base + k.toUpperCase()).slice(0, maxChars); sendText();
+  }
+  else if (k === "Backspace") { word = fresh ? "" : word.slice(0, -1); fresh = false; $("typed").textContent = word || "-";
+    if (word) sendText(); }  // an empty sign is never sent (the server keeps the last word)
+  else if (k === "Escape") { word = startWord; fresh = true; sendText(); }
+}
 function key(k) {
+  if (mode === "text") return keyText(k);
   if (/^[0-9]$/.test(k)) { digits = (digits + k).slice(-5); sendText(); }
   else if (k === "Backspace") { digits = digits.slice(0, -1); sendText(); }
   else if (k === "Escape") { digits = startDigits; sendText(); }
 }
 document.addEventListener("keydown", (e) => {
-  if (/^[0-9]$/.test(e.key) || e.key === "Backspace" || e.key === "Escape") { e.preventDefault(); key(e.key); }
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const ok = mode === "text" ? /^[A-Za-z0-9 ]$/.test(e.key) : /^[0-9]$/.test(e.key);
+  if (ok || e.key === "Backspace" || e.key === "Escape") { e.preventDefault(); key(e.key); }
 });
 $("pad").append(...["1","2","3","4","5","6","7","8","9","0","Backspace","Escape"].map((k) => {
   const b = document.createElement("button");
@@ -100,7 +116,15 @@ function connect() {
     if (typeof ev.data === "string") {
       const m = JSON.parse(ev.data);
       if (m.type === "hello") {
-        const t = m.text || "", st = m.start ?? t;  // code-live-lcd-r1 #1: Reset goes back to the start number
+        const t = m.text || "", st = m.start ?? t;
+        mode = m.mode || "digits"; maxChars = m.max_chars || 5;
+        if (mode === "text") {
+          word = t.toUpperCase(); startWord = st.toUpperCase(); fresh = true;
+          $("pad").hidden = true;
+          document.querySelector(".lede").textContent = "Krea Realtime 14B is generating this video now. Type a word "
+            + "(letters, digits, space; up to " + maxChars + "): before its next block the model's memory is rewritten "
+            + "with it, and it keeps generating from there. Backspace deletes, Esc restores the start.";
+        }  // code-live-lcd-r1 #1: Reset goes back to the start number
         const i = t.search(/[0-9]+$/), j = st.search(/[0-9]+$/);
         prefix = i >= 0 ? t.slice(0, i) : t; digits = i >= 0 ? t.slice(i) : "";
         startDigits = j >= 0 ? st.slice(j) : "";

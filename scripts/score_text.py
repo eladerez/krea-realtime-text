@@ -4,7 +4,10 @@ by an ORB homography (textbench/paste_writer.TextTracker). For every `stride`-th
 line, joined, against the line expected (live_line with the field set to the block's shown text). Also the share of
 frames after the first switch that still read the start text.
 Usage: uv run --with fastapi python scripts/score_text.py --run logs/live/<launch>/<subdir> --config <replay config>
-       --out data/scores/<name>.json
+       --out data/scores/<name>.json [--fallback-full]
+--fallback-full (LIVE.md 17 Nov, v3: the camera pans so far that the ORB tracker loses the line while it is still in view
+and right): for a frame where the tracker is lost, OCR the whole frame, join lines on the same row left to right, and
+count the frame right if any row reads the expected line. Reported as right_fallback beside right (tracked only).
 """
 from __future__ import annotations
 
@@ -35,12 +38,26 @@ def read_line(frame: np.ndarray, tracker: TextTracker) -> str | None:
     return "".join(norm(t) for _, t in got)
 
 
+def rows_full(frame: np.ndarray) -> list[str]:
+    """Every OCR row of the whole frame (lines whose centres lie within half a line height), joined left to right."""
+    ls = sorted(((l[:, 1].mean(), l[:, 0].min(), float(np.ptp(l[:, 1])), norm(t)) for l, t, _ in ocr_lines(frame)))
+    rows: list[list] = []
+    for y, x, h, t in ls:
+        if rows and abs(y - rows[-1][0][0]) <= max(h, rows[-1][0][2]) / 2:
+            rows[-1].append((y, x, h, t))
+        else:
+            rows.append([(y, x, h, t)])
+    out = ["".join(t for _, _, _, t in sorted(r, key=lambda z: z[1])) for r in rows]
+    return out + [t for _, _, _, t in ls]
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--run", type=Path, required=True)
     ap.add_argument("--config", required=True)
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--stride", type=int, default=3)
+    ap.add_argument("--fallback-full", action="store_true")
     a = ap.parse_args()
     rep = load_config(a.config)["live_replay"]
     arm0 = load_config(rep["arms"][0])
@@ -62,27 +79,33 @@ def main() -> None:
             blocks = [json.loads(x) for x in log.read_text().splitlines()]
             owner = [i for i, b in enumerate(blocks) for _ in range(b["n"])]
             tracker = TextTracker(start, q)
-            rows, ok, ok_typed, held, n, n_after, lost = [], 0, 0, 0, 0, 0, 0
+            rows, ok, ok_typed, held, n, n_after, lost, ok_fb = [], 0, 0, 0, 0, 0, 0, 0
             with av.open(str(mp4)) as c:
                 for k, f in enumerate(c.decode(video=0)):
                     if k % a.stride or k >= len(owner):
                         continue
                     b = blocks[owner[k]]
                     want = tmpl.format(text=str(b["shown"]).upper())
-                    read = read_line(f.to_ndarray(format="rgb24"), tracker)
+                    arr = f.to_ndarray(format="rgb24")
+                    read = read_line(arr, tracker)
                     lost += read is None
+                    fb = None
+                    if read is None and a.fallback_full:
+                        fb = next((r for r in rows_full(arr) if same(r, want)), "")
                     read = read or ""
                     ok += same(read, want)
+                    ok_fb += same(read, want) or bool(fb)
                     ok_typed += same(read, tmpl.format(text=str(b["typed"]).upper()))  # r1: a failed switch keeps shown
                     n += 1
                     if b["shown"] != fld:
                         n_after += 1
                         held += same(read, tmpl.format(text=fld.upper()))
-                    rows.append({"frame": k, "block": owner[k], "want": norm(want), "read": read})
+                    rows.append({"frame": k, "block": owner[k], "want": norm(want), "read": read, "fallback": fb})
             bs = sorted(b["block_s"] for b in blocks)
             locks = [b["lock"] for b in blocks if isinstance(b.get("lock"), dict)]
             per_seed[sd] = {"frames_read": n, "right": round(ok / max(n, 1), 3),
                             "right_vs_typed": round(ok_typed / max(n, 1), 3), "tracker_lost": lost,
+                            "right_fallback": round(ok_fb / max(n, 1), 3) if a.fallback_full else None,
                             "blocks_typed_not_shown": sum(b["typed"] != b["shown"] for b in blocks),
                             "memory_rewrites": sum(bool(l.get("memory_fixed")) for l in locks),
                             "lock_lost": sum((l.get("inliers") or 0) <= 0 for l in locks),
@@ -92,8 +115,11 @@ def main() -> None:
             res["arms"][arm] = {"seeds": per_seed,
                                 "right": round(float(np.mean([v["right"] for v in per_seed.values()])), 3),
                                 "reads_start_text": round(float(np.mean([v["reads_start_text"] for v in per_seed.values()])), 3)}
+            if a.fallback_full:
+                res["arms"][arm]["right_fallback"] = round(float(np.mean([v["right_fallback"] for v in per_seed.values()])), 3)
             r = res["arms"][arm]
-            print(f"{arm:32s} right {r['right']:.0%}  still the start text {r['reads_start_text']:.0%}  "
+            fbs = f"  with full-frame fallback {r['right_fallback']:.0%}" if a.fallback_full else ""
+            print(f"{arm:32s} right {r['right']:.0%}{fbs}  still the start text {r['reads_start_text']:.0%}  "
                   f"per seed {[(s, v['right'], v['right_vs_typed'], v['blocks_typed_not_shown'], v['memory_rewrites'], v['tracker_lost']) for s, v in per_seed.items()]}"
                   "  (right, vs typed, blocks typed!=shown, lock rewrites, tracker lost)", flush=True)
     a.out.parent.mkdir(parents=True, exist_ok=True)

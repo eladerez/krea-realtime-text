@@ -1,0 +1,8 @@
+{
+ "replay_E2P_base_door/s101": {
+  "frames": 160,
+  "right_fallback": 0.613,
+  "contains": 0.613,
+  "contains_with_start_text": 0
+ }
+}

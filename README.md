@@ -1,42 +1,88 @@
 # Typed text that holds in Krea Realtime 14B
 
-Real-time video models drift on text: a calculator typed "23476" shows "29476" a second later, and a sign flips its
-letters. This repo shows a way to make [Krea Realtime 14B](https://github.com/krea-ai/realtime-video) keep the text you
-type, on calculators, signs, screens and notes, at no cost in speed:
+Runway's Solaris write-up: "Fully real-time generated text remains an open challenge." Type a new gate number into
+[Krea Realtime 14B](https://github.com/krea-ai/realtime-video) and the sign keeps saying "GATE B6". This repo makes the
+text you type appear on the surface and hold while the camera moves: signs, price tags, screens, words and digits.
+Every frame is drawn by Krea; nothing is overlaid.
 
-1. **Write the text into the model's memory.** Krea draws each new block of frames from a memory of recent frames. A
-   writer finds the text in that memory with OCR, erases it and pastes the typed text in a plain font.
-2. **A small LoRA makes the model copy the memory's text.** Rank-16 adapters on self-attention, trained on Krea's own
-   frames, merged into the weights.
-3. **A lock checks every block.** If the newest frame reads wrong, the memory is written again.
+![Same model, seed and typing. Left: the text in the prompt only. Right: also written into the model's memory.](media/before_after_stills.jpg)
 
-Every frame shown is drawn by Krea. The typed text reaches it only through the prompt and the memory.
+*Same model (Krea + the same LoRA), noise seed and typing, five scenes the LoRA never saw. Left: the typed text in the
+prompt only. Right: also written into the model's memory. Videos: [media/krea_text_before_after.mp4](media/krea_text_before_after.mp4)
+(40 s, side by side), [media/krea_text_reel.mp4](media/krea_text_reel.mp4) (36 s).*
 
-![Base Krea (left) vs Krea + LoRA v2 (right), same noise seed and typed text](media/surfaces_stills.jpg)
+## Results
 
-*Base Krea (left) vs Krea + LoRA v2 (right) on four surfaces the LoRA never trained on. Video:
-[media/text_surfaces_v2_s101.mp4](media/text_surfaces_v2_s101.mp4) (62 s).*
+Share of frames where OCR finds the typed text (160 frames per scene, 10 typed changes, noise seed 101, camera moving;
+[results/scores/](results/scores), `*_contains.json`):
+
+| Scene | Prompt only, base Krea | Prompt only, + LoRA | Memory write, no LoRA | Memory write + LoRA |
+|---|---|---|---|---|
+| Door sign (words) | 5% | 4% | 61% | **99%** |
+| Price tag | 4% | 4% | 57% | 53%* |
+| Gas pump display | 31% | 4% | **100%** | 99% |
+| Airport gate sign | 4% | 4% | 91% | **92%** |
+| Coffee machine label | 11% | 12% | **78%** | 73% |
+| **Mean** | **11%** | **5%** | **77%** | **83%** |
+
+\*OCR often misses the small raised "$" Krea draws on the tag. Files: `before_eval_*`, `pairA_eval_*`, `ablate_eval_*`,
+`fix5_eval_*` (price tag: `fix6_eval_price_tag`, the same method with the lock fix below).
+
+- **The prompt alone does not change text already on screen** (5-11%): the old text stays (door: CLOSED in 100% of
+  frames with the LoRA).
+- **The memory write is the method** (77% without the LoRA). The LoRA adds 6 points on the mean, almost all on the door
+  sign, where base Krea's camera also dives into the sign on this seed; on the price tag and coffee machine it is
+  slightly lower.
+- **Speed** (one RTX PRO 6000, per 12-frame block): 3.3 s for a plain block; a block where the text changes takes
+  4.3 s plus the write (up to 1.8 s, 90th percentile); the lock adds about 0.15 s to every block. The merged LoRA costs
+  nothing (3.31 vs 3.29 s).
 
 ## How it works
 
 ```mermaid
 flowchart LR
     T["You type: OPEN"] --> P["Prompt: …It reads 'OPEN'…"]
-    P --> TE["T5 text encoder"] --> CA
-    T --> W["Writer: OCR finds the text in memory,<br/>erases it, pastes the new text"]
-    W --> M["Memory: last 9 frames<br/>(VAE-encoded)"] --> KV["Key-value cache"] --> SA
-    subgraph B["Each of the 40 transformer blocks (4 denoising steps per video block)"]
-        SA["Self-attention<br/>+ LoRA rank 16"] --> CA["Cross-attention<br/>(reads the prompt)"] --> FF["Feed-forward"]
+    P --> CA
+    T --> F["Plane: the surface's edges<br/>found once, tracked per frame"]
+    F --> C["Copy of the memory with OPEN<br/>drawn on the surface's plane"]
+    M["Memory: last 9 frames"] --> C
+    C -- "denoising steps 1-2" --> SA
+    M -- "steps 3-4, old text masked" --> SA
+    subgraph B["Krea Realtime 14B, 4 denoising steps per block of 12 frames"]
+        SA["Self-attention (+ LoRA)"] --> CA["Cross-attention"]
     end
-    FF --> D["VAE decode: 12 new frames"] --> S["Shown"]
-    S --> L["Lock: newest frame read by OCR"]
-    L -- "wrong: write again" --> W
-    S -. "new frames become the memory" .-> M
+    CA --> S["12 new frames"]
+    S --> L["Lock: OCR reads the newest frame"]
+    L -- "wrong: write again" --> C
+    S -. "become the memory" .-> M
 ```
 
-A fuller diagram with the measurements is in [docs/diagram.html](docs/diagram.html).
+1. **Find the plane** (`textbench/paste_writer.py`, `PlaneWriter`). On the first frame OCR finds the text; the surface's
+   own border edges (line segments near the text, with the surface's colour inside) give its plane, the text's height
+   and font width. An ORB tracker follows the text, and the plane moves with it.
+2. **Show the new text for the first steps only** (`runner/gen_krea.py`, `live_paste_mode: early`). Krea draws each
+   block from a memory of its last frames. When the text changes, the first 2 of the 4 denoising steps run on a copy of
+   the memory with the old text erased and the new text drawn on the plane; the last 2 run on the real memory, its
+   key-value cache rebuilt, with the old text's tokens masked in each frame. The memory itself is not edited: the model
+   draws the letters in the scene's light and perspective. After feature injection in image editing (Plug-and-Play,
+   Tumanyan et al. 2023).
+3. **Lock.** OCR reads every new block; if the text is wrong, the next block is written again.
+4. **LoRA** (optional, +6 points): rank 16 on self-attention, 0.14% of the weights, trained on Krea's own frames to keep
+   what its memory shows, merged into the weights.
 
-## What we found
+## Limits
+
+- One noise seed for these tables, scored by OCR (it misreads some fonts and the small "$").
+- **Text stays where it is on screen.** On a long pan the price tag moves on and the number lags behind it, then slips
+  off the tag (the videos show the stretches where it holds). Erasing the copies left on the background
+  (`live_paste_strays`, tried) did not fix it.
+- Krea restarts from the first frame every 13 blocks (it drifts away from the scene after ~30 blocks).
+- Flat surfaces with one line of text. One model and one GPU type; not real-time on that GPU (3.3 s per 0.75 s of video).
+
+## Earlier findings (first writer, 17 Nov)
+
+The first version pasted the text into the memory in a plain font (it held, but looked pasted). These
+findings are from that version.
 
 ### Where the digit lives inside the model
 
@@ -122,28 +168,20 @@ On the sticky note, v2's 100% comes with a frozen frame. The training shots were
 shot" prompts, and the loss held the rest of the frame close to Krea's own output; the next round needs moving-camera
 examples.
 
-## Limits
-
-- One model (Krea Realtime 14B) and one GPU type. A 12-frame block (0.75 s of video at 16 fps) takes about 3.5 s on an
-  RTX PRO 6000 with standard attention, so our runs are not real-time on that GPU.
-- Flat surfaces with one line of text. Curved, glowing, handwritten-in-scene and multi-line text are not tested.
-- OCR and a 7-segment reader score the frames; both misread some fonts. The tables count the reader's verdicts, checked
-  by eye on samples.
-- Two or three noise seeds per condition.
-
 ## Repository
 
 | Path | What |
 |---|---|
-| `textbench/paste_writer.py` | the general writer: OCR find, ORB tracking, two-colour erase and inpaint, paste |
+| `textbench/paste_writer.py` | the writer: OCR find, ORB tracking, the surface plane (`PlaneWriter`), erase and inpaint |
 | `textbench/write_lcd.py`, `seg7.py` | the 7-segment writer and reader for calculator LCDs |
 | `textbench/lora_targets.py` | training targets: a block's wrong frames get the display of its right frames |
-| `runner/gen_krea.py` | the live loop (writers, lock, LoRA attach or merge, sample collection, probe hooks) |
+| `runner/gen_krea.py` | the live loop (writers, early-steps write, lock, LoRA attach or merge, probe hooks) |
 | `runner/lora_train.py` | the LoRA trainer (one random denoising step per sample, weighted x0 loss) |
 | `runner/feature_probe.py`, `scripts/probe_digits.py` | the hidden-state probe |
 | `runner/live_server.py`, `live_page.html` | the live typing page |
-| `runner/configs.yaml` | every run's settings (e.g. `tscene_door`, `lora_v2`, `lora_eval_v2_s0`) |
-| `scripts/score_text.py`, `score_replay.py`, `motion_check.py` | scoring |
+| `runner/configs.yaml` | every run's settings (e.g. `replay_E2P_lora4_door`, `fix5_eval_door`, `before_eval_door`) |
+| `scripts/score_text.py`, `contains_rate.py`, `score_replay.py`, `motion_check.py` | scoring |
+| `scripts/scene_reel.py`, `before_after.py` | the videos |
 | `results/scores/` | the numbers in this README |
 | `docs/` | the pilot plan, the general-text plan, the diagram |
 

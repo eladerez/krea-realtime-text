@@ -134,3 +134,65 @@ def latent_weights(lcd: list, verified: list, frames_per_latent: int = 4, hw: tu
         ok = all(verified[i] for i in fr)
         w[j][cells] = inside if ok else 0.0
     return w
+
+
+# LIVE.md 17 Nov (v3: any surface, letters, a moving camera): the same targets for the general writer's scenes. The
+# text line is tracked from the start image (textbench/paste_writer.TextTracker) and read by OCR in each frame; a frame
+# that reads wrong gets the text region of the nearest right frame of its block, moved by the two frames' tracked quads
+# (a perspective warp), put in inside a padded text region, feathered; every changed frame is read again.
+
+def text_region(shape, quad: np.ndarray, grow_u: float = 0.35, grow_v: float = 0.35) -> np.ndarray:
+    """The tracked line's region (padded by line heights along and across it), as a uint8 mask (0/255)."""
+    from textbench.paste_writer import _region
+    return (_region(shape, quad, grow_u, grow_v) * 255).astype(np.uint8)
+
+
+def read_text(frame: np.ndarray, quad: np.ndarray) -> str:
+    """OCR's lines whose centre lies in the quad (padded by a third of its height along it, 0.15 across), joined."""
+    from textbench.paste_writer import norm, ocr_lines
+    h = float(np.linalg.norm(quad[3] - quad[0]))
+    x0, y0 = quad.min(0) - np.array([h / 3, h * 0.15])
+    x1, y1 = quad.max(0) + np.array([h / 3, h * 0.15])
+    got = sorted((q[:, 0].min(), t) for q, t, _ in ocr_lines(frame)
+                 if x0 <= q[:, 0].mean() <= x1 and y0 <= q[:, 1].mean() <= y1)
+    return "".join(norm(t) for _, t in got)
+
+
+def build_text(frames: list[np.ndarray], want_line: str, tracker) -> dict:
+    """frames: the block's RGB frames as Krea made them; want_line: the whole line expected (e.g. "ROUTE 47").
+    Returns the same dict as build() ("lcd" holds the text region masks)."""
+    from textbench.paste_writer import same
+    n = len(frames)
+    quads, reads = [None] * n, [None] * n
+    for i, f in enumerate(frames):
+        q, _n = tracker.locate(f)
+        if q is None:
+            continue
+        quads[i] = q
+        reads[i] = read_text(f, q)
+    right = [r is not None and same(r, want_line) for r in reads]
+    out, verified, how = list(frames), [False] * n, ["lost"] * n
+    masks = [text_region(f.shape, q) if q is not None else None for q, f in zip(quads, frames)]
+    for i in range(n):
+        if right[i]:
+            verified[i], how[i] = True, "krea"
+    src_i = None
+    for i in range(n):
+        if right[i] or quads[i] is None:
+            continue
+        if not any(right):
+            how[i] = "no source"
+            continue
+        j = min((j for j in range(n) if right[j]), key=lambda j: abs(j - i))
+        src_i = j if src_i is None else src_i
+        m = cv2.getPerspectiveTransform(quads[j].astype(np.float32), quads[i].astype(np.float32))
+        h, w = frames[i].shape[:2]
+        moved = cv2.warpPerspective(frames[j], m, (w, h), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+        k = soft(masks[i])
+        out[i] = np.clip(frames[i] * (1 - k) + moved * k, 0, 255).astype(np.uint8)
+        how[i] = "from frame %d" % j
+        verified[i] = same(read_text(out[i], quads[i]), want_line)
+    info = {"source": "krea" if any(right) else "none", "source_frame": src_i,
+            "source_ocr": reads[src_i] if src_i is not None else None,
+            "reads": reads, "right": sum(right), "verified": sum(verified), "n": n}
+    return {"frames": out, "verified": verified, "lcd": masks, "how": how, "info": info}

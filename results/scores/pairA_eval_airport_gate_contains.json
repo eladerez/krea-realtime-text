@@ -1,0 +1,8 @@
+{
+ "replay_P_lora4_airport_gate/s101": {
+  "frames": 160,
+  "right_fallback": 0.037,
+  "contains": 0.037,
+  "contains_with_start_text": 6
+ }
+}

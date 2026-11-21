@@ -173,7 +173,7 @@ def run_loop(gen: Generator, state: LiveState, send: Callable[[dict, bytes], Non
 
 
 def make_app(state: LiveState, start_loop: Callable[[Callable[[dict, bytes], None]], None], log_path: Path,
-             title: str = "Live Sign") -> FastAPI:
+             title: str = "Live Sign", mode: str = "digits", max_chars: int = 5) -> FastAPI:
     app = FastAPI()
     events = log_path.with_name(log_path.stem + "_keys.jsonl")  # code-live-r1 #5: keys and page-measured latencies
 
@@ -217,7 +217,8 @@ def make_app(state: LiveState, start_loop: Callable[[Callable[[dict, bytes], Non
         clients.add(q)
         text, seq = state.get()
         await socket.send_text(json.dumps({"type": "hello", "text": text, "start": state.start, "seq": seq,
-                                           "title": title}))  # r1 #6
+                                           "title": title, "mode": mode, "max_chars": max_chars}))  # r1 #6
+        # LIVE.md 17 Nov (code-live-text-r1 #1): mode "text" (the paste writer) lets the page type letters too
 
         async def pump() -> None:
             while True:
@@ -241,7 +242,7 @@ def make_app(state: LiveState, start_loop: Callable[[Callable[[dict, bytes], Non
 
 
 def serve(gen_factory: Callable[[], Generator], text: str, port: int, log_path: Path, host: str = "127.0.0.1",
-          title: str = "Live Sign") -> None:
+          title: str = "Live Sign", mode: str = "digits", max_chars: int = 5) -> None:
     """Start the server; the generator is built in the generation thread (Krea's CUDA work stays on one thread)."""
     import uvicorn
     state, stop = LiveState(text), threading.Event()
@@ -256,7 +257,7 @@ def serve(gen_factory: Callable[[], Generator], text: str, port: int, log_path: 
                 os._exit(1)
         threading.Thread(target=worker, daemon=True).start()
 
-    uvicorn.run(make_app(state, start_loop, log_path, title), host=host, port=port, log_level="warning")
+    uvicorn.run(make_app(state, start_loop, log_path, title, mode, max_chars), host=host, port=port, log_level="warning")
     stop.set()
 
 
@@ -266,6 +267,8 @@ def main() -> None:
     ap.add_argument("--start", type=Path, required=True)
     ap.add_argument("--text", default="LAP 7")
     ap.add_argument("--title", default="Live Sign")
+    ap.add_argument("--mode", default="digits", choices=["digits", "text"])
+    ap.add_argument("--max-chars", type=int, default=5)
     ap.add_argument("--port", type=int, default=8000)
     ap.add_argument("--host", default="127.0.0.1", help="stub only; e.g. the Jetson's Tailscale address for a phone")
     ap.add_argument("--log", type=Path, default=ROOT / "logs/live/stub.jsonl")
@@ -275,7 +278,7 @@ def main() -> None:
     if not a.stub:
         raise SystemExit("the real generator runs from runner/gen_krea.py --live")
     start = np.asarray(Image.open(a.start).convert("RGB"))
-    serve(lambda: StubGenerator(start, a.text, check=a.check, drift=a.drift), a.text, a.port, a.log, a.host, a.title)
+    serve(lambda: StubGenerator(start, a.text, check=a.check, drift=a.drift), a.text, a.port, a.log, a.host, a.title, a.mode, a.max_chars)
 
 
 if __name__ == "__main__":

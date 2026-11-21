@@ -1,0 +1,8 @@
+{
+ "replay_E2P_base_gas_pump/s101": {
+  "frames": 160,
+  "right_fallback": 0.994,
+  "contains": 1.0,
+  "contains_with_start_text": 0
+ }
+}

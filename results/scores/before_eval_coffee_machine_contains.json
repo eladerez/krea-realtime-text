@@ -1,0 +1,8 @@
+{
+ "replay_P_base_coffee_machine/s101": {
+  "frames": 160,
+  "right_fallback": 0.106,
+  "contains": 0.106,
+  "contains_with_start_text": 0
+ }
+}

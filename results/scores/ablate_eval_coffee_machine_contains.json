@@ -1,0 +1,8 @@
+{
+ "replay_E2P_base_coffee_machine/s101": {
+  "frames": 160,
+  "right_fallback": 0.775,
+  "contains": 0.775,
+  "contains_with_start_text": 0
+ }
+}
